@@ -1,0 +1,31 @@
+<!--pages/login/login.wxml-->
+<form bindsubmit="loginBind">
+<view class="container" wx:if="{{bindInfo}}">
+  <image class="title" src="/imgs/login/2.png"></image> 
+  <view class="input-wrapper">
+    <image src="/imgs/login/4.png"></image>
+    <input type="text" placeholder="请输入您的账号/手机号" name="username"></input>
+  </view>
+  <view class="input-wrapper">
+    <image src="/imgs/login/3.png"></image>
+    <input type="password" placeholder="请输入您的密码" name="password"></input>
+  </view>
+  <view class="link-wrapper">
+    <view class="find-pass" bindtap="navigateToResetPass">忘记密码</view>
+    <view class="register" bindtap="navigateToRegister">注册>></view>
+  </view>
+  <button class="btn-login" formType="submit">登 录</button>
+</view>
+</form>
+
+<view class="login-container" wx:if="{{!bindInfo}}">
+  <view class="logo">
+    <image src="" mode="widthFix"></image>
+  </view>
+  <view class="tip-msg">
+    <text>申请获取您的公开信息（昵称、头像等）</text>
+  </view>
+  <view class="btn-login">
+    <button open-type="getUserInfo" bindgetuserinfo="login">微信登录</button>
+  </view>
+</view>

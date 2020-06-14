@@ -1,0 +1,38 @@
+<!--pages/register/register.wxml-->
+<form bindsubmit="register">
+<view class="container">
+  <view class="input-wrapper">
+    <input placeholder="请输入您的手机号" name="tel"></input>
+    <image src="/imgs/register/1.png"></image>
+  </view>
+  <view class="input-wrapper">
+    <input placeholder="在这里输入您的密码" name="password" type="password"></input>
+    <image src="/imgs/register/2.png"></image>
+  </view>
+  <view class="input-wrapper">
+    <input placeholder="请再次确认一遍密码" name="repeatpass" type="password"></input>
+    <image src="/imgs/register/3.png"></image>
+  </view>
+  <view class="input-wrapper">
+    <input placeholder="身份证号码" name="idnum"></input>
+    <image src="/imgs/register/4.png"></image>
+  </view>
+  <view class="input-wrapper">
+    <input placeholder="姓名" name="realname"></input>
+    <image src="/imgs/register/5.png"></image>
+  </view>
+  <picker bindchange="bindPickerChange" value="{{index}}" range="{{departmentList}}">
+    <view class="input-wrapper">
+          <input placeholder="所在部门" name="department" value="{{department}}" disabled="true"></input>
+          <image src="/imgs/register/6.png"></image>
+    </view>
+  </picker>
+</view>
+<view class="menu-wrapper">
+  <view bindtap="navigateToLogin">
+    <image src="/imgs/register/left.png"></image>
+    <text>前往登录</text>
+  </view>
+  <button form-type="submit">注册</button>
+</view>
+</form>

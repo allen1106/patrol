@@ -1,13 +1,42 @@
 <!--index.wxml-->
+<image src="/imgs/index/bg.png" class="page-wrapper">
+  <view class="header">您好，欢迎使用绿地中原部品控巡检系统</view>
+  <view class="date-wrapper">
+    <text>{{date}}</text>
+    <text>{{workDay}}</text>
+  </view>
+</image>
+
 <view class="container">
-  <view class="userinfo">
-    <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
-    <block wx:else>
-      <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
-      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-    </block>
+  <view class="notification">
+    <image src="/imgs/index/7.png">
+      <view>{{taskNum}}</view>
+    </image>
+    <text wx:if="{{showLogin}}">请先到个人中心进行登录</text>
+    <text wx:if="{{!showLogin}}">您有{{taskNum}}条任务待处理，请加快处理</text>
   </view>
-  <view class="usermotto">
-    <text class="user-motto">{{motto}}</text>
+  <view class="menu-list">
+    <image class="menu-item" src="/imgs/index/2.png" bindtap="navigateToTaskList" data-isfb="1">
+      <view class="text-wrapper"><text>巡检报告</text></view>
+    </image>
+    <image class="menu-item" src="/imgs/index/3.png" bindtap="navigateToTaskList" data-isfb="0">
+      <view class="text-wrapper">待提交报告</view>
+    </image>
+    <image class="menu-item" src="/imgs/index/4.png" bindtap="navigateToEvaluate" data-isfb="1">
+      <view class="text-wrapper"><text>已评价报告</text></view>
+    </image>
+    <image class="menu-item" src="/imgs/index/5.png" bindtap="navigateToEvaluate" data-isfb="0">
+      <view class="text-wrapper"><text>待评价报告</text></view>
+    </image>
+    <image class="menu-item" src="/imgs/index/2.png" bindtap="navigateToStatistics" data-tab="1">
+      <view class="text-wrapper"><text>表格统计</text></view>
+    </image>
+    <image class="menu-item" src="/imgs/index/6.png" bindtap="navigateToReport" data-id="0">
+      <view class="text-wrapper"><text>发布巡检报告</text></view>
+    </image>
+    <image class="menu-item" src="/imgs/index/1.png"bindtap="navigateToPersonal">
+      <view class="text-wrapper"><text>个人中心</text></view>
+    </image>
   </view>
+  <button class="btn-logout" wx:if="{{!showLogin}}" bindtap="logout">退出登录</button>
 </view>

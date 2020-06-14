@@ -1,0 +1,24 @@
+<!--pages/tasklist/tasklist.wxml-->
+<view class="nav">
+  <view class="project">
+    <picker bindchange="bindProjectChange" value="{{proIdx}}" range="{{projectList}}" range-key="name">
+      <view class="picker">
+        当前项目：{{projectList[proIdx].name}}
+      </view>
+    </picker>
+  </view>
+  <view class="system">
+    <picker bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
+      <view class="picker">
+        当前系统：{{systemList[sysIdx].name}}
+      </view>
+    </picker>
+  </view>
+</view>
+
+<view class="task-list">
+  <view class="task-item" wx:for="{{submitList}}" wx:key="item" bindtap="viewReport" data-rid="{{item.id}}">
+    <text>{{item.name}}</text>
+    <text>任务生成时间：{{item.task_time}}</text>
+  </view>
+</view>

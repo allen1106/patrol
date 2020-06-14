@@ -1,0 +1,20 @@
+<view class="container">
+  <view class="notification">
+    <image src="/imgs/login/4.png"></image>
+    <text>{{userInfo.realname}}</text>
+  </view>
+  <view class="info">
+    <view class="info-item">
+      <text>我的部门</text>
+      <text>{{userInfo.department}}</text>
+    </view>
+    <view class="info-item">
+      <text>巡检报告</text>
+      <text>{{userInfo.report}}</text>
+    </view>
+    <view class="info-item">
+      <text>评价数量</text>
+      <text>{{userInfo.evaluate}}</text>
+    </view>
+  </view>
+</view>

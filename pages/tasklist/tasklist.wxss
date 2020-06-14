@@ -1,0 +1,40 @@
+/* pages/tasklist/tasklist.wxss */
+.nav {
+  display: flex;
+  width: 95%;
+  height: 80rpx;
+  margin: 20rpx auto;
+  background-color: #4876FF;
+  border-radius: 20rpx;
+  color: #fff;
+  align-items: center;
+  font-size: 24rpx;
+}
+
+.nav .project {
+  width: 45%;
+  margin-left: 5%;
+}
+
+.nav .system {
+  width: 45%;
+  margin-left: 5%;
+}
+
+.task-list {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.task-item {
+  display: flex;
+  flex-direction: column;
+  padding: 10rpx 30rpx;
+  margin-top: 50rpx;
+  border: 1rpx solid #EAE7E8;
+  border-radius: 10rpx;
+}
+
+.task-item text:nth-child(2) {
+  font-size: 20rpx;
+}
