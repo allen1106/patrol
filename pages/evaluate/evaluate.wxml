@@ -1,35 +1,34 @@
-<form bindsubmit="bindSubmitForm" bindreset="bindBackToIndex">
+<form bindsubmit="bindSubmitForm" bindreset="bindBack">
 <view class="page-wrapper">
   <view class="header">
-    <view class="title">郑州绿地花语城四期洋房样板间</view>
-    <view class="opt-wrapper">
+    <view class="title">{{reportInfo.title}}</view>
+    <!-- <view class="opt-wrapper">
       <image bindtap="download" src="/imgs/report/2.png"></image>
-      <!-- <image src="/imgs/regist_name.png"></image> -->
-    </view>
+      <image src="/imgs/regist_name.png"></image>
+    </view> -->
   </view>
   <view class="summary">
-    <view>巡检部门：{{reportInfo.department}}</view>
-    <view>巡检人：{{reportInfo.username}}</view>
-    <view>巡检时间：{{reportInfo.time}}</view>
+    <view>任务编号：{{reportInfo.bgbh}}</view>
+    <view>发起时间：{{reportInfo.task_time}}</view>
   </view>
   <view class="description">
     <view class="tr width28 bg-blue">
       <view class="td">问题描述</view>
-      <view class="td"><input value="{{reportInfo.question}}" name="question"></input></view>
+      <view class="td"><input value="{{reportInfo.question}}" disabled="true"></input></view>
     </view>
         <view class="tr width28 bg-blue">
       <view class="td">原因</view>
-      <view class="td"><input value="{{reportInfo.reason}}" name="reason"></input></view>
+      <view class="td"><input value="{{reportInfo.reason}}" disabled="true"></input></view>
     </view>
         <view class="tr width28 bg-blue">
       <view class="td">解决办法</view>
-      <view class="td"><input value="{{reportInfo.solve}}" name="solve"></input></view>
+      <view class="td"><input value="{{reportInfo.solve}}" disabled="true"></input></view>
     </view>
     <view class="tr width55">
       <view class="td co-black">区域</view>
-      <view class="td co-orange"><input value="{{reportInfo.region}}" name="region"></input></view>
+      <view class="td co-orange"><input value="{{reportInfo.region}}" disabled="true"></input></view>
       <view class="td co-black">部位</view>
-      <view class="td co-orange"><input value="{{reportInfo.position}}" name="position"></input></view>
+      <view class="td co-orange"><input value="{{reportInfo.position}}" disabled="true"></input></view>
       <view class="td co-black">设计要求</view>
     </view>
     <view class="tr width55">
@@ -53,45 +52,34 @@
         <view class="img-upload-container" data-index="1">
           <view class="img-preview-container" wx:for="{{image1List}}" wx:key="index">
             <image class="img-preview" src="{{image1List[index]}}" data-src="{{image1List[index]}}" data-index="1" bindtap="previewImage"></image>
-            <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{imageList[index]}}" data-index="1"></image>
+            <!-- <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{imageList[index]}}" data-index="1"></image> -->
           </view>
-          <view class="img-preview-container" data-index="1" bindtap="chooseImage" wx:if="{{image1List.length < count}}">
+          <!-- <view class="img-preview-container" data-index="1" bindtap="chooseImage" wx:if="{{image1List.length < count}}">
             <image class="img-preview" src="/imgs/report/1.png"></image>
-          </view>
+          </view> -->
         </view>
       </view>
     </view>
     <view class="tr width28 bg-blue">
       <view class="td">备注</view>
-      <view class="td co-pink"><input value="{{reportInfo.remark}}" name="remark"></input></view>
+      <view class="td co-pink"><input value="{{reportInfo.remark}}" disabled="true"></input></view>
     </view>
   </view>
-  <view class="assign">
-    <view class="title">推送给：</view>
-    <scroll-view class="scroll-view-con" scroll-y>
-    <view class="member-container" wx:for="{{memberList}}" wx:for-index="index" wx:for-item="value">
-      <view class="title-wrapper">{{departmentList[index]}}:</view>
-      <view class="check-wrapper">
-        <view class="select-all">
-          <checkbox bindtap="bindSelectAll" data-sidx="{{index}}">全选</checkbox>
-        </view>
-        <view class="select-list">
-          <view class="checkbox" wx:for="{{value}}" wx:key="item">
-          <checkbox value="{{item.id}}" checked="{{item.checked}}">{{item.realname}}</checkbox>
-          </view>
-        </view>
-      </view>
+  <view class="comment" wx:if="{{!isFb}}">
+    <view>评价</view>
+    <textarea placeholder="请输入评价内容" name="comment"></textarea>
+  </view>
+  <view class="comment-list">
+    <view wx:for="{{comments}}" wx:key="item">
+      <text class="content">{{item.evaluate_content}}</text>
+      <text>{{item.evaluate_name}}</text>
+      <text>{{item.evaluate_time}}</text>
     </view>
-    </scroll-view>
   </view>
   <view class="foot">
-    <view class="comment-wrapper">
-      <text wx:for="{{commonList}}"></text>
-    </view>
-    <view class="btn-wrapper">
-      <button form-type="submit" data-id="1">提交</button>
+    <view class="btn-wrapper" wx:if="{{!isFb}}">
+      <button form-type="submit">提交</button>
       <button form-type="reset">取消</button>
-      <button form-type="submit" data-id="0">保存</button>
     </view>
   </view>
 </view>

@@ -158,23 +158,40 @@ Page({
     })
   },
 
+  validateInfo: function (data) {
+    if (!data['question']) return '问题描述'
+    if (!data['reason']) return '原因'
+    if (!data['solve']) return '解决办法'
+    if (!data['region']) return '区域'
+    if (!data['position']) return '部位'
+    return 'success'
+  },
+
   bindSubmitForm: function (e) {
-    var value = e.detail.value;
+    var value = e.detail.value
+    console.log(e.detail.value)
     var btnId = e.detail.target.dataset.id
     var that = this
     var url = btnId == "0" ? 'report_save.php' : 'report_submit.php'
     var data = {
-      userid: wx.getStorageSync('userId'),
+      pjr_id: wx.getStorageSync('userId'),
       task_time: new Date(),
       region: value.region,
       position: value.position,
       question: value.question,
       reason: value.reason,
       solve: value.solve,
-      pjr_id: value.pjr_id,
       project_id: 0,
       industry_id: 0,
       report_id: 0
+    }
+    var valid = that.validateInfo(data)
+    if (valid != "success") {
+      wx.showToast({
+        title: valid + '不能为空',
+        icon: 'none',
+      })
+      return
     }
     // 获取位置信息，如果没有弹出提示框
     wx.getSetting({
@@ -215,52 +232,59 @@ Page({
         imgs = this.data.imageList,
         imgs1 = this.data.image1List
     var allImgs = imgs.concat(imgs1)
-    for (var i in allImgs) {
-      wx.uploadFile({
-        url: api.API_HOST + "/fileup.php",
-        filePath: allImgs[i],
-        name: 'file',
-        header: { "Content-Type": "multipart/form-data" },
-        // formData: {
-        //   //和服务器约定的token, 一般也可以放在header中
-        //   'session_token': wx.getStorageSync('session_token')
-        // },
-        success: function (res) {
-          console.log(res);
-          if (res.statusCode != 200) {
-            wx.showModal({
-              title: '提示',
-              content: '上传失败',
-              showCancel: false
-            })
-            return;
-          } else {
-            switch (res.data.status) {
-              case 1:
-                if (i < imgsLength) {
-                  uploadedImgs.append(res.data.imgpath)
-                } else {
-                  uploadedImgs1.append(res.data.imgpath)
-                }
-                if (i == imgs1Length) {
-                  data['imgs'] = imgs
-                  data['imgs1'] = imgs1
-                  that.submitForm(url, data)
-                }
-              default:
-                wx.showModal({
-                  title: '提示',
-                  content: '上传失败',
-                  showCancel: false
-                })
-                return
+    if (allImgs.length == 0) {
+      data['imgs'] = uploadedImgs
+      data['imgs1'] = uploadedImgs1
+      that.submitForm(url, data)
+    } else {
+      for (var i in allImgs) {
+        wx.uploadFile({
+          url: api.API_HOST + "/fileup.php",
+          filePath: allImgs[i],
+          name: 'file',
+          header: { "Content-Type": "multipart/form-data" },
+          // formData: {
+          //   //和服务器约定的token, 一般也可以放在header中
+          //   'session_token': wx.getStorageSync('session_token')
+          // },
+          success: function (res) {
+            console.log(res);
+            if (res.statusCode != 200) {
+              wx.showModal({
+                title: '提示',
+                content: '上传失败',
+                showCancel: false
+              })
+              return;
+            } else {
+              switch (res.data.status) {
+                case 1:
+                  if (i < imgsLength) {
+                    uploadedImgs.append(res.data.imgpath)
+                  } else {
+                    uploadedImgs1.append(res.data.imgpath)
+                  }
+                  if (i == imgs1Length) {
+                    data['imgs'] = uploadedImgs
+                    data['imgs1'] = uploadedImgs1
+                    console.log('======>>>>>')
+                    that.submitForm(url, data)
+                  }
+                default:
+                  wx.showModal({
+                    title: '提示',
+                    content: '上传失败',
+                    showCancel: false
+                  })
+                  return
+              }
             }
+          },
+          complete: function () {
+            wx.hideToast();  //隐藏Toast
           }
-        },
-        complete: function () {
-          wx.hideToast();  //隐藏Toast
-        }
-      })
+        })
+      }
     }
   },
 
@@ -270,13 +294,20 @@ Page({
       url: url,
       data: data,
       success: function (res) {
-        wx.showToast({
-          title: '提交成功',
-          icon: 'success',
-          success: function () {
-            setTimeout(that.bindBackToIndex, 1500);
-          }
-        })
+        if (res.data.status == 1) {
+          wx.showToast({
+            title: '提交成功',
+            icon: 'success',
+            success: function () {
+              setTimeout(that.bindBackToIndex, 1500);
+            }
+          })
+        } else {
+          wx.showToast({
+            title: '提交失败',
+            icon: 'none'
+          })
+        }
       }
     })
   },

@@ -1,6 +1,6 @@
 const HTTP_HOST = 'https://xunjian.17letao.cn'
 const API_HOST = HTTP_HOST + '/api/'
-const DEBUG = false
+const DEBUG = true
 const IMG_HOST = DEBUG ? '' : HTTP_HOST
 var Mock = require('../utils/mock.js')
 function phpRequest(requestParam) {
@@ -86,7 +86,31 @@ function phpRequest(requestParam) {
         'errMsg': 'request:ok',
         'data': list
       })
-    } else if (url == "project.php") {
+    } else if (url == "evaluate.php") {
+      var list = [
+        { "name": "郑州绿地一期", "task_time": "2020年6月1日 20:20:20", id: 1},
+        { "name": "郑州绿地二期", "task_time": "2020年6月2日 20:20:20", id: 2},
+        { "name": "郑州绿地三期", "task_time": "2020年6月3日 20:20:20", id: 3},
+        { "name": "郑州绿地四期", "task_time": "2020年6月4日 20:20:20", id: 4},
+        { "name": "郑州绿地五期", "task_time": "2020年6月5日 20:20:20", id: 5},
+        { "name": "郑州绿地六期", "task_time": "2020年6月6日 20:20:20", id: 6},
+        { "name": "郑州绿地七期", "task_time": "2020年6月7日 20:20:20", id: 7},
+        { "name": "郑州绿地八期", "task_time": "2020年6月8日 20:20:20", id: 8},
+        { "name": "郑州绿地九期", "task_time": "2020年6月9日 20:20:20", id: 9},
+        { "name": "郑州绿地十期", "task_time": "2020年6月10日 20:20:20", id: 10},
+        { "name": "郑州绿地十一期", "task_time": "2020年6月11日 20:20:20", id: 11},
+        { "name": "郑州绿地十二期", "task_time": "2020年6月12日 20:20:20", id: 12},
+      ]
+      var pageNum = 8
+      var totalPage = Math.ceil(list.length / (pageNum * 1.0))
+      var page = requestParam.data.page ? requestParam.data.page : 1
+      list = list.slice(pageNum * (page - 1), pageNum * page)
+      res = Mock.mock({
+        'statusCode': 200,
+        'errMsg': 'request:ok',
+        'data': list
+      })
+    }else if (url == "project.php") {
       var list = [
         { "name": "郑州绿地一期", "project_id": 1},
         { "name": "郑州绿地二期", "project_id": 2},
@@ -155,6 +179,7 @@ function phpRequest(requestParam) {
       })
     } else if (url == 'report_list.php') {
       data = {
+        "title": "郑州xxx区房屋漏水",
         "bgbh":"2020060115160001",
         "task_time":"2020年06年01日20:20:20",
         "region":"区域",
@@ -170,6 +195,18 @@ function phpRequest(requestParam) {
         'statusCode': 200,
         'errMsg': 'request:ok',
         'data': data
+      })
+    } else if (url == 'evaluate_list.php') {
+      var list = [
+        {"evaluate_name":"小李","evaluate_time":"2020-06-01 15:32:11","evaluate_content":"评价的内容1"},
+        {"evaluate_name":"小张","evaluate_time":"2020-06-01 15:32:11","evaluate_content":"评价的内容2"},
+        {"evaluate_name":"小王","evaluate_time":"2020-06-01 15:32:11","evaluate_content":"评价的内容3"},
+        {"evaluate_name":"小菜","evaluate_time":"2020-06-01 15:32:11","evaluate_content":"评价的内容4"},
+      ]
+      res = Mock.mock({
+        'statusCode': 200,
+        'errMsg': 'request:ok',
+        'data': list
       })
     } else if (url == 'statistics.php') {
       var list = [

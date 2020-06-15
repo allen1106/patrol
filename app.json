@@ -9,7 +9,8 @@
     "pages/register/register",
     "pages/report/report",
     "pages/opinion/opinion",
-    "pages/logs/logs"
+    "pages/logs/logs",
+    "pages/evaluate/evaluate"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -132,8 +132,14 @@ Page({
 
   viewReport: function (e) {
     console.log(e.currentTarget.dataset.rid)
-    wx.navigateTo({
-      url: '/pages/report/report?id=' + e.currentTarget.dataset.rid,
-    })
+    if (this.data.isEvaluate) {
+      wx.navigateTo({
+        url: '/pages/evaluate/evaluate?id=' + e.currentTarget.dataset.rid + '&isFb=' + this.data.isFb,
+      })
+    } else {
+      wx.navigateTo({
+        url: '/pages/report/report?id=' + e.currentTarget.dataset.rid + '&isFb=' + this.data.isFb,
+      })
+    }
   }
 })
