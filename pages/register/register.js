@@ -53,7 +53,7 @@ Page({
       return
     }
     var data = {
-      'user': userId,
+      'userid': userId,
       'tel': value.tel,
       'password': value.password,
       'idnum': value.idnum,
@@ -71,7 +71,7 @@ Page({
       },
       data: data,
       success: function(res){
-        var status = res.data.status
+        var status = Number(res.data.status)
         console.log(res);
         switch (status) {
           case 1:

@@ -14,11 +14,16 @@ Page({
   data: {
     id: 0,
     reportInfo: null,
-    is_create: false,
+    isFb: 0,
     departmentList: [],
+    projectList: null,
+    proIdx: 0,
+    systemList: null,
+    sysIdx: 0,
+    projectId: null,
+    systemId: null,
     selectAll: [],
     memberList: {},
-    choosedMember: [],
     didx: 0,
     //最多可上传的图片数量
     count: 3,
@@ -32,16 +37,21 @@ Page({
   onLoad: function (options) {
     var that = this
     var id = Number(options.id)
+    var isFb = Number(options.isFb)
+    console.log(id, isFb)
     if (id == 0) {
       var info = app.globalData.userInfo
       that.setData({
         id: id,
+        isFb: isFb,
         reportInfo: {
           department: info.department,
           username: info.realname,
           time: util.formatTime(new Date())
         }
-      })
+      }),
+      that.fetchProjectList()
+      that.fetchSystemList()
     } else {
       api.phpRequest({
         url: 'report_list.php',
@@ -52,6 +62,7 @@ Page({
           console.log(res.data)
           that.setData({
             id: id,
+            isFb: isFb,
             reportInfo: res.data,
             imageList: res.data.imgs,
             image1List: res.data.imgs1
@@ -107,7 +118,6 @@ Page({
     var imgList = index == "0" ? this.data.imageList : this.data.image1List
     var idx = imgList.indexOf(current)
     imgList.splice(idx, 1)
-    console.log(imgList);
     if (index == "0") {
       this.setData({
         imageList: imgList
@@ -121,24 +131,28 @@ Page({
 
   fetchMemberList: function () {
     var that = this
-    console.log(that.data.departmentList)
     for (var i in that.data.departmentList) {
       that.data.memberList[i] = []
       that.data.selectAll.push(false)
-      api.phpRequest({
-        url: 'user.php',
-        data: {
-          departmentid: i
-        },
-        success: function (res) {
-          that.data.memberList[i] = res.data
-          that.setData({
-            memberList: that.data.memberList,
-            selectAll: that.data.selectAll
-          })
-        }
-      })
+      that.fetchMember(i)
     }
+  },
+
+  fetchMember: function (i) {
+    var that = this
+    api.phpRequest({
+      url: 'user.php',
+      data: {
+        departmentid: that.data.departmentList[i]
+      },
+      success: function (res) {
+        that.data.memberList[i] = res.data
+        that.setData({
+          memberList: that.data.memberList,
+          selectAll: that.data.selectAll
+        })
+      }
+    })
   },
 
   bindSelectAll: function (e) {
@@ -149,13 +163,34 @@ Page({
     var memberOjbs = that.data.memberList[index]
     for (var i in memberOjbs) {
       memberOjbs[i]["checked"] = !isAll
-      console.log(that.data.selectAll)
-      console.log(that.data.memberList)
     }
     that.setData({
       memberList: that.data.memberList,
       selectAll: that.data.selectAll
     })
+  },
+
+  bindSelect: function (e) {
+    var that = this
+    var value = e.currentTarget.dataset
+    var memberOjbs = that.data.memberList[value.sidx]
+    memberOjbs[value.midx]["checked"] = !memberOjbs[value.midx]["checked"]
+    that.setData({
+      memberList: that.data.memberList
+    })
+  },
+
+  getCheckedMember: function (e) {
+    var ret = []
+    for (var i in this.data.memberList) {
+      for (var j in this.data.memberList[i]) {
+        if (this.data.memberList[i][j]["checked"]) {
+          ret.push(this.data.memberList[i][j]["id"])
+        }
+      }
+    }
+    console.log(ret)
+    return ret
   },
 
   validateInfo: function (data) {
@@ -174,16 +209,17 @@ Page({
     var that = this
     var url = btnId == "0" ? 'report_save.php' : 'report_submit.php'
     var data = {
-      pjr_id: wx.getStorageSync('userId'),
-      task_time: new Date(),
+      userid: wx.getStorageSync('userId'),
+      task_time: util.formatTime(new Date()),
       region: value.region,
       position: value.position,
       question: value.question,
       reason: value.reason,
       solve: value.solve,
-      project_id: 0,
-      industry_id: 0,
-      report_id: 0
+      project_id: that.data.projectId,
+      industry_id: that.data.systemId,
+      report_id: 0,
+      pjr_id: that.getCheckedMember()
     }
     var valid = that.validateInfo(data)
     if (valid != "success") {
@@ -289,10 +325,13 @@ Page({
   },
 
   submitForm: function (url, data) {
+    var that = this
     // 获取到位置信息后，调用api提交表单
     api.phpRequest({
       url: url,
       data: data,
+      method: 'post',
+      header: {'content-type': 'application/x-www-form-urlencoded'},
       success: function (res) {
         if (res.data.status == 1) {
           wx.showToast({
@@ -339,5 +378,48 @@ Page({
         icon: 'none',
       })
     }
-  }
+  },
+
+  fetchProjectList: function (fn1, fn2) {
+    var that = this;
+    api.phpRequest({
+      url: 'project.php',
+      data: {
+        userid: wx.getStorageSync('userId')
+      },
+      success: function (res) {
+        var list = res.data
+        that.setData({
+          projectList: list,
+          projectId: list[0].project_id
+        })
+        if (fn1) {
+          fn1(fn2)
+        }
+      }
+    })
+  },
+
+  fetchSystemList: function (fn) {
+    console.log("fetchSystemList")
+    return new Promise(resolve => {
+      var that = this;
+      api.phpRequest({
+        url: 'system.php',
+        data: {
+          userid: wx.getStorageSync('userId')
+        },
+        success: function (res) {
+          var list = res.data
+          that.setData({
+            systemList: list,
+            systemId: list[0].industry_id
+          })
+          if (fn) {
+            fn()
+          }
+        }
+      })
+    })
+  },
 })

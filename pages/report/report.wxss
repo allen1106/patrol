@@ -29,6 +29,28 @@
   width: 30rpx;
 }
 
+.nav {
+  display: flex;
+  width: 100%;
+  height: 80rpx;
+  margin: 20rpx auto;
+  background-color: #4876FF;
+  border-radius: 20rpx;
+  color: #fff;
+  align-items: center;
+  font-size: 24rpx;
+}
+
+.nav .project {
+  width: 45%;
+  margin-left: 5%;
+}
+
+.nav .system {
+  width: 45%;
+  margin-left: 5%;
+}
+
 .summary {
   width: calc(100% - 50rpx);
   padding: 0 20rpx;

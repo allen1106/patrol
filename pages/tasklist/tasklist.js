@@ -7,7 +7,8 @@ Page({
    * 页面的初始数据
    */
   data: {
-    userId: wx.getStorageSync('userId'),
+    title: "",
+    userId: null,
     isEvaluate: 0,
     isFb: 1,
     submitList: null,
@@ -25,17 +26,36 @@ Page({
    */
   onLoad: function (options) {
     var that = this
+    var isFb = Number(options.isfb)
+    var isEvaluate = Number(options.isEvaluate)
     that.setData({
-      isFb: Number(options.isfb),
-      isEvaluate: Number(options.isEvaluate)
+      isFb: isFb,
+      isEvaluate: isEvaluate,
+      userId: wx.getStorageSync('userId')
+    })
+    var title = ""
+    if (isFb) {
+      title += "已"
+    } else {
+      title += "待"
+    }
+    if (isEvaluate) {
+      title += "评价列表"
+    } else {
+      title += "巡检任务列表"
+    }
+    that.setData({
+      title: title
+    })
+    wx.setNavigationBarTitle({
+      title: that.data.title
     })
     that.fetchProjectList(this.fetchSystemList, this.fetchTaskList)
   },
 
   fetchProjectList: function (fn1, fn2) {
-    console.log("fetchProjectList")
+    var that = this;
     return new Promise(resolve => {
-      var that = this;
       api.phpRequest({
         url: 'project.php',
         data: {

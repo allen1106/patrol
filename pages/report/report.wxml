@@ -1,10 +1,26 @@
 <form bindsubmit="bindSubmitForm" bindreset="bindBackToIndex">
 <view class="page-wrapper">
-  <view class="header">
+  <view class="header" wx:if="{{id != 0}}">
     <view class="title">郑州绿地花语城四期洋房样板间</view>
     <view class="opt-wrapper">
       <image bindtap="download" src="/imgs/report/2.png"></image>
       <!-- <image src="/imgs/regist_name.png"></image> -->
+    </view>
+  </view>
+  <view class="nav" wx:if="{{id == 0}}">
+    <view class="project">
+      <picker bindchange="bindProjectChange" value="{{proIdx}}" range="{{projectList}}" range-key="name">
+        <view class="picker">
+          当前项目：{{projectList[proIdx].name}}
+        </view>
+      </picker>
+    </view>
+    <view class="system">
+      <picker bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
+        <view class="picker">
+          当前系统：{{systemList[sysIdx].name}}
+        </view>
+      </picker>
     </view>
   </view>
   <view class="summary">
@@ -69,26 +85,28 @@
   <view class="assign">
     <view class="title">推送给：</view>
     <scroll-view class="scroll-view-con" scroll-y>
-    <view class="member-container" wx:for="{{memberList}}" wx:for-index="index" wx:for-item="value">
-      <view class="title-wrapper">{{departmentList[index]}}:</view>
-      <view class="check-wrapper">
-        <view class="select-all">
-          <checkbox bindtap="bindSelectAll" data-sidx="{{index}}">全选</checkbox>
-        </view>
-        <view class="select-list">
-          <view class="checkbox" wx:for="{{value}}" wx:key="item">
-          <checkbox value="{{item.id}}" checked="{{item.checked}}">{{item.realname}}</checkbox>
+      <view class="member-container" wx:for="{{memberList}}" wx:for-index="index" wx:for-item="value">
+        <view class="title-wrapper">{{departmentList[index]}}:</view>
+        <view class="check-wrapper">
+          <view class="select-all">
+            <checkbox bindtap="bindSelectAll" data-sidx="{{index}}">全选</checkbox>
+          </view>
+          <view class="select-list">
+            <checkbox-group bindchange="checkboxChange">
+              <view class="checkbox" wx:for="{{value}}" wx:key="index" wx:for-index="midx">
+              <checkbox bindtap="bindSelect" value="{{value[midx].id}}" checked="{{value[midx].checked}}" data-sidx="{{index}}" data-midx="{{midx}}">{{value[midx].realname}}</checkbox>
+              </view>
+            </checkbox-group>
           </view>
         </view>
       </view>
-    </view>
     </scroll-view>
   </view>
   <view class="foot">
     <view class="comment-wrapper">
       <text wx:for="{{commonList}}"></text>
     </view>
-    <view class="btn-wrapper">
+    <view class="btn-wrapper" wx:if="{{isFb!=1}}">
       <button form-type="submit" data-id="1">提交</button>
       <button form-type="reset">取消</button>
       <button form-type="submit" data-id="0">保存</button>

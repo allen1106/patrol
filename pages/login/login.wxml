@@ -10,11 +10,10 @@
     <image src="/imgs/login/3.png"></image>
     <input type="password" placeholder="请输入您的密码" name="password"></input>
   </view>
+  <button class="btn-login" formType="submit">登 录</button>
   <view class="link-wrapper">
-    <view class="find-pass" bindtap="navigateToResetPass">忘记密码</view>
     <view class="register" bindtap="navigateToRegister">注册>></view>
   </view>
-  <button class="btn-login" formType="submit">登 录</button>
 </view>
 </form>
 

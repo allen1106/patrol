@@ -37,10 +37,8 @@ Page({
             },
             success: function (res) {
               console.log(res)
-              wx.setStorageSync('userId', res.data.user)
-              wx.setStorageSync('userId', 2)
+              wx.setStorageSync('userId', res.data.userid)
               wx.setStorageSync('userBind', res.data.bind)
-              wx.setStorageSync('userId', 1)
               if (res.data.bind === 1) {
                 wx.navigateBack({
                   delta: 1
@@ -148,12 +146,6 @@ Page({
   navigateToRegister: function (e) {
     wx.navigateTo({
       url: '/pages/register/register',
-    })
-  },
-
-  navigateToResetPass: function (e) {
-    wx.navigateTo({
-      url: '/pages/findpass/findpass',
     })
   }
 })
