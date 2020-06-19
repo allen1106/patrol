@@ -23,10 +23,14 @@
       </picker>
     </view>
   </view>
-  <view class="summary">
+  <view class="summary" wx:if="{{id==0}}">
     <view>巡检部门：{{reportInfo.department}}</view>
     <view>巡检人：{{reportInfo.username}}</view>
     <view>巡检时间：{{reportInfo.time}}</view>
+  </view>
+  <view class="summary" wx:if="{{id!=0}}">
+    <view>任务编号：{{reportInfo.bgbh}}</view>
+    <view>发起时间：{{reportInfo.task_time}}</view>
   </view>
   <view class="description">
     <view class="tr width28 bg-blue">

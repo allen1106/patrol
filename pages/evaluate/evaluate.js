@@ -36,8 +36,8 @@ Page({
         that.setData({
           id: id,
           reportInfo: res.data,
-          imageList: res.data.imgs.split('|'),
-          image1List: res.data.imgs1.split('|')
+          imageList: res.data.imgs && res.data.imgs.split('|'),
+          image1List: res.data.imgs1 && res.data.imgs1.split('|')
         })
       }
     })
@@ -69,6 +69,11 @@ Page({
     }
     api.phpRequest({
       url: 'evaluate_save.php',
+      method: 'Post',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json'
+      },
       data: {
         userid: wx.getStorageSync('userId'),
         report_id: that.data.id,

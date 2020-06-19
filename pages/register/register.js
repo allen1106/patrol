@@ -75,12 +75,14 @@ Page({
         console.log(res);
         switch (status) {
           case 1:
+            wx.setStorageSync('userId', data['userid'])
+            wx.setStorageSync('userBind', 1)
             wx.showToast({
               title: '注册成功',
               icon: 'success',
             })
             wx.navigateBack({
-              delta: 1
+              delta: 2
             })
             break
           case 2:

@@ -1,6 +1,6 @@
 <view class="container">
   <view class="notification">
-    <image src="/imgs/login/4.png"></image>
+    <image src="{{userInfo.headimgurl}}"></image>
     <text>{{userInfo.realname}}</text>
   </view>
   <view class="info">

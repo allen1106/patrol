@@ -89,13 +89,6 @@ Page({
       },
       data: data,
       success: function(res){
-        res = {
-          'statusCode': 200,
-          'errMsg': 'request:ok',
-          'data': {
-            "status": 1
-          }
-        }
         var status = res.data.status
         switch (status) {
           case 1:

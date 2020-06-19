@@ -12,6 +12,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    title: "",
     id: 0,
     reportInfo: null,
     isFb: 0,
@@ -42,6 +43,7 @@ Page({
     if (id == 0) {
       var info = app.globalData.userInfo
       that.setData({
+        title: "发布巡检报告",
         id: id,
         isFb: isFb,
         reportInfo: {
@@ -53,6 +55,9 @@ Page({
       that.fetchProjectList()
       that.fetchSystemList()
     } else {
+      that.setData({
+        title: "查看巡检报告",
+      })
       api.phpRequest({
         url: 'report_list.php',
         data: {
@@ -79,6 +84,9 @@ Page({
           departmentList: util.formatDepartment(res.data)
         }, that.fetchMemberList)
       }
+    })
+    wx.setNavigationBarTitle({
+      title: that.data.title
     })
   },
 
@@ -274,15 +282,11 @@ Page({
       that.submitForm(url, data)
     } else {
       for (var i in allImgs) {
+        console.log(allImgs[i])
         wx.uploadFile({
-          url: api.API_HOST + "/fileup.php",
+          url: api.API_HOST + "fileup.php",
           filePath: allImgs[i],
-          name: 'file',
-          header: { "Content-Type": "multipart/form-data" },
-          // formData: {
-          //   //和服务器约定的token, 一般也可以放在header中
-          //   'session_token': wx.getStorageSync('session_token')
-          // },
+          name: 'imgs',
           success: function (res) {
             console.log(res);
             if (res.statusCode != 200) {
