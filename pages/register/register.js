@@ -41,7 +41,7 @@ Page({
     var value = e.detail.value
     var tipMsg = ""
     if (!value.realname) { tipMsg="姓名不能为空" }
-    if (!value.idnum) { tipMsg="身份证号不能为空" }
+    // if (!value.idnum) { tipMsg="身份证号不能为空" }
     if (value.password != value.repeatpass) { tipMsg="两次密码不一致" }
     if (!value.password) { tipMsg="密码不能为空" }
     if (!value.tel) { tipMsg="手机号不能为空" }
@@ -56,7 +56,7 @@ Page({
       'userid': userId,
       'tel': value.tel,
       'password': value.password,
-      'idnum': value.idnum,
+      // 'idnum': value.idnum,
       'realname': value.realname,
       'department': that.data.department
     }

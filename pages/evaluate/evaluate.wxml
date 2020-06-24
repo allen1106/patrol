@@ -12,31 +12,32 @@
     <view>发起时间：{{reportInfo.task_time}}</view>
   </view>
   <view class="description">
-    <view class="tr width28 bg-blue">
-      <view class="td">问题描述</view>
-      <view class="td"><input value="{{reportInfo.question}}" disabled="true"></input></view>
+    <view class="item-wrapper">
+      <view class="label">问题描述</view>
+      <view class="input"><input value="{{reportInfo.question}}" disabled="true"></input></view>
     </view>
-        <view class="tr width28 bg-blue">
-      <view class="td">原因</view>
-      <view class="td"><input value="{{reportInfo.reason}}" disabled="true"></input></view>
+        <view class="item-wrapper">
+      <view class="label">原因</view>
+      <view class="input"><input value="{{reportInfo.reason}}" disabled="true"></input></view>
     </view>
-        <view class="tr width28 bg-blue">
-      <view class="td">解决办法</view>
-      <view class="td"><input value="{{reportInfo.solve}}" disabled="true"></input></view>
+        <view class="item-wrapper">
+      <view class="label">解决办法</view>
+      <view class="input"><input value="{{reportInfo.solve}}" disabled="true"></input></view>
     </view>
-    <view class="tr width55">
-      <view class="td co-black">区域</view>
-      <view class="td co-orange"><input value="{{reportInfo.region}}" disabled="true"></input></view>
-      <view class="td co-black">部位</view>
-      <view class="td co-orange"><input value="{{reportInfo.position}}" disabled="true"></input></view>
-      <view class="td co-black">设计要求</view>
+    <view class="item-wrapper">
+      <view class="label">区域</view>
+      <view class="input"><input value="{{reportInfo.region}}" disabled="true"></input></view>
     </view>
-    <view class="tr width55">
-      <view class="td">现场图片</view>
-      <view class="td">参照做法和要求</view>
+    <view class="item-wrapper">
+      <view class="label">部位</view>
+      <view class="input"><input value="{{reportInfo.position}}" disabled="true"></input></view>
     </view>
-    <view class="tr width55 bg-gray high-tr">
-      <view class="td">
+    <view class="item-wrapper">
+      <view class="label">设计要求</view>
+    </view>
+    <view class="item-wrapper">
+      <view class="small-label">现场图片</view>
+      <view class="image-wrapper">
         <view class="img-upload-container">
           <view class="img-preview-container" wx:for="{{imageList}}" wx:key="index">
             <image class="img-preview" src="{{imageList[index]}}" data-src="{{imageList[index]}}" data-index="0" bindtap="previewImage"></image>
@@ -47,8 +48,10 @@
           </view>
         </view>
       </view>
-      <view class="gap-line"></view>
-      <view class="td">
+    </view>
+    <view class="item-wrapper">
+      <view class="small-label">参照做法和要求</view>
+      <view class="image-wrapper">
         <view class="img-upload-container" data-index="1">
           <view class="img-preview-container" wx:for="{{image1List}}" wx:key="index">
             <image class="img-preview" src="{{image1List[index]}}" data-src="{{image1List[index]}}" data-index="1" bindtap="previewImage"></image>
@@ -60,14 +63,14 @@
         </view>
       </view>
     </view>
-    <view class="tr width28 bg-blue">
-      <view class="td">备注</view>
-      <view class="td co-pink"><input value="{{reportInfo.remark}}" disabled="true"></input></view>
+    <view class="item-wrapper">
+      <view class="label">备注</view>
+      <view class="input"><input value="{{reportInfo.remark}}" disabled="true"></input></view>
     </view>
   </view>
-  <view class="comment" wx:if="{{!isFb}}">
-    <view>评价</view>
-    <textarea placeholder="请输入评价内容" name="comment"></textarea>
+  <view class="item-wrapper" wx:if="{{!isFb}}">
+    <view class="label">评价</view>
+    <view class="input"><textarea placeholder="请输入评价内容" name="comment"></textarea></view>
   </view>
   <view class="comment-list">
     <view wx:for="{{comments}}" wx:key="item">

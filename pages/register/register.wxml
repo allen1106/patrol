@@ -13,10 +13,10 @@
     <input placeholder="请再次确认一遍密码" name="repeatpass" type="password"></input>
     <image src="/imgs/register/3.png"></image>
   </view>
-  <view class="input-wrapper">
+  <!-- <view class="input-wrapper">
     <input placeholder="身份证号码" name="idnum"></input>
     <image src="/imgs/register/4.png"></image>
-  </view>
+  </view> -->
   <view class="input-wrapper">
     <input placeholder="姓名" name="realname"></input>
     <image src="/imgs/register/5.png"></image>

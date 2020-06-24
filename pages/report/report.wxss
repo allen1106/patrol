@@ -1,7 +1,11 @@
 /* pages/report/report.wxss */
+page {
+  background-color: #F6F6F6;
+}
+
 .page-wrapper {
   width: 95%;
-  margin: 0 auto;
+  margin: 20rpx auto;
   font-size: 20rpx;
 }
 
@@ -56,6 +60,7 @@
   padding: 0 20rpx;
   border: 5rpx solid #4876FF;
   border-radius: 20rpx;
+  background-color: #fff;
 }
 
 .summary view {
@@ -69,42 +74,7 @@
 .description {
   margin-top: 20rpx;
   width: 100%;
-  border: 2rpx solid #9999A6;
   color: #9999A6;
-}
-.tr {
-  display: flex;
-  width: 100%;
-  height: 50rpx;
-  justify-content: center;
-  align-items: center;
-  border-top: 2rpx solid #9999A6;
-}
-.tr:nth-child(1) {
-  border-top: none;
-}
-.td {
-  display: flex;
-  height: 100%;
-  line-height: 100%;
-  justify-content: center;
-  align-items: center;
-  border-left: 2rpx solid #9999A6;
-}
-.tr .td:nth-child(1) {
-  border-left: none;
-}
-.width28 .td:nth-child(1) {
-  flex: 2;
-  font-size: 28rpx;
-}
-.width28 .td:nth-child(2) {
-  flex: 8;
-  font-size: 24rpx;
-}
-.width55 .td {
-  flex: 1;
-  font-size: 28rpx;
 }
 .bg-blue {
   background-color: #87CEFA;
@@ -121,27 +91,32 @@
 .co-pink {
   color: #C71585;
 }
-.high-tr {
-  height: unset;
-}
-.high-tr .td:nth-child(1) {
-  width: 50%;
-  /* border-right: 2rpx solid #9999A6; */
-  border-right: none;
-}
-.high-tr .td:nth-child(2) {
-  width: 50%;
-  border-left: none;
-}
-.gap-line {
-  display: inline-block;
-  width: 1rpx;
-  height: 100%;
-  background-color: #9999A6;
-}
 
-.td input {
-  text-align: center;
+.item-wrapper {
+  margin-top: 20rpx;
+}
+.item-wrapper .label {
+  font-size: 32rpx;
+}
+.item-wrapper .small-label {
+  font-size: 28rpx;
+}
+.item-wrapper .input {
+  margin-top: 10rpx;
+  border: 2rpx solid #DCDCDC;
+  border-radius: 20rpx;
+  height: 80rpx;
+  padding: 10rpx 20rpx;
+  background-color: #fff;
+}
+.item-wrapper .input input {
+  height: 80rpx;
+  font-size: 24rpx;
+}
+.item-wrapper .image-wrapper {
+  background-color: #fff;
+  border: 2rpx solid #DCDCDC;
+  border-radius: 20rpx;
 }
 
 
@@ -180,23 +155,25 @@
 }
 
 .assign {
+  margin-top: 20rpx;
   width: 100%;
-  color: #fff;
   font-size: 24rpx;
-  border: 2rpx solid #9999A6;
 }
 
 .assign .title {
   width: 100%;
   height: 50rpx;
   line-height: 50rpx;
-  text-align: center;
-  background-color: #9999A6;
+  font-size: 32rpx;
+  color: #9999A6;
 }
 
 .scroll-view-con {
   width: 100%;
   height: 200rpx;
+  border: 2rpx solid #DCDCDC;
+  border-radius: 20rpx;
+  background-color: #fff;
 }
 
 .assign .member-container {
@@ -204,7 +181,11 @@
   padding: 10rpx;
   width: calc(100% - 20rpx);
   color: #000;
-  border-top: 2rpx solid #9999A6;
+  border-bottom: 2rpx solid #DCDCDC;
+}
+
+.assign .member-container:nth-last-child(1) {
+  border-bottom: none;
 }
 
 .assign .member-container .title-wrapper {
@@ -234,17 +215,17 @@ checkbox .wx-checkbox-input {
 }
 
 .btn-wrapper {
-  margin-top: 30rpx;
+  margin: 30rpx 0;
   display: flex;
 }
 
 .btn-wrapper button:not([size='mini']) {
   padding: 0;
-  width: 150rpx;
-  height: 50rpx;
-  line-height: 50rpx;
+  width: 200rpx;
+  height: 60rpx;
+  line-height: 60rpx;
   border-radius: 30rpx;
   background-color: #4876FF;
-  font-size: 24rpx;
+  font-size: 28rpx;
   color: #fff;
 }

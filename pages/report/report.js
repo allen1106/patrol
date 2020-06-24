@@ -69,8 +69,8 @@ Page({
             id: id,
             isFb: isFb,
             reportInfo: res.data,
-            imageList: res.data.imgs,
-            image1List: res.data.imgs1
+            imageList: res.data.imgs.split(','),
+            image1List: res.data.imgs1.split(',')
           })
         }
       })
@@ -271,8 +271,6 @@ Page({
     var that = this
     var uploadedImgs = [],
         uploadedImgs1 = [],
-        imgsLength = 0,
-        imgs1Length = 0,
         imgs = this.data.imageList,
         imgs1 = this.data.image1List
     var allImgs = imgs.concat(imgs1)
@@ -281,51 +279,63 @@ Page({
       data['imgs1'] = uploadedImgs1
       that.submitForm(url, data)
     } else {
-      for (var i in allImgs) {
-        console.log(allImgs[i])
-        wx.uploadFile({
-          url: api.API_HOST + "fileup.php",
-          filePath: allImgs[i],
-          name: 'imgs',
-          success: function (res) {
-            console.log(res);
-            if (res.statusCode != 200) {
+      console.log(allImgs)
+      var i = 0
+      that.uploadSingleImg(i, uploadedImgs, uploadedImgs1, imgs, imgs1, allImgs, url, data)
+    }
+  },
+
+  uploadSingleImg: function (i, uploadedImgs, uploadedImgs1, imgs, imgs1, allImgs, url, data) {
+    var that = this
+    wx.uploadFile({
+      url: api.API_HOST + "fileup.php",
+      filePath: allImgs[i],
+      name: 'imgs',
+      success: function (res) {
+        res.data = res.data.substring(1, res.data.length)
+        res.data = JSON.parse(res.data)
+        if (res.statusCode != 200) {
+          wx.showModal({
+            title: '提示',
+            content: '上传失败',
+            showCancel: false
+          })
+          return;
+        } else {
+          console.log(i)
+          console.log(imgs)
+          console.log(uploadedImgs)
+          console.log(uploadedImgs1)
+          switch (res.data.status) {
+            case 1:
+              if (i < imgs.length) {
+                uploadedImgs.push(res.data.imgpath)
+              } else {
+                uploadedImgs1.push(res.data.imgpath)
+              }
+              if (i >= allImgs.length - 1) {
+                data['imgs'] = uploadedImgs
+                data['imgs1'] = uploadedImgs1
+                that.submitForm(url, data)
+              } else {
+                i++
+                that.uploadSingleImg(i, uploadedImgs, uploadedImgs1, imgs, imgs1, allImgs, url, data)
+              }
+              break
+            default:
               wx.showModal({
                 title: '提示',
                 content: '上传失败',
                 showCancel: false
               })
-              return;
-            } else {
-              switch (res.data.status) {
-                case 1:
-                  if (i < imgsLength) {
-                    uploadedImgs.append(res.data.imgpath)
-                  } else {
-                    uploadedImgs1.append(res.data.imgpath)
-                  }
-                  if (i == imgs1Length) {
-                    data['imgs'] = uploadedImgs
-                    data['imgs1'] = uploadedImgs1
-                    console.log('======>>>>>')
-                    that.submitForm(url, data)
-                  }
-                default:
-                  wx.showModal({
-                    title: '提示',
-                    content: '上传失败',
-                    showCancel: false
-                  })
-                  return
-              }
-            }
-          },
-          complete: function () {
-            wx.hideToast();  //隐藏Toast
+              return
           }
-        })
+        }
+      },
+      complete: function () {
+        wx.hideToast();  //隐藏Toast
       }
-    }
+    })
   },
 
   submitForm: function (url, data) {
