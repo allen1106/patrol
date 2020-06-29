@@ -1,7 +1,7 @@
 <form bindsubmit="bindSubmitForm" bindreset="bindBackToIndex">
 <view class="page-wrapper">
   <view class="header" wx:if="{{id != 0}}">
-    <view class="title">郑州绿地花语城四期洋房样板间</view>
+    <view class="title">{{reportInfo.title}}</view>
     <view class="opt-wrapper">
       <image bindtap="download" src="/imgs/report/2.png"></image>
       <!-- <image src="/imgs/regist_name.png"></image> -->
@@ -35,23 +35,23 @@
   <view class="description">
     <view class="item-wrapper">
       <view class="label">问题描述</view>
-      <view class="input"><input value="{{reportInfo.question}}" name="question"></input></view>
+      <view class="input"><textarea value="{{reportInfo.question}}" name="question"></textarea></view>
     </view>
     <view class="item-wrapper">
       <view class="label">原因</view>
-      <view class="input"><input value="{{reportInfo.reason}}" name="reason"></input></view>
+      <view class="input"><textarea value="{{reportInfo.reason}}" name="reason"></textarea></view>
     </view>
     <view class="item-wrapper">
       <view class="label">解决办法</view>
-      <view class="input"><input value="{{reportInfo.solve}}" name="solve"></input></view>
+      <view class="input"><textarea value="{{reportInfo.solve}}" name="solve"></textarea></view>
     </view>
     <view class="item-wrapper">
       <view class="label">区域</view>
-      <view class="input"><input value="{{reportInfo.region}}" name="region"></input></view>
+      <view class="input"><textarea value="{{reportInfo.region}}" name="region"></textarea></view>
     </view>
     <view class="item-wrapper">
       <view class="label">部位</view>
-      <view class="input"><input value="{{reportInfo.position}}" name="position"></input></view>
+      <view class="input"><textarea value="{{reportInfo.position}}" name="position"></textarea></view>
     </view>
     <view class="item-wrapper">
       <view class="label">设计要求</view>
@@ -86,7 +86,7 @@
     </view>
     <view class="item-wrapper">
       <view class="label">备注</view>
-      <view class="input"><input value="{{reportInfo.remark}}" name="remark"></input></view>
+      <view class="input"><textarea value="{{reportInfo.remark}}" name="remark"></textarea></view>
     </view>
   </view>
   <view class="assign">
@@ -109,14 +109,35 @@
       </view>
     </scroll-view>
   </view>
+  <view class="comment-list">
+    <view class="comment-item" wx:for="{{comments}}" wx:key="index">
+      <text class="content">{{comments[index].evaluate_content}}</text>
+      <view class="image-wrapper">
+        <view class="img-upload-container" data-index="3">
+          <view class="img-preview-container" wx:for="{{comments[index].evaluate_imgs}}" wx:key="item" wx:for-item="url" wx:for-index="cidx">
+            <image class="img-preview" src="{{url}}" data-src="{{url}}" data-index="3" data-cidx="{{index}}" bindtap="previewImage"></image>
+            <!-- <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{imageList[index]}}" data-index="1"></image> -->
+          </view>
+          <!-- <view class="img-preview-container" data-index="1" bindtap="chooseImage" wx:if="{{image1List.length < count}}">
+            <image class="img-preview" src="/imgs/report/1.png"></image>
+          </view> -->
+        </view>
+      </view>
+      <text>{{item.evaluate_name}}</text>
+      <text>{{item.evaluate_time}}</text>
+    </view>
+  </view>
   <view class="foot">
     <view class="comment-wrapper">
       <text wx:for="{{commonList}}"></text>
     </view>
-    <view class="btn-wrapper" wx:if="{{isFb!=1}}">
+    <view class="btn-wrapper" wx:if="{{isFb==0}}">
       <button form-type="submit" data-id="1">提交</button>
       <button form-type="reset">取消</button>
-      <button form-type="submit" data-id="0">保存</button>
+      <button form-type="submit" data-id="0">保存草稿</button>
+    </view>
+    <view class="btn-wrapper" wx:if="{{isFb==1}}">
+      <button form-type="submit" data-id="2">解决成功</button>
     </view>
   </view>
 </view>

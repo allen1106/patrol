@@ -14,10 +14,17 @@
       </view>
     </picker>
   </view>
+  <view class="status" wx:if="{{!isEvaluate && isFb != 0}}">
+    <picker bindchange="bindStatusChange" value="{{statusIdx}}" range="{{statusList}}" range-key="name">
+      <view class="picker">
+        状态：{{statusList[statusIdx].name}}
+      </view>
+    </picker>
+  </view>
 </view>
 
 <view class="task-list">
-  <view class="task-item" wx:for="{{submitList}}" wx:key="item" bindtap="viewReport" data-rid="{{item.id}}">
+  <view class="task-item" wx:for="{{submitList}}" wx:key="item" bindtap="viewReport" data-rid="{{item.id}}" data-isfb="{{item.is_fb}}">
     <text>{{item.name}}</text>
     <text>任务生成时间：{{item.task_time}}</text>
   </view>

@@ -106,12 +106,14 @@ page {
   border: 2rpx solid #DCDCDC;
   border-radius: 20rpx;
   height: 80rpx;
+  width: calc(100% - 44rpx);
   padding: 10rpx 20rpx;
   background-color: #fff;
 }
-.item-wrapper .input input {
+.item-wrapper .input textarea {
   height: 80rpx;
-  font-size: 24rpx;
+  font-size: 28rpx;
+  width: 100%;
 }
 .item-wrapper .image-wrapper {
   background-color: #fff;
@@ -170,7 +172,7 @@ page {
 
 .scroll-view-con {
   width: 100%;
-  height: 200rpx;
+  height: 400rpx;
   border: 2rpx solid #DCDCDC;
   border-radius: 20rpx;
   background-color: #fff;
@@ -228,4 +230,25 @@ checkbox .wx-checkbox-input {
   background-color: #4876FF;
   font-size: 28rpx;
   color: #fff;
+}
+
+.comment-list .comment-item {
+  margin-top: 5rpx;
+  padding: 5rpx 10rpx;
+  justify-content: center;
+  align-items: center;
+  border: 2rpx solid #87CEFA;
+  border-radius: 10rpx;
+}
+
+.comment-list .comment-item text {
+  display: inline-block;
+  width: 50%;
+  color: #9999A6;
+}
+
+.comment-list .comment-item .content {
+  font-size: 28rpx;
+  width: 100%;
+  color: #4876FF;
 }

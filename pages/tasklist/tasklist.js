@@ -13,12 +13,14 @@ Page({
     isFb: 1,
     submitList: null,
     page: 1,
-    projectList: null,
+    projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
-    systemList: null,
+    systemList: [{"name": "请选择系统", "industry_id": 0}],
     sysIdx: 0,
-    projectId: null,
-    systemId: null
+    projectId: 0,
+    statusList: [{"name": "全部", "isFb": 3}, {"name": "已解决", "isFb": 2}, {"name": "待解决", "isFb": 1}],
+    statusIdx: 0,
+    systemId: 0
   },
 
   /**
@@ -28,6 +30,7 @@ Page({
     var that = this
     var isFb = Number(options.isfb)
     var isEvaluate = Number(options.isEvaluate)
+    console.log(isFb, isEvaluate)
     that.setData({
       isFb: isFb,
       isEvaluate: isEvaluate,
@@ -40,7 +43,7 @@ Page({
       title += "待"
     }
     if (isEvaluate) {
-      title += "评价列表"
+      title += "处理列表"
     } else {
       title += "巡检任务列表"
     }
@@ -64,8 +67,7 @@ Page({
         success: function (res) {
           var list = res.data
           that.setData({
-            projectList: list,
-            projectId: list[0].project_id
+            projectList: that.data.projectList.concat(list)
           })
           if (fn1) {
             fn1(fn2)
@@ -87,8 +89,7 @@ Page({
         success: function (res) {
           var list = res.data
           that.setData({
-            systemList: list,
-            systemId: list[0].industry_id
+            systemList: that.data.systemList.concat(list)
           })
           if (fn) {
             fn()
@@ -114,17 +115,27 @@ Page({
     }, this.fetchTaskList)
   },
 
+  bindStatusChange: function (e) {
+    var idx = e.detail.value
+    this.setData({
+      statusIdx: e.detail.value,
+      isFb: this.data.statusList[idx].isFb
+    }, this.fetchTaskList)
+  },
+
   fetchTaskList: function (concatFlag) {
     var that = this
+    var data = {
+      userid: that.data.userId,
+      page: that.data.page,
+      is_fb: that.data.isFb
+    }
+    console.log(that.data)
+    if (that.data.projectId != 0) {data["project_id"] = that.data.projectId}
+    if (that.data.systemId != 0) {data["industry_id"] = that.data.systemId}
     api.phpRequest({
       url: that.data.isEvaluate ? 'evaluate.php' : 'report.php',
-      data: {
-        userid: that.data.userId,
-        page: that.data.page,
-        project_id: that.data.projectId,
-        industry_id: that.data.systemId,
-        is_fb: that.data.isFb
-      },
+      data: data,
       success: function (res) {
         console.log(res)
         var list = res.data
@@ -152,13 +163,19 @@ Page({
 
   viewReport: function (e) {
     console.log(e.currentTarget.dataset.rid)
+    var rid = e.currentTarget.dataset.rid
+    var isFb = e.currentTarget.dataset.isfb
+    if (this.data.isEvaluate) {
+      isFb = this.data.isFb
+    }
+    console.log(rid, isFb)
     if (this.data.isEvaluate) {
       wx.navigateTo({
-        url: '/pages/evaluate/evaluate?id=' + e.currentTarget.dataset.rid + '&isFb=' + this.data.isFb,
+        url: '/pages/evaluate/evaluate?id=' + rid + '&isFb=' + isFb,
       })
     } else {
       wx.navigateTo({
-        url: '/pages/report/report?id=' + e.currentTarget.dataset.rid + '&isFb=' + this.data.isFb,
+        url: '/pages/report/report?id=' + rid + '&isFb=' + isFb,
       })
     }
   }

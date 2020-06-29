@@ -10,8 +10,8 @@ Page({
   data: {
     // winWidth: 0,
     // winHeight: 0,
-    startDate: util.formatDate(new Date()),
-    endDate: util.formatDate(new Date()),
+    startDate: "开始时间",
+    endDate: "结束时间",
     itemList: null
   },
 
@@ -128,13 +128,14 @@ Page({
 
   fetchList: function () {
     var that = this
+    var data = {
+      userid: wx.getStorageSync('userId')
+    }
+    if (that.data.startDate != "开始时间") {data["startDate"] = that.data.startDate}
+    if (that.data.endDate != "结束时间") {data["startDate"] = that.data.endDate}
     api.phpRequest({
       url: 'statistics.php',
-      data: {
-        userid: wx.getStorageSync('userId'),
-        startDate: that.data.startDate,
-        endDate: that.data.endDate
-      },
+      data: data,
       success: function (res) {
         var list = res.data
         that.setData({

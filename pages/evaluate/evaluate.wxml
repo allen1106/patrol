@@ -41,11 +41,11 @@
         <view class="img-upload-container">
           <view class="img-preview-container" wx:for="{{imageList}}" wx:key="index">
             <image class="img-preview" src="{{imageList[index]}}" data-src="{{imageList[index]}}" data-index="0" bindtap="previewImage"></image>
-            <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{imageList[index]}}" data-index="0"></image>
+            <!-- <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{imageList[index]}}" data-index="0"></image> -->
           </view>
-          <view class="img-preview-container" bindtap="chooseImage" wx:if="{{imageList.length < count}}" data-index="0">
+          <!-- <view class="img-preview-container" bindtap="chooseImage" wx:if="{{imageList.length < count}}" data-index="0">
             <image class="img-preview" src="/imgs/report/1.png"></image>
-          </view>
+          </view> -->
         </view>
       </view>
     </view>
@@ -69,12 +69,34 @@
     </view>
   </view>
   <view class="item-wrapper" wx:if="{{!isFb}}">
-    <view class="label">评价</view>
-    <view class="input"><textarea placeholder="请输入评价内容" name="comment"></textarea></view>
+    <view class="label">处理回复</view>
+    <view class="input"><textarea placeholder="请输入处理内容" name="comment"></textarea></view>
+    <view class="image-wrapper">
+      <view class="img-upload-container">
+        <view class="img-preview-container" wx:for="{{commentImgList}}" wx:key="index">
+          <image class="img-preview" src="{{commentImgList[index]}}" data-src="{{commentImgList[index]}}" data-index="2" bindtap="previewImage"></image>
+          <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{commentImgList[index]}}" data-index="2"></image>
+        </view>
+        <view class="img-preview-container" bindtap="chooseImage" wx:if="{{commentImgList.length < count}}" data-index="2">
+          <image class="img-preview" src="/imgs/report/1.png"></image>
+        </view>
+      </view>
+    </view>
   </view>
   <view class="comment-list">
-    <view wx:for="{{comments}}" wx:key="item">
-      <text class="content">{{item.evaluate_content}}</text>
+    <view class="comment-item" wx:for="{{comments}}" wx:key="index">
+      <text class="content">{{comments[index].evaluate_content}}</text>
+      <view class="image-wrapper">
+        <view class="img-upload-container" data-index="3">
+          <view class="img-preview-container" wx:for="{{comments[index].evaluate_imgs}}" wx:key="item" wx:for-item="url" wx:for-index="cidx">
+            <image class="img-preview" src="{{url}}" data-src="{{url}}" data-index="3" data-cidx="{{index}}" bindtap="previewImage"></image>
+            <!-- <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{imageList[index]}}" data-index="1"></image> -->
+          </view>
+          <!-- <view class="img-preview-container" data-index="1" bindtap="chooseImage" wx:if="{{image1List.length < count}}">
+            <image class="img-preview" src="/imgs/report/1.png"></image>
+          </view> -->
+        </view>
+      </view>
       <text>{{item.evaluate_name}}</text>
       <text>{{item.evaluate_time}}</text>
     </view>

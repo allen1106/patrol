@@ -8,8 +8,8 @@
     "pages/opinion/opinion",
     "pages/register/register",
     "pages/logs/logs",
-    "pages/report/report",
-    "pages/evaluate/evaluate"
+    "pages/evaluate/evaluate",
+    "pages/report/report"
   ],
   "window": {
     "backgroundTextStyle": "light",

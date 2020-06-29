@@ -8,13 +8,21 @@
       <text>我的部门</text>
       <text>{{userInfo.department}}</text>
     </view>
-    <view class="info-item">
+    <view class="info-item" bindtap="navigateToTaskList" data-isevaluate="0">
       <text>巡检报告</text>
       <text>{{userInfo.report}}</text>
     </view>
-    <view class="info-item">
+    <view class="info-item" bindtap="navigateToTaskList" data-isevaluate="1">
       <text>评价数量</text>
       <text>{{userInfo.evaluate}}</text>
+    </view>
+    <view class="info-item project">
+      <view class="title-wrapper">项目列表</view>
+      <view class="list-wrapper">
+        <view class="item-list" wx:for="{{projectList}}" wx:key="item">
+          <text>{{item.name}}</text>
+        </view>
+      </view>
     </view>
   </view>
 </view>

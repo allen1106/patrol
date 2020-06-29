@@ -29,7 +29,9 @@ Page({
     //最多可上传的图片数量
     count: 3,
     imageList: [],
-    image1List: []
+    image1List: [],
+    fileUrl: '',
+    comments: []
   },
 
   /**
@@ -45,7 +47,6 @@ Page({
       that.setData({
         title: "发布巡检报告",
         id: id,
-        isFb: isFb,
         reportInfo: {
           department: info.department,
           username: info.realname,
@@ -74,6 +75,23 @@ Page({
           })
         }
       })
+      if (id != 0) {
+        api.phpRequest({
+          url: 'evaluate_list.php',
+          data: {
+            report_id: id
+          },
+          success: function (res) {
+            console.log(res.data)
+            for (var i in res.data) {
+              res.data[i].evaluate_imgs = res.data[i].evaluate_imgs && res.data[i].evaluate_imgs.split(',')
+            }
+            that.setData({
+              comments: res.data,
+            })
+          }
+        })
+      }
     }
     // 获取部门信息
     api.phpRequest({
@@ -215,6 +233,10 @@ Page({
     console.log(e.detail.value)
     var btnId = e.detail.target.dataset.id
     var that = this
+    if (btnId == "2") {
+      that.handleSuccess()
+      return
+    }
     var url = btnId == "0" ? 'report_save.php' : 'report_submit.php'
     var data = {
       userid: wx.getStorageSync('userId'),
@@ -226,7 +248,7 @@ Page({
       solve: value.solve,
       project_id: that.data.projectId,
       industry_id: that.data.systemId,
-      report_id: 0,
+      report_id: that.data.id,
       pjr_id: that.getCheckedMember()
     }
     var valid = that.validateInfo(data)
@@ -247,7 +269,12 @@ Page({
           success (res) {
             data['lng'] = res.longitude,
             data['lat'] = res.latitude
-            that.uploadImg(url, data)
+            if (that.data.id != 0) {
+              that.submitForm(url, data)
+              return
+            } else {
+              that.uploadImg(url, data)
+            }
           },
           //定位失败回调
           fail: function () {
@@ -266,6 +293,32 @@ Page({
       }
     })
   },
+  
+  handleSuccess: function () {
+    var that = this
+    api.phpRequest({
+      url: "report_result.php",
+      data: {'report_id': that.data.id, 'userid': wx.getStorageSync('userId')},
+      method: 'post',
+      header: {'content-type': 'application/x-www-form-urlencoded'},
+      success: function (res) {
+        if (res.data.status == 1) {
+          wx.showToast({
+            title: '处理成功',
+            icon: 'success',
+            success: function () {
+              setTimeout(that.bindBackToIndex, 1500);
+            }
+          })
+        } else {
+          wx.showToast({
+            title: '处理失败',
+            icon: 'none'
+          })
+        }
+      }
+    })
+  },
 
   uploadImg: function (url, data) {
     var that = this
@@ -279,7 +332,6 @@ Page({
       data['imgs1'] = uploadedImgs1
       that.submitForm(url, data)
     } else {
-      console.log(allImgs)
       var i = 0
       that.uploadSingleImg(i, uploadedImgs, uploadedImgs1, imgs, imgs1, allImgs, url, data)
     }
@@ -302,10 +354,6 @@ Page({
           })
           return;
         } else {
-          console.log(i)
-          console.log(imgs)
-          console.log(uploadedImgs)
-          console.log(uploadedImgs1)
           switch (res.data.status) {
             case 1:
               if (i < imgs.length) {
@@ -380,10 +428,9 @@ Page({
           report_id: that.data.id
         },
         success: function (res) {
-          console.log(res.data)
           that.setData({
-            departmentList: util.formatDepartment(res.data)
-          })
+            fileUrl: res.data.file
+          }, that.openFile)
         }
       })
     } else {
@@ -392,6 +439,18 @@ Page({
         icon: 'none',
       })
     }
+  },
+
+  openFile: function (e) {
+    var that = this
+    wx.downloadFile({
+      url: that.data.fileUrl,
+      success (res) {
+          wx.openDocument({
+              filePath: res.tempFilePath
+          })
+      }
+  })
   },
 
   fetchProjectList: function (fn1, fn2) {
@@ -434,6 +493,21 @@ Page({
           }
         }
       })
+    })
+  },
+  bindProjectChange: function (e) {
+    var idx = e.detail.value
+    this.setData({
+      proIdx: idx,
+      projectId: this.data.projectList[idx].project_id
+    })
+  },
+
+  bindSystemChange: function (e) {
+    var idx = e.detail.value
+    this.setData({
+      sysIdx: e.detail.value,
+      systemId: this.data.systemList[idx].industry_id
     })
   },
 })

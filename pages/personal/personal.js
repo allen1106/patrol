@@ -8,7 +8,8 @@ Page({
    * 页面的初始数据
    */
   data: {
-    userInfo: null
+    userInfo: null,
+    projectList: null
   },
 
   /**
@@ -21,7 +22,7 @@ Page({
       console.log(userInfo)
       this.setData({
         userInfo: userInfo
-      })
+      }, this.fetchProjectList)
     } else {
       var userId = wx.getStorageSync('userId')
       var userBind = wx.getStorageSync('userBind')
@@ -36,7 +37,7 @@ Page({
             console.log(res)
             that.setData({
               userInfo: res.data
-            })
+            }, that.fetchProjectList)
             getApp().globalData.userInfo = res.data
           }
         })
@@ -46,5 +47,28 @@ Page({
         })
       }
     }
-  }
+  },
+  fetchProjectList: function () {
+    var that = this;
+    return new Promise(resolve => {
+      api.phpRequest({
+        url: 'project.php',
+        data: {
+          userid: wx.getStorageSync('userId')
+        },
+        success: function (res) {
+          var list = res.data
+          that.setData({
+            projectList: list
+          })
+        }
+      })
+    })
+  },
+  navigateToTaskList: function (e) {
+    var isEvaluate = e.currentTarget.dataset.isevaluate
+    wx.navigateTo({
+      url: '/pages/tasklist/tasklist?isfb=1&isEvaluate=' + isEvaluate,
+    })
+  },
 })

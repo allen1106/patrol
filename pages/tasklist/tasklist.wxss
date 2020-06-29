@@ -1,24 +1,16 @@
 /* pages/tasklist/tasklist.wxss */
 .nav {
   display: flex;
-  width: 95%;
+  justify-content: space-between;
+  width: calc(95% - 40rpx);
   height: 80rpx;
   margin: 20rpx auto;
+  padding: 0 20rpx;
   background-color: #4876FF;
   border-radius: 20rpx;
   color: #fff;
   align-items: center;
   font-size: 24rpx;
-}
-
-.nav .project {
-  width: 45%;
-  margin-left: 5%;
-}
-
-.nav .system {
-  width: 45%;
-  margin-left: 5%;
 }
 
 .task-list {

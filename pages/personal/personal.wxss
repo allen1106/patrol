@@ -56,10 +56,27 @@ page {
 
 .info-item {
   width: 90%;
-  margin: 30rpx auto;
-  margin-top: 50rpx;
+  padding: 15rpx 30rpx;
 }
 
 .info-item text:nth-child(2n+2) {
   margin-left: 50rpx;
+}
+
+.project {
+  display: inline-flex;
+}
+
+.info-item .title-wrapper {
+  /* position: absolute;
+  top: 0; */
+  /* display: inline-block;
+  height: 100%; */
+}
+
+.info-item .list-wrapper {
+  margin-left: 50rpx;
+  /* position: absolute;
+  top: 0; */
+  /* display: inline-block; */
 }

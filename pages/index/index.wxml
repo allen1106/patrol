@@ -1,6 +1,6 @@
 <!--index.wxml-->
 <image src="/imgs/index/bg.png" class="page-wrapper">
-  <view class="header">您好，欢迎使用绿地中原部品控巡检系统</view>
+  <view class="header">您好，欢迎使用绿地中原事业部品控巡检系统</view>
   <view class="date-wrapper">
     <text>{{date}}</text>
     <text>{{workDay}}</text>
@@ -13,30 +13,36 @@
       <view>{{taskNum}}</view>
     </image>
     <text wx:if="{{showLogin}}">请先到个人中心进行登录</text>
-    <text wx:if="{{!showLogin}}">您有{{taskNum}}条任务待处理，请加快处理</text>
+    <text wx:if="{{!showLogin}}" bindtap="navigateToTaskList" data-isfb="0">您有{{taskNum}}条任务待解决，请加快解决</text>
   </view>
   <view class="menu-list">
-    <image class="menu-item" src="/imgs/index/2.png" bindtap="navigateToTaskList" data-isfb="1">
-      <view class="text-wrapper"><text>巡检报告</text></view>
+    <image class="menu-item" src="/imgs/index/2.png" bindtap="navigateToEvaluate" data-isfb="0">
+      <view class="text-wrapper"><text>待处理报告</text></view>
     </image>
-    <image class="menu-item" src="/imgs/index/3.png" bindtap="navigateToTaskList" data-isfb="0">
-      <view class="text-wrapper">待提交报告</view>
+    <image class="menu-item" src="/imgs/index/6.png" bindtap="navigateToEvaluate" data-isfb="1">
+      <view class="text-wrapper"><text>已处理报告</text></view>
     </image>
-    <image class="menu-item" src="/imgs/index/4.png" bindtap="navigateToEvaluate" data-isfb="1">
-      <view class="text-wrapper"><text>已评价报告</text></view>
-    </image>
-    <image class="menu-item" src="/imgs/index/5.png" bindtap="navigateToEvaluate" data-isfb="0">
-      <view class="text-wrapper"><text>待评价报告</text></view>
-    </image>
-    <image class="menu-item" src="/imgs/index/2.png" bindtap="navigateToStatistics" data-tab="1">
-      <view class="text-wrapper"><text>表格统计</text></view>
-    </image>
-    <image class="menu-item" src="/imgs/index/6.png" bindtap="navigateToReport" data-id="0">
+    <image class="menu-item" src="/imgs/index/4.png" bindtap="navigateToReport" data-id="0">
       <view class="text-wrapper"><text>发布巡检报告</text></view>
     </image>
-    <image class="menu-item" src="/imgs/index/1.png"bindtap="navigateToPersonal">
-      <view class="text-wrapper"><text>个人中心</text></view>
+    <image class="menu-item" src="/imgs/index/5.png" bindtap="navigateToTaskList" data-isfb="0">
+      <view class="text-wrapper"><text>草稿箱</text></view>
     </image>
+    <image class="menu-item" src="/imgs/index/2.png" bindtap="navigateToTaskList" data-isfb="3">
+      <view class="text-wrapper"><text>已发布巡检报告</text></view>
+    </image>
+    <!-- <image class="menu-item" src="/imgs/index/3.png" bindtap="navigateToTaskList" data-isfb="0">
+      <view class="text-wrapper">草稿箱</view>
+    </image> -->
+    <image class="menu-item" src="/imgs/index/6.png" bindtap="navigateToStatistics" data-tab="1">
+      <view class="text-wrapper"><text>表格统计</text></view>
+    </image>
+    <!-- <image class="menu-item" src="/imgs/index/1.png"bindtap="navigateToPersonal">
+      <view class="text-wrapper"><text>个人中心</text></view>
+    </image> -->
   </view>
-  <button class="btn-logout" wx:if="{{!showLogin}}" bindtap="logout">退出登录</button>
+  <view class="btn-wrapper">
+    <button class="btn-logout" bindtap="navigateToPersonal">个人中心</button>
+    <button class="btn-logout" wx:if="{{!showLogin}}" bindtap="logout">退出登录</button>
+  </view>
 </view>

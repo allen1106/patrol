@@ -5,12 +5,12 @@
 
 <view class="filter-menu">
   <view class="date-filter">
-    <picker mode="date" bindchange="bindStartChange" value="{{startDate}}" start="2020-06-10" end="{{currentDate}}">
+    <picker mode="date" bindchange="bindStartChange" value="{{startDate}}" start="1990-01-01" end="{{currentDate}}">
       <view class="picker">
         <text>{{startDate}}</text><text>起</text>
       </view>
     </picker>
-    <picker mode="date" bindchange="bindEndChange" value="{{endDate}}" start="2020-06-10" end="{{currentDate}}">
+    <picker mode="date" bindchange="bindEndChange" value="{{endDate}}" start="1990-01-01" end="{{currentDate}}">
       <view class="picker">
         <text>{{endDate}}</text><text>止</text>
       </view>
@@ -38,7 +38,7 @@
     <view>{{itemList[index].department}}</view>
     <view>{{itemList[index].realname}}</view>
     <view>{{itemList[index].number}}</view>
-    <view>{{itemList[index].number}}</view>
-    <view>{{itemList[index].number}}</view>
+    <view>{{itemList[index].number1}}</view>
+    <view>{{itemList[index].number2}}</view>
   </view>
 </view>
