@@ -4,41 +4,64 @@
 </view>
 
 <view class="filter-menu">
+  <view class="common-filter">
+    <view class="region">
+      <picker bindchange="bindRegionChange" value="{{regionIdx}}" range="{{regionList}}">
+        <view class="picker">
+          当前区域：{{regionList[regionIdx]}}
+        </view>
+      </picker>
+    </view>
+    <view class="project">
+      <picker bindchange="bindProjectChange" value="{{proIdx}}" range="{{projectList}}" range-key="name">
+        <view class="picker">
+          当前项目：{{projectList[proIdx].name}}
+        </view>
+      </picker>
+    </view>
+    <view class="system">
+      <picker bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
+        <view class="picker">
+          当前系统：{{systemList[sysIdx].name}}
+        </view>
+      </picker>
+    </view>
+  </view>
   <view class="date-filter">
     <picker mode="date" bindchange="bindStartChange" value="{{startDate}}" start="1990-01-01" end="{{currentDate}}">
       <view class="picker">
-        <text>{{startDate}}</text><text>起</text>
+        开始时间：{{startDate}}
       </view>
     </picker>
     <picker mode="date" bindchange="bindEndChange" value="{{endDate}}" start="1990-01-01" end="{{currentDate}}">
       <view class="picker">
-        <text>{{endDate}}</text><text>止</text>
+        结束时间：{{endDate}}
       </view>
     </picker>
   </view>
-  <!-- <view class="user-filter">
-    <text>人员</text>
-    <image src="/imgs/login_name.png"></image>
-  </view> -->
 </view>
 <view class="item-detail">
     <view class="img-wrapper"></view>
     <view class="info-wrapper">
-      <view>部门</view>
-      <view>人员</view>
-      <view>已处理</view>
-      <view>处理中</view>
-      <view>未处理</view>
+      <view class="flex-big">项目名称</view>
+      <view class="flex-more">报告总数</view>
+      <view>未解决</view>
+      <view>已解决</view>
     </view>
 </view>
 
 <view class="item-detail" wx:for="{{itemList}}" wx:key="index">
   <view class="img-wrapper"><image src="/imgs/statistic/top{{index+1}}.png" wx:if="{{index < 3}}"></image></view>
   <view class="info-wrapper">
-    <view>{{itemList[index].department}}</view>
-    <view>{{itemList[index].realname}}</view>
-    <view>{{itemList[index].number}}</view>
+    <view class="flex-big">{{itemList[index].realname}}</view>
+    <view class="flex-more">{{itemList[index].number}}</view>
     <view>{{itemList[index].number1}}</view>
     <view>{{itemList[index].number2}}</view>
   </view>
+</view>
+
+<view class="report-summary">
+  <view>报告总数：{{reportSummary.number}}</view>
+  <view>已解决：{{reportSummary.number1}}</view>
+  <view>未解决：{{reportSummary.number2}}</view>
 </view>

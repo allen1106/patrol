@@ -1,5 +1,12 @@
 <!--pages/tasklist/tasklist.wxml-->
 <view class="nav">
+  <view class="region">
+    <picker bindchange="bindRegionChange" value="{{regionIdx}}" range="{{regionList}}">
+      <view class="picker">
+        当前区域：{{regionList[regionIdx]}}
+      </view>
+    </picker>
+  </view>
   <view class="project">
     <picker bindchange="bindProjectChange" value="{{proIdx}}" range="{{projectList}}" range-key="name">
       <view class="picker">

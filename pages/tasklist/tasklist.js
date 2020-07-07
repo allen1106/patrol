@@ -1,5 +1,6 @@
 // pages/tasklist/tasklist.js
 var api = require("../../utils/api.js")
+var util = require("../../utils/util.js")
 
 Page({
 
@@ -13,6 +14,8 @@ Page({
     isFb: 1,
     submitList: null,
     page: 1,
+    regionList: ["请选择区域"],
+    regionIdx: 0,
     projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
     systemList: [{"name": "请选择系统", "industry_id": 0}],
@@ -53,32 +56,52 @@ Page({
     wx.setNavigationBarTitle({
       title: that.data.title
     })
-    that.fetchProjectList(this.fetchSystemList, this.fetchTaskList)
+    that.fetchRegionList()
+    that.fetchSystemList()
   },
 
-  fetchProjectList: function (fn1, fn2) {
+  onShow: function () {
+    var that = this;
+    that.fetchTaskList()
+  },
+
+  fetchRegionList: function () {
+    var that = this
+    // 获取部门信息
+    api.phpRequest({
+      url: 'department.php',
+      success: function (res) {
+        console.log(res)
+        var departList = util.formatDepartment(res.data)
+        departList = departList.slice(1)
+        departList = that.data.regionList.concat(departList)
+        that.setData({
+          regionList: departList
+        })
+      }
+    })
+  },
+
+  fetchProjectList: function () {
     var that = this;
     return new Promise(resolve => {
       api.phpRequest({
         url: 'project.php',
         data: {
-          userid: that.data.userId
+          userid: that.data.userId,
+          qymc: that.data.regionList[that.data.regionIdx]
         },
         success: function (res) {
           var list = res.data
           that.setData({
             projectList: that.data.projectList.concat(list)
           })
-          if (fn1) {
-            fn1(fn2)
-          }
         }
       })
     })
   },
 
-  fetchSystemList: function (fn) {
-    console.log("fetchSystemList")
+  fetchSystemList: function () {
     return new Promise(resolve => {
       var that = this;
       api.phpRequest({
@@ -91,11 +114,34 @@ Page({
           that.setData({
             systemList: that.data.systemList.concat(list)
           })
-          if (fn) {
-            fn()
-          }
         }
       })
+    })
+  },
+
+  initProjectList: function (fn) {
+    this.setData({
+      projectList: [{"name": "请选择项目", "project_id": 0}],
+      proIdx: 0,
+      projectId: 0
+    }, () => {
+      if (fn) { fn() }
+    })
+  },
+
+  bindRegionChange: function (e) {
+    var idx = e.detail.value
+    var that = this
+    that.setData({
+      regionIdx: idx
+    }, () => {
+      console.log(that.data.regionIdx)
+      if (that.data.regionIdx != 0) {
+        that.initProjectList(that.fetchProjectList)
+      } else {
+        that.initProjectList()
+      }
+      that.fetchTaskList()
     })
   },
 
@@ -131,6 +177,9 @@ Page({
       is_fb: that.data.isFb
     }
     console.log(that.data)
+    if (that.data.regionIdx != 0) {data["qymc"] = that.data.regionList[that.data.regionIdx]}
+    if (that.data.projectId != 0) {data["project_id"] = that.data.projectId}
+    if (that.data.systemId != 0) {data["industry_id"] = that.data.systemId}
     if (that.data.projectId != 0) {data["project_id"] = that.data.projectId}
     if (that.data.systemId != 0) {data["industry_id"] = that.data.systemId}
     api.phpRequest({

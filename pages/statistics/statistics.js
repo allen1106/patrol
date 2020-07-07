@@ -10,9 +10,19 @@ Page({
   data: {
     // winWidth: 0,
     // winHeight: 0,
-    startDate: "开始时间",
-    endDate: "结束时间",
-    itemList: null
+    userId: wx.getStorageSync('userId'),
+    startDate: "请选择开始时间",
+    endDate: "请选择结束时间",
+    itemList: null,
+    regionList: ["请选择区域"],
+    regionIdx: 0,
+    projectList: [{"name": "请选择项目", "project_id": 0}],
+    proIdx: 0,
+    projectId: 0,
+    systemList: [{"name": "请选择系统", "industry_id": 0}],
+    sysIdx: 0,
+    systemId: 0,
+    reportSummary: null
   },
 
   bindChange: function(e) {
@@ -21,17 +31,6 @@ Page({
       currentTab: e.detail.current
     });
   },
-
-  // swichNav: function(e) {
-  //   var that = this;
-  //   if(this.data.currentTab === e.target.dataset.current) {
-  //     return false;
-  //   } else {
-  //     that.setData({
-  //       currentTab: e.target.dataset.current
-  //     })
-  //   }
-  // },
 
   /**
    * 生命周期函数--监听页面加载
@@ -62,7 +61,63 @@ Page({
     // this.setData({
     //   yearList: this.getYearList(),
     // })
+    this.fetchRegionList()
+    this.fetchSystemList()
     this.fetchList()
+  },
+
+  fetchRegionList: function () {
+    var that = this
+    // 获取部门信息
+    api.phpRequest({
+      url: 'department.php',
+      success: function (res) {
+        console.log(res)
+        var departList = util.formatDepartment(res.data)
+        departList = departList.slice(1)
+        departList = that.data.regionList.concat(departList)
+        that.setData({
+          regionList: departList
+        })
+      }
+    })
+  },
+
+  fetchProjectList: function () {
+    var that = this;
+    return new Promise(resolve => {
+      api.phpRequest({
+        url: 'project.php',
+        data: {
+          userid: that.data.userId,
+          qymc: that.data.regionList[that.data.regionIdx]
+        },
+        success: function (res) {
+          var list = res.data
+          that.setData({
+            projectList: that.data.projectList.concat(list)
+          })
+        }
+      })
+    })
+  },
+
+  fetchSystemList: function () {
+    return new Promise(resolve => {
+      var that = this;
+      api.phpRequest({
+        url: 'system.php',
+        data: {
+          userid: that.data.userId
+        },
+        success: function (res) {
+          var list = res.data
+          that.setData({
+            systemList: that.data.systemList.concat(list)
+          })
+        }
+      })
+    })
   },
 
   // bindDayChange: function (e) {
@@ -112,6 +167,48 @@ Page({
   //   return list
   // },
 
+  initProjectList: function (fn) {
+    this.setData({
+      projectList: [{"name": "请选择项目", "project_id": 0}],
+      proIdx: 0,
+      projectId: 0
+    }, () => {
+      if (fn) { fn() }
+    })
+  },
+
+  bindRegionChange: function (e) {
+    var idx = e.detail.value
+    console.log(idx)
+    var that = this
+    that.setData({
+      regionIdx: idx
+    }, () => {
+      if (that.data.regionIdx) {
+        that.initProjectList(that.fetchProjectList)
+      } else {
+        that.initProjectList()
+      }
+      that.fetchList()
+    })
+  },
+
+  bindProjectChange: function (e) {
+    var idx = e.detail.value
+    this.setData({
+      proIdx: idx,
+      projectId: this.data.projectList[idx].project_id
+    }, this.fetchList)
+  },
+
+  bindSystemChange: function (e) {
+    var idx = e.detail.value
+    this.setData({
+      sysIdx: e.detail.value,
+      systemId: this.data.systemList[idx].industry_id
+    }, this.fetchList)
+  },
+
   bindStartChange: function (e) {
     var date = e.detail.value
     this.setData({
@@ -131,8 +228,11 @@ Page({
     var data = {
       userid: wx.getStorageSync('userId')
     }
-    if (that.data.startDate != "开始时间") {data["startDate"] = that.data.startDate}
-    if (that.data.endDate != "结束时间") {data["startDate"] = that.data.endDate}
+    if (that.data.regionIdx != 0) {data["qymc"] = that.data.regionList[that.data.regionIdx]}
+    if (that.data.projectId != 0) {data["project_id"] = that.data.projectId}
+    if (that.data.systemId != 0) {data["industry_id"] = that.data.systemId}
+    if (that.data.startDate != "请选择开始时间") {data["startDate"] = that.data.startDate}
+    if (that.data.endDate != "请选择结束时间") {data["startDate"] = that.data.endDate}
     api.phpRequest({
       url: 'statistics.php',
       data: data,
@@ -141,7 +241,22 @@ Page({
         that.setData({
           itemList: list
         })
+        that.fetchSummary(data)
       }
     })
   },
+
+  fetchSummary: function (data) {
+    var that = this
+    api.phpRequest({
+      url: 'statistics_total.php',
+      data: data,
+      success: function (res) {
+        var summary = res.data
+        that.setData({
+          reportSummary: summary
+        })
+      }
+    })
+  }
 })

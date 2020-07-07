@@ -168,7 +168,7 @@ checkbox .wx-checkbox-input {
 }
 
 .btn-wrapper {
-  margin-top: 30rpx;
+  padding: 50rpx 0;
   display: flex;
 }
 

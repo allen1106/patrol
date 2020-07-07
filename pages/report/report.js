@@ -17,14 +17,17 @@ Page({
     reportInfo: null,
     isFb: 0,
     departmentList: [],
-    projectList: null,
+    regionList: ["请选择区域"],
+    regionIdx: 0,
+    projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
-    systemList: null,
+    systemList: [{"name": "请选择系统", "industry_id": 0}],
     sysIdx: 0,
-    projectId: null,
-    systemId: null,
+    projectId: 0,
+    systemId: 0,
     selectAll: [],
     memberList: {},
+    memberCheckedList: [],
     didx: 0,
     //最多可上传的图片数量
     count: 3,
@@ -53,7 +56,7 @@ Page({
           time: util.formatTime(new Date())
         }
       }),
-      that.fetchProjectList()
+      that.fetchRegionList()
       that.fetchSystemList()
     } else {
       that.setData({
@@ -70,28 +73,28 @@ Page({
             id: id,
             isFb: isFb,
             reportInfo: res.data,
-            imageList: res.data.imgs.split(','),
-            image1List: res.data.imgs1.split(',')
+            imageList: res.data.imgs ? res.data.imgs.split(',') : [],
+            image1List: res.data.imgs1 ? res.data.imgs1.split(',') : []
           })
         }
       })
-      if (id != 0) {
-        api.phpRequest({
-          url: 'evaluate_list.php',
-          data: {
-            report_id: id
-          },
-          success: function (res) {
-            console.log(res.data)
-            for (var i in res.data) {
-              res.data[i].evaluate_imgs = res.data[i].evaluate_imgs && res.data[i].evaluate_imgs.split(',')
-            }
-            that.setData({
-              comments: res.data,
-            })
-          }
-        })
-      }
+      // if (id != 0) {
+      //   api.phpRequest({
+      //     url: 'evaluate_list.php',
+      //     data: {
+      //       report_id: id
+      //     },
+      //     success: function (res) {
+      //       console.log(res.data)
+      //       for (var i in res.data) {
+      //         res.data[i].evaluate_imgs = res.data[i].evaluate_imgs && res.data[i].evaluate_imgs.split(',')
+      //       }
+      //       that.setData({
+      //         comments: res.data,
+      //       })
+      //     }
+      //   })
+      // }
     }
     // 获取部门信息
     api.phpRequest({
@@ -100,7 +103,7 @@ Page({
         console.log(res.data)
         that.setData({
           departmentList: util.formatDepartment(res.data)
-        }, that.fetchMemberList)
+        }, that.fetchMemberListWrapper)
       }
     })
     wx.setNavigationBarTitle({
@@ -155,6 +158,26 @@ Page({
     }
   },
 
+  fetchMemberListWrapper: function () {
+    var that = this
+    if (that.data.id != 0) {
+      api.phpRequest({
+        url: 'report_cs.php',
+        data: {
+          report_id: that.data.id
+        },
+        success: function (res) {
+          console.log(res.data)
+          that.setData({
+            memberCheckedList: res.data
+          }, that.fetchMemberList)
+        }
+      })
+    } else {
+      that.fetchMemberList()
+    }
+  },
+
   fetchMemberList: function () {
     var that = this
     for (var i in that.data.departmentList) {
@@ -172,6 +195,14 @@ Page({
         departmentid: that.data.departmentList[i]
       },
       success: function (res) {
+        var flag = 0
+        for (var j in res.data) {
+          if (that.data.memberCheckedList.indexOf(res.data[j].id) != -1) {
+            res.data[j].checked = true
+            flag++
+          }
+        }
+        that.data.selectAll[i] = res.data.length != 0 && res.data.length == flag
         that.data.memberList[i] = res.data
         that.setData({
           memberList: that.data.memberList,
@@ -204,6 +235,16 @@ Page({
     that.setData({
       memberList: that.data.memberList
     })
+    var flag = 0
+    for (var i in that.data.memberList[value.sidx]) {
+      if (that.data.memberList[value.sidx][i].checked) {
+        flag++
+      }
+    }
+    that.data.selectAll[value.sidx] = that.data.memberList[value.sidx].length != 0 && that.data.memberList[value.sidx].length == flag
+    that.setData({
+      selectAll: that.data.selectAll
+    })
   },
 
   getCheckedMember: function (e) {
@@ -220,11 +261,13 @@ Page({
   },
 
   validateInfo: function (data) {
-    if (!data['question']) return '问题描述'
+    if (!data['question']) return '标题'
     if (!data['reason']) return '原因'
     if (!data['solve']) return '解决办法'
     if (!data['region']) return '区域'
     if (!data['position']) return '部位'
+    if (data['report_id'] == 0 && data['project_id'] == 0) return '区域和项目'
+    if (data['report_id'] == 0 && data['industry_id'] == 0) return '系统'
     return 'success'
   },
 
@@ -235,6 +278,10 @@ Page({
     var that = this
     if (btnId == "2") {
       that.handleSuccess()
+      return
+    }
+    if (btnId == "3") {
+      that.handleReject()
       return
     }
     var url = btnId == "0" ? 'report_save.php' : 'report_submit.php'
@@ -269,12 +316,12 @@ Page({
           success (res) {
             data['lng'] = res.longitude,
             data['lat'] = res.latitude
-            if (that.data.id != 0) {
-              that.submitForm(url, data)
-              return
-            } else {
-              that.uploadImg(url, data)
-            }
+            // if (that.data.id != 0) {
+            //   that.submitForm(url, data)
+            //   return
+            // } else {
+            that.uploadImg(url, data)
+            // }
           },
           //定位失败回调
           fail: function () {
@@ -320,12 +367,48 @@ Page({
     })
   },
 
+  handleReject: function () {
+    var that = this
+    api.phpRequest({
+      url: "report_reject.php",
+      data: {'report_id': that.data.id, 'userid': wx.getStorageSync('userId')},
+      method: 'post',
+      header: {'content-type': 'application/x-www-form-urlencoded'},
+      success: function (res) {
+        if (res.data.status == 1) {
+          wx.showToast({
+            title: '处理成功',
+            icon: 'success',
+            success: function () {
+              setTimeout(that.bindBackToIndex, 1500);
+            }
+          })
+        } else {
+          wx.showToast({
+            title: '处理失败',
+            icon: 'none'
+          })
+        }
+      }
+    })
+  },
+
   uploadImg: function (url, data) {
     var that = this
     var uploadedImgs = [],
         uploadedImgs1 = [],
         imgs = this.data.imageList,
         imgs1 = this.data.image1List
+    for (var i in imgs) {
+      if (imgs[i].startsWith(api.HTTP_HOST)) {
+        uploadedImgs.push(imgs.splice(i, 1))
+      }
+    }
+    for (var i in imgs1) {
+      if (imgs1[i].startsWith(api.HTTP_HOST)) {
+        uploadedImgs1.push(imgs1.splice(i, 1))
+      }
+    }
     var allImgs = imgs.concat(imgs1)
     if (allImgs.length == 0) {
       data['imgs'] = uploadedImgs
@@ -453,18 +536,36 @@ Page({
   })
   },
 
+  fetchRegionList: function () {
+    var that = this
+    // 获取部门信息
+    api.phpRequest({
+      url: 'department.php',
+      success: function (res) {
+        console.log(res)
+        var departList = util.formatDepartment(res.data)
+        departList = departList.slice(1)
+        departList = that.data.regionList.concat(departList)
+        that.setData({
+          regionList: departList
+        })
+      }
+    })
+  },
+
   fetchProjectList: function (fn1, fn2) {
     var that = this;
     api.phpRequest({
       url: 'project.php',
       data: {
-        userid: wx.getStorageSync('userId')
+        userid: wx.getStorageSync('userId'),
+        qymc: that.data.regionList[that.data.regionIdx]
       },
       success: function (res) {
         var list = res.data
+        list = that.data.projectList.concat(list)
         that.setData({
-          projectList: list,
-          projectId: list[0].project_id
+          projectList: list
         })
         if (fn1) {
           fn1(fn2)
@@ -484,9 +585,9 @@ Page({
         },
         success: function (res) {
           var list = res.data
+          list = that.data.systemList.concat(list)
           that.setData({
-            systemList: list,
-            systemId: list[0].industry_id
+            systemList: list
           })
           if (fn) {
             fn()
@@ -495,6 +596,32 @@ Page({
       })
     })
   },
+
+  initProjectList: function (fn) {
+    this.setData({
+      projectList: [{"name": "请选择项目", "project_id": 0}],
+      proIdx: 0,
+      projectId: 0
+    }, () => {
+      if (fn) { fn() }
+    })
+  },
+
+  bindRegionChange: function (e) {
+    var idx = e.detail.value
+    var that = this
+    that.setData({
+      regionIdx: idx
+    }, () => {
+      console.log(that.data.regionIdx)
+      if (that.data.regionIdx != 0) {
+        that.initProjectList(that.fetchProjectList)
+      } else {
+        that.initProjectList()
+      }
+    })
+  },
+
   bindProjectChange: function (e) {
     var idx = e.detail.value
     this.setData({

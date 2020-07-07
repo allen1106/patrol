@@ -35,24 +35,16 @@ page {
 
 .nav {
   display: flex;
-  width: 100%;
+  width: calc(100% - 20rpx);
   height: 80rpx;
   margin: 20rpx auto;
+  padding: 0 10rpx;
   background-color: #4876FF;
   border-radius: 20rpx;
   color: #fff;
   align-items: center;
-  font-size: 24rpx;
-}
-
-.nav .project {
-  width: 45%;
-  margin-left: 5%;
-}
-
-.nav .system {
-  width: 45%;
-  margin-left: 5%;
+  justify-content: space-between;
+  font-size: 20rpx;
 }
 
 .summary {
@@ -217,7 +209,7 @@ checkbox .wx-checkbox-input {
 }
 
 .btn-wrapper {
-  margin: 30rpx 0;
+  padding: 50rpx 0;
   display: flex;
 }
 
