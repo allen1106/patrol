@@ -47,7 +47,8 @@ Page({
       api.phpRequest({
         url: 'evaluate_list.php',
         data: {
-          report_id: id
+          report_id: id,
+          userid: wx.getStorageSync('userId')
         },
         success: function (res) {
           console.log(res.data)
@@ -153,7 +154,9 @@ Page({
       filePath: imgs[i],
       name: 'imgs',
       success: function (res) {
-        res.data = res.data.substring(1, res.data.length)
+        if (typeof(res.data) != Object) {
+          res.data = res.data.replace("\ufeff", "")
+        }
         res.data = JSON.parse(res.data)
         if (res.statusCode != 200) {
           wx.showModal({

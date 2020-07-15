@@ -5,6 +5,7 @@ var api = require("../../utils/api.js")
 //index.js
 //获取应用实例
 const app = getApp()
+console.log(app.globalData)
 
 Page({
 
@@ -18,11 +19,11 @@ Page({
     isFb: 0,
     departmentList: [],
     regionList: ["请选择区域"],
-    regionIdx: 0,
+    regionIdx: app.globalData.regionIdx,
     projectList: [{"name": "请选择项目", "project_id": 0}],
-    proIdx: 0,
+    proIdx: app.globalData.proIdx,
     systemList: [{"name": "请选择系统", "industry_id": 0}],
-    sysIdx: 0,
+    sysIdx: app.globalData.sysIdx,
     projectId: 0,
     systemId: 0,
     selectAll: [],
@@ -44,7 +45,6 @@ Page({
     var that = this
     var id = Number(options.id)
     var isFb = Number(options.isFb)
-    console.log(id, isFb)
     if (id == 0) {
       var info = app.globalData.userInfo
       that.setData({
@@ -58,6 +58,12 @@ Page({
       }),
       that.fetchRegionList()
       that.fetchSystemList()
+      if (app.globalData.regionIdx != 0) {}
+      that.setData({
+        regionIdx: app.globalData.regionIdx,
+        proIdx: app.globalData.proIdx,
+        sysIdx: app.globalData.sysIdx,
+      })
     } else {
       that.setData({
         title: "查看巡检报告",
@@ -78,23 +84,24 @@ Page({
           })
         }
       })
-      // if (id != 0) {
-      //   api.phpRequest({
-      //     url: 'evaluate_list.php',
-      //     data: {
-      //       report_id: id
-      //     },
-      //     success: function (res) {
-      //       console.log(res.data)
-      //       for (var i in res.data) {
-      //         res.data[i].evaluate_imgs = res.data[i].evaluate_imgs && res.data[i].evaluate_imgs.split(',')
-      //       }
-      //       that.setData({
-      //         comments: res.data,
-      //       })
-      //     }
-      //   })
-      // }
+      if (id != 0) {
+        api.phpRequest({
+          url: 'evaluate_list.php',
+          data: {
+            report_id: id,
+            userid: wx.getStorageSync('userId')
+          },
+          success: function (res) {
+            console.log(res.data)
+            for (var i in res.data) {
+              res.data[i].evaluate_imgs = res.data[i].evaluate_imgs && res.data[i].evaluate_imgs.split(',')
+            }
+            that.setData({
+              comments: res.data,
+            })
+          }
+        })
+      }
     }
     // 获取部门信息
     api.phpRequest({
@@ -284,6 +291,11 @@ Page({
       that.handleReject()
       return
     }
+    if (btnId == "4") {
+      that.handleDelete()
+      return
+    }
+
     var url = btnId == "0" ? 'report_save.php' : 'report_submit.php'
     var data = {
       userid: wx.getStorageSync('userId'),
@@ -393,6 +405,32 @@ Page({
     })
   },
 
+  handleDelete: function () {
+    var that = this
+    api.phpRequest({
+      url: "report_delete.php",
+      data: {'report_id': that.data.id},
+      method: 'post',
+      header: {'content-type': 'application/x-www-form-urlencoded'},
+      success: function (res) {
+        if (res.data.status == 1) {
+          wx.showToast({
+            title: '删除成功',
+            icon: 'success',
+            success: function () {
+              setTimeout(that.bindBackToIndex, 1500);
+            }
+          })
+        } else {
+          wx.showToast({
+            title: '删除失败',
+            icon: 'none'
+          })
+        }
+      }
+    })
+  },
+
   uploadImg: function (url, data) {
     var that = this
     var uploadedImgs = [],
@@ -427,7 +465,9 @@ Page({
       filePath: allImgs[i],
       name: 'imgs',
       success: function (res) {
-        res.data = res.data.substring(1, res.data.length)
+        if (typeof(res.data) != Object) {
+          res.data = res.data.replace("\ufeff", "")
+        }
         res.data = JSON.parse(res.data)
         if (res.statusCode != 200) {
           wx.showModal({
@@ -613,7 +653,8 @@ Page({
     that.setData({
       regionIdx: idx
     }, () => {
-      console.log(that.data.regionIdx)
+      app.globalData.regionIdx = idx
+      console.log(app.globalData)
       if (that.data.regionIdx != 0) {
         that.initProjectList(that.fetchProjectList)
       } else {

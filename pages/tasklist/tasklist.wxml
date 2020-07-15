@@ -29,6 +29,18 @@
     </picker>
   </view>
 </view>
+<view class="date-filter">
+  <picker mode="date" bindchange="bindStartChange" value="{{startDate}}" start="1990-01-01" end="{{currentDate}}">
+    <view class="picker">
+      开始时间：{{startDate}}
+    </view>
+  </picker>
+  <picker mode="date" bindchange="bindEndChange" value="{{endDate}}" start="1990-01-01" end="{{currentDate}}">
+    <view class="picker">
+      结束时间：{{endDate}}
+    </view>
+  </picker>
+</view>
 
 <view class="task-list">
   <view class="task-item" wx:for="{{submitList}}" wx:key="item" bindtap="viewReport" data-rid="{{item.id}}" data-isfb="{{item.is_fb}}">

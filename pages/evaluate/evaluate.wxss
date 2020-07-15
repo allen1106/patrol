@@ -41,7 +41,7 @@ page {
 }
 
 .summary view {
-  display: inline-block;
+  /* display: inline-block; */
   min-width: 50%;
   margin: 10rpx 0;
   font-size: 24rpx;

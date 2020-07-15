@@ -232,7 +232,7 @@ Page({
     if (that.data.projectId != 0) {data["project_id"] = that.data.projectId}
     if (that.data.systemId != 0) {data["industry_id"] = that.data.systemId}
     if (that.data.startDate != "请选择开始时间") {data["startDate"] = that.data.startDate}
-    if (that.data.endDate != "请选择结束时间") {data["startDate"] = that.data.endDate}
+    if (that.data.endDate != "请选择结束时间") {data["endDate"] = that.data.endDate}
     api.phpRequest({
       url: 'statistics.php',
       data: data,

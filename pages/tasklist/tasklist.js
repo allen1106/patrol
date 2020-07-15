@@ -23,7 +23,9 @@ Page({
     projectId: 0,
     statusList: [{"name": "全部", "isFb": 3}, {"name": "已解决", "isFb": 2}, {"name": "待解决", "isFb": 1}],
     statusIdx: 0,
-    systemId: 0
+    systemId: 0,
+    startDate: "请选择开始时间",
+    endDate: "请选择结束时间",
   },
 
   /**
@@ -169,6 +171,20 @@ Page({
     }, this.fetchTaskList)
   },
 
+  bindStartChange: function (e) {
+    var date = e.detail.value
+    this.setData({
+      startDate: date
+    }, this.fetchTaskList)
+  },
+
+  bindEndChange: function (e) {
+    var date = e.detail.value
+    this.setData({
+      endDate: date
+    }, this.fetchTaskList)
+  },
+
   fetchTaskList: function (concatFlag) {
     var that = this
     var data = {
@@ -182,6 +198,8 @@ Page({
     if (that.data.systemId != 0) {data["industry_id"] = that.data.systemId}
     if (that.data.projectId != 0) {data["project_id"] = that.data.projectId}
     if (that.data.systemId != 0) {data["industry_id"] = that.data.systemId}
+    if (that.data.startDate != "请选择开始时间") {data["startDate"] = that.data.startDate}
+    if (that.data.endDate != "请选择结束时间") {data["endDate"] = that.data.endDate}
     api.phpRequest({
       url: that.data.isEvaluate ? 'evaluate.php' : 'report.php',
       data: data,

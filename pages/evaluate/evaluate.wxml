@@ -9,6 +9,7 @@
   </view>
   <view class="summary">
     <view>任务编号：{{reportInfo.bgbh}}</view>
+    <view>发起人：{{reportInfo.area}}-{{reportInfo.realname}}</view>
     <view>发起时间：{{reportInfo.task_time}}</view>
   </view>
   <view class="description">
@@ -32,9 +33,9 @@
       <view class="label">部位</view>
       <view class="input"><input value="{{reportInfo.position}}" disabled="true"></input></view>
     </view>
-    <view class="item-wrapper">
+    <!-- <view class="item-wrapper">
       <view class="label">设计要求</view>
-    </view>
+    </view> -->
     <view class="item-wrapper">
       <view class="small-label">现场图片</view>
       <view class="image-wrapper">
