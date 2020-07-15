@@ -19,11 +19,11 @@ Page({
     isFb: 0,
     departmentList: [],
     regionList: ["请选择区域"],
-    regionIdx: app.globalData.regionIdx,
+    regionIdx: 0,
     projectList: [{"name": "请选择项目", "project_id": 0}],
-    proIdx: app.globalData.proIdx,
+    proIdx: 0,
     systemList: [{"name": "请选择系统", "industry_id": 0}],
-    sysIdx: app.globalData.sysIdx,
+    sysIdx: 0,
     projectId: 0,
     systemId: 0,
     selectAll: [],
@@ -58,7 +58,6 @@ Page({
       }),
       that.fetchRegionList()
       that.fetchSystemList()
-      if (app.globalData.regionIdx != 0) {}
       that.setData({
         regionIdx: app.globalData.regionIdx,
         proIdx: app.globalData.proIdx,
@@ -588,6 +587,17 @@ Page({
         departList = that.data.regionList.concat(departList)
         that.setData({
           regionList: departList
+        }, () => {
+          if (that.data.regionIdx != 0) {
+            that.fetchProjectList(() => {
+              if (app.globalData.proIdx != 0) {
+                that.setData({
+                  proIdx: app.globalData.proIdx,
+                  projectId: that.data.projectList[app.globalData.proIdx].project_id
+                })
+              }
+            })
+          }
         })
       }
     })
@@ -628,6 +638,13 @@ Page({
           list = that.data.systemList.concat(list)
           that.setData({
             systemList: list
+          }, () => {
+            if (that.data.sysIdx != 0) {
+              that.setData({
+                sysIdx: app.globalData.sysIdx,
+                systemId: that.data.systemList[app.globalData.sysIdx].industry_id
+              })
+            }
           })
           if (fn) {
             fn()
@@ -643,6 +660,7 @@ Page({
       proIdx: 0,
       projectId: 0
     }, () => {
+      app.globalData.proIdx = 0
       if (fn) { fn() }
     })
   },
@@ -669,6 +687,7 @@ Page({
       proIdx: idx,
       projectId: this.data.projectList[idx].project_id
     })
+    app.globalData.proIdx = idx
   },
 
   bindSystemChange: function (e) {
@@ -677,5 +696,6 @@ Page({
       sysIdx: e.detail.value,
       systemId: this.data.systemList[idx].industry_id
     })
+    app.globalData.sysIdx = idx
   },
 })
