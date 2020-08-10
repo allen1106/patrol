@@ -44,9 +44,30 @@
     <view class="img-wrapper"></view>
     <view class="info-wrapper">
       <view class="flex-big">项目名称</view>
-      <view class="flex-more">报告总数</view>
-      <view>未解决</view>
-      <view>已解决</view>
+      <view class="flex-more text-center" data-sid="0" bindtap="bindSortBy">报告总数
+        <block wx:if="{{sortBy == 0}}">
+        <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
+        <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
+        </block>
+      </view>
+      <view class="text-center" data-sid="1" bindtap="bindSortBy">未解决
+        <block wx:if="{{sortBy == 1}}">
+        <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
+        <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
+        </block>
+      </view>
+      <view class="text-center" data-sid="2" bindtap="bindSortBy">已解决
+        <block wx:if="{{sortBy == 2}}">
+        <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
+        <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
+        </block>
+      </view>
+      <view class="text-center" data-sid="3" bindtap="bindSortBy">完成率
+        <block wx:if="{{sortBy == 3}}">
+        <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
+        <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
+        </block>
+      </view>
     </view>
 </view>
 
@@ -54,9 +75,10 @@
   <view class="img-wrapper"><image src="/imgs/statistic/top{{index+1}}.png" wx:if="{{index < 3}}"></image></view>
   <view class="info-wrapper">
     <view class="flex-big">{{itemList[index].realname}}</view>
-    <view class="flex-more">{{itemList[index].number}}</view>
-    <view>{{itemList[index].number1}}</view>
-    <view>{{itemList[index].number2}}</view>
+    <view class="flex-more text-center">{{itemList[index].number}}</view>
+    <view class="text-center">{{itemList[index].number1}}</view>
+    <view class="text-center">{{itemList[index].number2}}</view>
+    <view class="text-center">{{itemList[index].ratio}}%</view>
   </view>
 </view>
 
@@ -64,4 +86,5 @@
   <view>报告总数：{{reportSummary.number}}</view>
   <view>未解决：{{reportSummary.number2}}</view>
   <view>已解决：{{reportSummary.number1}}</view>
+  <view>完成率：{{reportSummary.ratio}}%</view>
 </view>

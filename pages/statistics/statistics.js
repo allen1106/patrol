@@ -22,7 +22,9 @@ Page({
     systemList: [{"name": "请选择系统", "industry_id": 0}],
     sysIdx: 0,
     systemId: 0,
-    reportSummary: null
+    reportSummary: null,
+    sortBy: 0, // [总数，未解决，已解决，解决率]
+    sortAsc: 0 
   },
 
   bindChange: function(e) {
@@ -238,8 +240,9 @@ Page({
       data: data,
       success: function (res) {
         var list = res.data
+        for (var i in list) {list[i].ratio = parseInt(list[i].ratio * 100)}
         that.setData({
-          itemList: list
+          itemList: that.sortList(list)
         })
         that.fetchSummary(data)
       }
@@ -253,10 +256,49 @@ Page({
       data: data,
       success: function (res) {
         var summary = res.data
+        summary.ratio = parseInt(summary.ratio * 100)
         that.setData({
           reportSummary: summary
         })
       }
     })
+  },
+
+  bindSortBy: function (e) {
+    var that = this
+    var sid = Number(e.target.dataset.sid)
+    var sortAsc = null
+    if (that.data.sortBy == sid) sortAsc = Number(!that.data.sortAsc)
+    else sortAsc = 0
+    that.setData({
+      sortBy: sid,
+      sortAsc: sortAsc
+    }, () => {
+      that.setData({
+        itemList: that.sortList(that.data.itemList)
+      })
+    })
+  },
+
+  sortList: function (itemList) {
+    var that = this
+    var sortKey = ''
+    var sortAsc = that.data.sortAsc
+    if (that.data.sortBy == 0) {
+      sortKey = 'number'
+    } else if (that.data.sortBy == 1) {
+      sortKey = 'number1'
+    } else if (that.data.sortBy == 2) {
+      sortKey = 'number2'
+    } else if (that.data.sortBy == 3) {
+      sortKey = 'ratio'
+    }
+    console.log(sortKey)
+    itemList.sort((x, y) => {
+      console.log(x[sortKey], y[sortKey], x[sortKey] - y[sortKey])
+      return sortAsc ? x[sortKey] - y[sortKey] : y[sortKey] - x[sortKey]
+    })
+    console.log(itemList)
+    return itemList
   }
 })

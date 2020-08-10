@@ -113,6 +113,7 @@
   display: flex;
   flex-direction: row;
   width: 90%;
+  font-size: 24rpx;
 }
 
 .item-detail .info-wrapper view {
@@ -122,6 +123,16 @@
   align-items: center;
   justify-content: space-between;
   align-content: center;
+  text-align: center;
+}
+
+.item-detail .info-wrapper view image {
+  width: 25rpx;
+  height: 25rpx;
+}
+
+.item-detail .info-wrapper view.text-center {
+  justify-content: center;
 }
 
 .item-detail .info-wrapper view.flex-more {

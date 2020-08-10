@@ -48,7 +48,7 @@ Page({
         url: 'evaluate_list.php',
         data: {
           report_id: id,
-          userid: wx.getStorageSync('userId')
+          // userid: wx.getStorageSync('userId')
         },
         success: function (res) {
           console.log(res.data)
