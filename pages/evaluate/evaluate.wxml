@@ -25,10 +25,10 @@
       <view class="label">解决办法</view>
       <view class="input"><input value="{{reportInfo.solve}}" disabled="true"></input></view>
     </view>
-    <view class="item-wrapper">
+    <!-- <view class="item-wrapper">
       <view class="label">区域</view>
       <view class="input"><input value="{{reportInfo.region}}" disabled="true"></input></view>
-    </view>
+    </view> -->
     <view class="item-wrapper">
       <view class="label">部位</view>
       <view class="input"><input value="{{reportInfo.position}}" disabled="true"></input></view>

@@ -22,7 +22,7 @@ Page({
     regionIdx: 0,
     projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
-    systemList: [{"name": "请选择系统", "industry_id": 0}],
+    systemList: [{"name": "请选择专业", "industry_id": 0}],
     sysIdx: 0,
     projectId: 0,
     systemId: 0,
@@ -270,10 +270,10 @@ Page({
     if (!data['question']) return '标题'
     if (!data['reason']) return '原因'
     if (!data['solve']) return '解决办法'
-    if (!data['region']) return '区域'
+    // if (!data['region']) return '区域'
     if (!data['position']) return '部位'
     if (data['report_id'] == 0 && data['project_id'] == 0) return '区域和项目'
-    if (data['report_id'] == 0 && data['industry_id'] == 0) return '系统'
+    if (data['report_id'] == 0 && data['industry_id'] == 0) return '专业'
     return 'success'
   },
 

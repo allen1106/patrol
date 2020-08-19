@@ -17,7 +17,7 @@
   <view class="system">
     <picker bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
       <view class="picker">
-        当前系统：{{systemList[sysIdx].name}}
+        当前专业：{{systemList[sysIdx].name}}
       </view>
     </picker>
   </view>

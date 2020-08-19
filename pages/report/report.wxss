@@ -83,6 +83,9 @@ page {
 .co-pink {
   color: #C71585;
 }
+.co-red {
+  color: #FF0000;
+}
 
 .item-wrapper {
   margin-top: 20rpx;

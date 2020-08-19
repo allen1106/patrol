@@ -18,7 +18,7 @@ Page({
     regionIdx: 0,
     projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
-    systemList: [{"name": "请选择系统", "industry_id": 0}],
+    systemList: [{"name": "请选择专业", "industry_id": 0}],
     sysIdx: 0,
     projectId: 0,
     statusList: [{"name": "全部", "isFb": 3}, {"name": "已解决", "isFb": 2}, {"name": "待解决", "isFb": 1}],

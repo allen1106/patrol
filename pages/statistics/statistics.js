@@ -19,7 +19,7 @@ Page({
     projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
     projectId: 0,
-    systemList: [{"name": "请选择系统", "industry_id": 0}],
+    systemList: [{"name": "请选择专业", "industry_id": 0}],
     sysIdx: 0,
     systemId: 0,
     reportSummary: null,
