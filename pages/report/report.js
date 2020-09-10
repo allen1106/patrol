@@ -525,6 +525,11 @@ Page({
               setTimeout(that.bindBackToIndex, 1500);
             }
           })
+        } else if (res.data.status == 2) {
+          wx.showToast({
+            title: '账号异常，请退出并重新登录小程序',
+            icon: 'none'
+          })
         } else {
           wx.showToast({
             title: '提交失败',
