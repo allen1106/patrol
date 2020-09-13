@@ -140,5 +140,11 @@ Page({
     wx.navigateTo({
       url: '/pages/register/register',
     })
+  },
+
+  backToHome: function (e) {
+    wx.navigateBack({
+      delta: 2
+    })
   }
 })
