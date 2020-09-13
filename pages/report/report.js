@@ -180,7 +180,14 @@ Page({
         }
       })
     } else {
-      that.fetchMemberList()
+      if (app.globalData.members) {
+        that.setData({
+          memberList: app.globalData.members,
+          selectAll: app.globalData.selectAll
+        })
+      } else {
+        that.fetchMemberList()
+      }
     }
   },
 
@@ -255,6 +262,8 @@ Page({
 
   getCheckedMember: function (e) {
     var ret = []
+    app.globalData.members = this.data.memberList
+    app.globalData.selectAll = this.data.selectAll
     for (var i in this.data.memberList) {
       for (var j in this.data.memberList[i]) {
         if (this.data.memberList[i][j]["checked"]) {
