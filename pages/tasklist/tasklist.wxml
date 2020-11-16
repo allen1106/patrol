@@ -3,28 +3,32 @@
   <view class="region">
     <picker bindchange="bindRegionChange" value="{{regionIdx}}" range="{{regionList}}">
       <view class="picker">
-        当前区域：{{regionList[regionIdx]}}
+        <text>{{regionList[regionIdx]}}</text>
+        <image src="/imgs/down.png"></image>
       </view>
     </picker>
   </view>
   <view class="project">
     <picker bindchange="bindProjectChange" value="{{proIdx}}" range="{{projectList}}" range-key="name">
       <view class="picker">
-        当前项目：{{projectList[proIdx].name}}
+        <text>{{projectList[proIdx].name}}</text>
+        <image src="/imgs/down.png"></image>
       </view>
     </picker>
   </view>
   <view class="system">
     <picker bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
       <view class="picker">
-        当前专业：{{systemList[sysIdx].name}}
+        <text>{{systemList[sysIdx].name}}</text>
+        <image src="/imgs/down.png"></image>
       </view>
     </picker>
   </view>
   <view class="status" wx:if="{{!isEvaluate && isFb != 0}}">
     <picker bindchange="bindStatusChange" value="{{statusIdx}}" range="{{statusList}}" range-key="name">
       <view class="picker">
-        状态：{{statusList[statusIdx].name}}
+        <text>{{statusList[statusIdx].name}}</text>
+        <image src="/imgs/down.png"></image>
       </view>
     </picker>
   </view>
@@ -32,12 +36,14 @@
 <view class="date-filter">
   <picker mode="date" bindchange="bindStartChange" value="{{startDate}}" start="1990-01-01" end="{{currentDate}}">
     <view class="picker">
-      开始时间：{{startDate}}
+      <text>{{startDate}}</text>
+      <image src="/imgs/down.png"></image>
     </view>
   </picker>
   <picker mode="date" bindchange="bindEndChange" value="{{endDate}}" start="1990-01-01" end="{{currentDate}}">
     <view class="picker">
-      结束时间：{{endDate}}
+      <text>{{endDate}}</text>
+      <image src="/imgs/down.png"></image>
     </view>
   </picker>
 </view>

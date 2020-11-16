@@ -44,3 +44,19 @@
 .task-item text:nth-child(2) {
   font-size: 20rpx;
 }
+
+.picker {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.picker text {
+  font-size: 24rpx;
+}
+
+.picker image {
+  width: 50rpx;
+  height: 50rpx;
+}
