@@ -24,15 +24,9 @@ Page({
     regionList: [{"name": "请选择区域", "department_id": 0}],
     regionIdx: 0,
     regionId: 0,
-    subRegionList: [{"name": "请选择公司", "sub_department_id": 0}],
-    subRegionIdx: 0,
-    subRegionId: 0,
     projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
     projectId: 0,
-    subProjectList: [{"name": "请选择子项目", "sub_project_id": 0}],
-    subProIdx: 0,
-    subProjectId: 0,
     systemList: [{"name": "请选择专业", "industry_id": 0}],
     sysIdx: 0,
     systemId: 0,
@@ -131,7 +125,7 @@ Page({
     }
     // 获取部门信息
     api.phpRequest({
-      url: 'department_sub_list.php',
+      url: 'department_list.php',
       success: function (res) {
         for (let i in res.data) {
           let key = res.data[i].department_id
@@ -430,7 +424,7 @@ Page({
 
   forceSelectManager: function (lastRegionId) {
     var that = this
-    var did = Number(that.data.subRegionId)
+    var did = Number(that.data.regionId)
     // for (var i in that.data.memberList[did]) {
     //   if (that.data.memberList[did][i].flag == 1) {
     //     that.data.memberList[did][i].checked = true
@@ -495,7 +489,7 @@ Page({
     if (!data['title']) return '问题简述'
     if (!data['position']) return '部位'
     if (!data['term']) return '处理期限'
-    if (data['report_id'] == 0 && data['project_sub_id'] == 0) return '区域和项目'
+    if (data['report_id'] == 0 && data['project_id'] == 0) return '区域和项目'
     if (data['report_id'] == 0 && data['industry_id'] == 0) return '专业'
     return 'success'
   },
@@ -528,9 +522,7 @@ Page({
       term: value.term,
       content: value.content,
       department_id: that.data.regionId,
-      department_sub_id: that.data.subRegionId,
       project_id: that.data.projectId,
-      project_sub_id: that.data.subProjectId,
       industry_id: that.data.systemId,
       problem_id: that.data.quesId,
       report_id: that.data.id,
@@ -546,7 +538,7 @@ Page({
       })
       return
     }
-    let did = that.data.subRegionId
+    let did = that.data.regionId
     let flag = false
     for (var i in that.data.memberList[did]) {
       if (that.data.memberList[did][i].flag == 1 && that.data.memberList[did][i].checked == false) {
@@ -906,36 +898,8 @@ Page({
           that.setData({
             regionIdx: app.globalData.regionIdx,
             regionId: regionObj.department_id
-          }, that.fetchSubRegionList)
+          }, that.fetchProjectList)
         }
-      }
-    })
-  },
-
-  fetchSubRegionList: function () {
-    var that = this
-    // 获取部门信息
-    api.phpRequest({
-      url: 'department_sub.php',
-      data: {
-        'department_id': that.data.regionId
-      },
-      success: function (res) {
-        var list = res.data
-        list = that.data.subRegionList.concat(list)
-        that.setData({
-          subRegionList: list
-        }, () => {
-          if (app.globalData.subRegionIdx != 0) {
-            let subRegionObj = list[app.globalData.subRegionIdx]
-            that.setData({
-              subRegionIdx: app.globalData.subRegionIdx,
-              subRegionId: subRegionObj.department_sub_id
-            }, () => {
-              that.fetchProjectList()
-            })
-          }
-        })
       }
     })
   },
@@ -946,7 +910,7 @@ Page({
     api.phpRequest({
       url: 'project.php',
       data: {
-        'department_sub_id': that.data.subRegionId
+        'department_id': that.data.regionId
       },
       success: function (res) {
         var list = res.data
@@ -959,32 +923,6 @@ Page({
             that.setData({
               proIdx: app.globalData.proIdx,
               projectId: proObj.project_id
-            }, that.fetchSubProjectList)
-          }
-        })
-      }
-    })
-  },
-
-  fetchSubProjectList: function () {
-    var that = this
-    // 获取子项目列表
-    api.phpRequest({
-      url: 'project_sub.php',
-      data: {
-        'project_id': that.data.projectId
-      },
-      success: function (res) {
-        var list = res.data
-        list = that.data.subProjectList.concat(list)
-        that.setData({
-          subProjectList: list
-        }, () => {
-          if (app.globalData.subProIdx) {
-            let proObj = list[app.globalData.subProIdx]
-            that.setData({
-              subProIdx: app.globalData.subProIdx,
-              subProjectId: proObj.project_sub_id
             })
           }
         })
@@ -1054,25 +992,6 @@ Page({
       app.globalData.regionIdx = idx
       console.log(app.globalData)
       if (that.data.regionIdx != 0) {
-        that.initSubRegionList(that.fetchSubRegionList)
-      } else {
-        that.initSubRegionList()
-      }
-    })
-  },
-
-  bindSubRegionChange: function (e) {
-    var idx = e.detail.value
-    var that = this
-    var lastRegionId = that.data.subRegionId
-    that.setData({
-      subRegionIdx: idx,
-      subRegionId: that.data.subRegionList[idx].department_sub_id
-    }, () => {
-      that.forceSelectManager(lastRegionId)
-      app.globalData.subRegionIdx = idx
-      console.log(app.globalData)
-      if (that.data.subRegionIdx != 0) {
         that.initProjectList(that.fetchProjectList)
       } else {
         that.initProjectList()
@@ -1088,32 +1007,6 @@ Page({
       projectId: this.data.projectList[idx].project_id
     }, () => {
       app.globalData.proIdx = idx
-      console.log(app.globalData)
-      if (that.data.proIdx != 0) {
-        that.initSubProjectList(that.fetchSubProjectList)
-      } else {
-        that.initSubProjectList()
-      }
-    })
-  },
-
-  bindSubProjectChange: function (e) {
-    var idx = e.detail.value
-    this.setData({
-      subProIdx: idx,
-      subProjectId: this.data.subProjectList[idx].project_sub_id
-    })
-    app.globalData.subProIdx = idx
-  },
-
-  initSubRegionList: function (fn) {
-    this.setData({
-      subRegionList: [{"name": "请选择公司", "department_id": 0}],
-      subRegionIdx: 0,
-      subRegionId: 0
-    }, () => {
-      app.globalData.subRegionIdx = 0
-      if (fn) { fn() }
     })
   },
 
@@ -1124,17 +1017,6 @@ Page({
       projectId: 0
     }, () => {
       app.globalData.proIdx = 0
-      if (fn) { fn() }
-    })
-  },
-
-  initSubProjectList: function (fn) {
-    this.setData({
-      subProjectList: [{"name": "请选择子项目", "project_id": 0}],
-      subProIdx: 0,
-      subProjectId: 0
-    }, () => {
-      app.globalData.subProIdx = 0
       if (fn) { fn() }
     })
   },
