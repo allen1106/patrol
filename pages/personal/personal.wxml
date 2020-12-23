@@ -9,11 +9,11 @@
       <text>{{userInfo.department}}</text>
     </view>
     <view class="info-item" bindtap="navigateToTaskList" data-isevaluate="0">
-      <text>巡检报告</text>
+      <text>发布报告</text>
       <text>{{userInfo.report}}</text>
     </view>
     <view class="info-item" bindtap="navigateToTaskList" data-isevaluate="1">
-      <text>评价数量</text>
+      <text>回复报告</text>
       <text>{{userInfo.evaluate}}</text>
     </view>
     <view class="info-item project">

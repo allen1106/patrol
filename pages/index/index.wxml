@@ -1,6 +1,6 @@
 <!--index.wxml-->
 <image src="/imgs/index/bg.png" class="page-wrapper">
-  <view class="header">绿地山东品控巡检系统</view>
+  <view class="header">绿地山东产品力质量巡检系统</view>
   <view class="date-wrapper">
     <text>{{date}}</text>
     <text>{{workDay}}</text>
@@ -17,35 +17,47 @@
   </view>
   <view class="menu-list">
     <view class="menu-line">
-    <image class="menu-item" src="/imgs/index/2.png" bindtap="navigateToEvaluate" data-isfb="0">
+    <!-- <image class="menu-item" src="/imgs/index/2.png" bindtap="navigateToEvaluate" data-isfb="0">
       <view class="text-wrapper"><text>待处理报告</text></view>
-    </image>
-    <image class="menu-item" src="/imgs/index/6.png" bindtap="navigateToEvaluate" data-isfb="1">
+    </image> -->
+    <view class="menu-item bg-2" bindtap="navigateToEvaluate" data-isfb="0">
+      <text class="text-wrapper">待处理报告</text>
+    </view>
+    <!-- <image class="menu-item bg-6" src="/imgs/index/6.png" bindtap="navigateToEvaluate" data-isfb="1">
       <view class="text-wrapper"><text>已处理报告</text></view>
-    </image>
+    </image> -->
+    <view class="menu-item bg-6" bindtap="navigateToEvaluate" data-isfb="1">
+      <text class="text-wrapper">已处理报告</text>
+    </view>
     </view>
     <view class="menu-line">
-    <image class="menu-item" src="/imgs/index/4.png" bindtap="navigateToReport" data-id="0">
+    <!-- <image class="menu-item bg-4" src="/imgs/index/4.png" bindtap="navigateToReport" data-id="0">
       <view class="text-wrapper"><text>发布巡检报告</text></view>
-    </image>
-    <image class="menu-item" src="/imgs/index/5.png" bindtap="navigateToTaskList" data-isfb="0">
+    </image> -->
+    <view class="menu-item bg-4" bindtap="navigateToReport" data-id="0">
+      <text class="text-wrapper">发布巡检报告</text>
+    </view>
+    <!-- <image class="menu-item bg-5" src="/imgs/index/5.png" bindtap="navigateToTaskList" data-isfb="0">
       <view class="text-wrapper"><text>草稿箱</text></view>
-    </image>
+    </image> -->
+    <view class="menu-item bg-5" bindtap="navigateToTaskList" data-isfb="0">
+      <text class="text-wrapper">草稿箱</text>
+    </view>
     </view>
     <view class="menu-line">
-    <image class="menu-item" src="/imgs/index/2.png" bindtap="navigateToTaskList" data-isfb="3">
+    <!-- <image class="menu-item bg-2" src="/imgs/index/2.png" bindtap="navigateToTaskList" data-isfb="3">
       <view class="text-wrapper"><text>已发布巡检报告</text></view>
-    </image>
-    <!-- <image class="menu-item" src="/imgs/index/3.png" bindtap="navigateToTaskList" data-isfb="0">
-      <view class="text-wrapper">草稿箱</view>
     </image> -->
-    <image class="menu-item" src="/imgs/index/6.png" bindtap="navigateToStatistics" data-tab="1">
-      <view class="text-wrapper"><text>表格统计</text></view>
-    </image>
+    <view class="menu-item bg-2" bindtap="navigateToTaskList" data-isfb="3">
+      <text class="text-wrapper">已发布巡检报告</text>
     </view>
-    <!-- <image class="menu-item" src="/imgs/index/1.png"bindtap="navigateToPersonal">
-      <view class="text-wrapper"><text>个人中心</text></view>
+    <!-- <image class="menu-item bg-6" src="/imgs/index/6.png" bindtap="navigateToStatistics" data-tab="1">
+      <view class="text-wrapper"><text>表格统计</text></view>
     </image> -->
+    <view class="menu-item bg-6" bindtap="navigateToStatistics" data-tab="1">
+      <text class="text-wrapper">表格统计</text>
+    </view>
+    </view>
   </view>
   <view class="btn-wrapper">
     <button class="btn-logout" bindtap="navigateToPersonal">个人中心</button>

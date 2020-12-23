@@ -1,4 +1,4 @@
-const HTTP_HOST = 'https://xunjian.hxy66.net'
+const HTTP_HOST = 'https://qlxunjian.17letao.cn'
 const API_HOST = HTTP_HOST + '/api/'
 const DEBUG = false
 const IMG_HOST = DEBUG ? '' : HTTP_HOST

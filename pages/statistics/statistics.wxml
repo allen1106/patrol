@@ -1,28 +1,57 @@
 
 <view class="swiper-tab">
-    <view class="swiper-tab-list {{currentTab==1 ? 'on' : ''}}" data-current="1" bindtap="swichNav">表格统计</view>
+    <view class="swiper-tab-list">表格统计</view>
 </view>
 
 <view class="filter-menu">
   <view class="common-filter">
     <view class="region">
-      <picker bindchange="bindRegionChange" value="{{regionIdx}}" range="{{regionList}}">
+      <picker bindchange="bindRegionChange" value="{{regionIdx}}" range="{{regionList}}" range-key="name">
         <view class="picker">
-          当前区域：{{regionList[regionIdx]}}
+          <text>{{regionList[regionIdx].name}}</text>
+          <image src="/imgs/down.png"></image>
+        </view>
+      </picker>
+    </view>
+    <view class="sub-region">
+      <picker bindchange="bindSubRegionChange" value="{{subRegionIdx}}" range="{{subRegionList}}" range-key="name">
+        <view class="picker">
+          <text>{{subRegionList[subRegionIdx].name}}</text>
+          <image src="/imgs/down.png"></image>
         </view>
       </picker>
     </view>
     <view class="project">
       <picker bindchange="bindProjectChange" value="{{proIdx}}" range="{{projectList}}" range-key="name">
         <view class="picker">
-          当前项目：{{projectList[proIdx].name}}
+          <text>{{projectList[proIdx].name}}</text>
+          <image src="/imgs/down.png"></image>
+        </view>
+      </picker>
+    </view>
+  </view>
+  <view class="common-filter">
+    <view class="sub-project">
+      <picker bindchange="bindSubProjectChange" value="{{subProIdx}}" range="{{subProjectList}}" range-key="name">
+        <view class="picker">
+          <text>{{subProjectList[subProIdx].name}}</text>
+          <image src="/imgs/down.png"></image>
         </view>
       </picker>
     </view>
     <view class="system">
       <picker bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
         <view class="picker">
-          当前专业：{{systemList[sysIdx].name}}
+          <text>{{systemList[sysIdx].name}}</text>
+          <image src="/imgs/down.png"></image>
+        </view>
+      </picker>
+    </view>
+    <view class="question">
+      <picker bindchange="bindQuesChange" value="{{quesIdx}}" range="{{quesList}}" range-key="name">
+        <view class="picker">
+          <text>{{quesList[quesIdx].name}}</text>
+          <image src="/imgs/down.png"></image>
         </view>
       </picker>
     </view>
@@ -30,14 +59,20 @@
   <view class="date-filter">
     <picker mode="date" bindchange="bindStartChange" value="{{startDate}}" start="1990-01-01" end="{{currentDate}}">
       <view class="picker">
-        开始时间：{{startDate}}
+        <text>{{startDate}}</text>
+        <image src="/imgs/down.png"></image>
       </view>
     </picker>
     <picker mode="date" bindchange="bindEndChange" value="{{endDate}}" start="1990-01-01" end="{{currentDate}}">
       <view class="picker">
-        结束时间：{{endDate}}
+        <text>{{endDate}}</text>
+        <image src="/imgs/down.png"></image>
       </view>
     </picker>
+    <view class="opt-wrapper" bindtap="download">
+      <image bindtap="download" src="/imgs/statistic/download.png"></image>
+      <!-- <image src="/imgs/regist_name.png"></image> -->
+    </view>
   </view>
 </view>
 <view class="item-detail">

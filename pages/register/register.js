@@ -16,10 +16,13 @@ Page({
     var that = this
     // 获取部门信息
     api.phpRequest({
-      url: 'department.php',
+      url: 'departmentlist.php',
       success: function (res) {
         console.log(res)
-        var departList = util.formatDepartment(res.data)
+        let departList = []
+        for (var i in res.data) {
+          departList.push(res.data[i].name)
+        }
         console.log(departList)
         that.setData({
           departmentList: departList,

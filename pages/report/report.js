@@ -1,6 +1,9 @@
 // pages/report/report.js
 var util = require("../../utils/util.js")
 var api = require("../../utils/api.js")
+var plugin = requirePlugin("WechatSI")
+
+let manager = plugin.getRecordRecognitionManager()
 
 //index.js
 //获取应用实例
@@ -17,31 +20,51 @@ Page({
     id: 0,
     reportInfo: null,
     isFb: 0,
-    departmentList: [],
-    regionList: ["请选择区域"],
+    departmentList: {},
+    regionList: [{"name": "请选择区域", "department_id": 0}],
     regionIdx: 0,
+    regionId: 0,
+    subRegionList: [{"name": "请选择公司", "sub_department_id": 0}],
+    subRegionIdx: 0,
+    subRegionId: 0,
     projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
+    projectId: 0,
+    subProjectList: [{"name": "请选择子项目", "sub_project_id": 0}],
+    subProIdx: 0,
+    subProjectId: 0,
     systemList: [{"name": "请选择专业", "industry_id": 0}],
     sysIdx: 0,
-    projectId: 0,
     systemId: 0,
-    selectAll: [],
+    quesList: [{"name": "请选择问题类型", "ques_id": 0}],
+    quesIdx: 0,
+    quesId: 0,
+    selectAll: {},
     memberList: {},
     memberCheckedList: [],
+    selectAll1: {},
+    memberList1: {},
+    memberCheckedList1: [],
+    title: "",
+    position: "",
+    solve: "",
+    term: "",
+    content: "",
     didx: 0,
     //最多可上传的图片数量
     count: 3,
     imageList: [],
     image1List: [],
     fileUrl: '',
-    comments: []
+    comments: [],
+    checkboxDisable: false
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    console.log(app.globalData)
     var that = this
     var id = Number(options.id)
     var isFb = Number(options.isFb)
@@ -56,12 +79,16 @@ Page({
           time: util.formatTime(new Date())
         }
       }),
+      console.log(app.globalData)
       that.fetchRegionList()
       that.fetchSystemList()
+      that.fetchQuesList()
       that.setData({
-        regionIdx: app.globalData.regionIdx,
-        proIdx: app.globalData.proIdx,
-        sysIdx: app.globalData.sysIdx,
+        title: app.globalData.title,
+        position: app.globalData.position,
+        solve: app.globalData.solve,
+        term: app.globalData.term,
+        content: app.globalData.content,
       })
     } else {
       that.setData({
@@ -104,19 +131,52 @@ Page({
     }
     // 获取部门信息
     api.phpRequest({
-      url: 'department.php',
+      url: 'department_sub_list.php',
       success: function (res) {
-        console.log(res.data)
+        for (let i in res.data) {
+          let key = res.data[i].department_id
+          that.data.departmentList[key] = res.data[i]
+        }
         that.setData({
-          departmentList: util.formatDepartment(res.data)
-        }, that.fetchMemberListWrapper)
+          departmentList: that.data.departmentList
+        }, () => {
+          that.fetchMemberListWrapper()
+          that.fetchMemberListWrapper1()
+        })
       }
-    })
-    wx.setNavigationBarTitle({
-      title: that.data.title
     })
   },
 
+  onShow: function () {
+    var that = this
+    manager.onStop = (res) => {
+      that.bindInput(res.result)
+    }
+
+    manager.onStart = (res) => {
+      console.log("正在聆听", res)
+      wx.showToast({
+        title: "正在聆听，松开结束语音",
+      })
+    }
+    manager.onError = (res) => {
+      console.log("error msg", res.msg)
+      wx.showToast({
+        title: '说话时间太短，请重试',
+      })
+    }
+  },
+
+  onUnload: function () {
+    var that = this
+    if (that.data.id == 0) {
+      app.globalData.title = that.data.title
+      app.globalData.position = that.data.position
+      app.globalData.solve = that.data.solve
+      app.globalData.term = that.data.term
+      app.globalData.content = that.data.content
+    }
+  },
 
   chooseImage: function (e) {
     var index = Number(e.currentTarget.dataset.index)
@@ -191,21 +251,59 @@ Page({
     }
   },
 
-  fetchMemberList: function () {
+  fetchMemberListWrapper1: function () {
     var that = this
-    for (var i in that.data.departmentList) {
-      that.data.memberList[i] = []
-      that.data.selectAll.push(false)
-      that.fetchMember(i)
+    if (that.data.id != 0) {
+      api.phpRequest({
+        url: 'report_cs1.php',
+        data: {
+          report_id: that.data.id
+        },
+        success: function (res) {
+          console.log(res.data)
+          that.setData({
+            memberCheckedList1: res.data
+          }, that.fetchMemberList1)
+        }
+      })
+    } else {
+      if (app.globalData.members1) {
+        that.setData({
+          memberList1: app.globalData.members1,
+          selectAll1: app.globalData.selectAll1
+        })
+      } else {
+        that.fetchMemberList1()
+      }
     }
   },
 
-  fetchMember: function (i) {
+  fetchMemberList: function () {
+    var that = this
+    for (var i in that.data.departmentList) {
+      let key = that.data.departmentList[i].department_id
+      that.data.memberList[key] = []
+      that.data.selectAll[key] = false
+      that.fetchMember(key)
+    }
+  },
+
+  fetchMemberList1: function () {
+    var that = this
+    for (var i in that.data.departmentList) {
+      let key = that.data.departmentList[i].department_id
+      that.data.memberList1[key] = []
+      that.data.selectAll1[key] = false
+      that.fetchMember1(key)
+    }
+  },
+
+  fetchMember: function (did) {
     var that = this
     api.phpRequest({
       url: 'user.php',
       data: {
-        departmentid: that.data.departmentList[i]
+        departmentid: did
       },
       success: function (res) {
         var flag = 0
@@ -215,11 +313,40 @@ Page({
             flag++
           }
         }
-        that.data.selectAll[i] = res.data.length != 0 && res.data.length == flag
-        that.data.memberList[i] = res.data
+        that.data.selectAll[did] = res.data.length != 0 && res.data.length == flag
+        that.data.memberList[did] = res.data
         that.setData({
           memberList: that.data.memberList,
           selectAll: that.data.selectAll
+        }, () => {
+          that.forceSelectManager(0)
+        })
+      }
+    })
+  },
+
+  fetchMember1: function (did) {
+    var that = this
+    api.phpRequest({
+      url: 'user.php',
+      data: {
+        departmentid: did
+      },
+      success: function (res) {
+        var flag = 0
+        for (var j in res.data) {
+          if (that.data.memberCheckedList1.indexOf(res.data[j].id) != -1) {
+            res.data[j].checked = true
+            flag++
+          }
+        }
+        that.data.selectAll1[did] = res.data.length != 0 && res.data.length == flag
+        that.data.memberList1[did] = res.data
+        that.setData({
+          memberList1: that.data.memberList1,
+          selectAll1: that.data.selectAll1
+        }, () => {
+          that.forceSelectManager(0)
         })
       }
     })
@@ -227,16 +354,37 @@ Page({
 
   bindSelectAll: function (e) {
     var that = this
-    var index = e.currentTarget.dataset.sidx
-    var isAll = that.data.selectAll[index]
-    that.data.selectAll[index] = !isAll
-    var memberOjbs = that.data.memberList[index]
+    var did = e.currentTarget.dataset.sidx
+    var isAll = that.data.selectAll[did]
+    that.data.selectAll[did] = !isAll
+    var memberOjbs = that.data.memberList[did]
     for (var i in memberOjbs) {
+      if (memberOjbs[i].disabled) {
+        continue
+      }
       memberOjbs[i]["checked"] = !isAll
     }
     that.setData({
       memberList: that.data.memberList,
       selectAll: that.data.selectAll
+    })
+  },
+
+  bindSelectAll1: function (e) {
+    var that = this
+    var did = e.currentTarget.dataset.sidx
+    var isAll = that.data.selectAll1[did]
+    that.data.selectAll1[did] = !isAll
+    var memberOjbs = that.data.memberList1[did]
+    for (var i in memberOjbs) {
+      if (memberOjbs[i].disabled) {
+        continue
+      }
+      memberOjbs[i]["checked"] = !isAll
+    }
+    that.setData({
+      memberList1: that.data.memberList1,
+      selectAll1: that.data.selectAll1
     })
   },
 
@@ -260,6 +408,59 @@ Page({
     })
   },
 
+  bindSelect1: function (e) {
+    var that = this
+    var value = e.currentTarget.dataset
+    var memberOjbs = that.data.memberList1[value.sidx]
+    memberOjbs[value.midx]["checked"] = !memberOjbs[value.midx]["checked"]
+    that.setData({
+      memberList1: that.data.memberList1
+    })
+    var flag = 0
+    for (var i in that.data.memberList1[value.sidx]) {
+      if (that.data.memberList1[value.sidx][i].checked) {
+        flag++
+      }
+    }
+    that.data.selectAll1[value.sidx] = that.data.memberList1[value.sidx].length != 0 && that.data.memberList1[value.sidx].length == flag
+    that.setData({
+      selectAll1: that.data.selectAll1
+    })
+  },
+
+  forceSelectManager: function (lastRegionId) {
+    var that = this
+    var did = Number(that.data.subRegionId)
+    // for (var i in that.data.memberList[did]) {
+    //   if (that.data.memberList[did][i].flag == 1) {
+    //     that.data.memberList[did][i].checked = true
+    //     that.data.memberList[did][i].disabled = true
+    //   }
+    // }
+    for (var i in that.data.memberList1) {
+      for (var j in that.data.memberList1[i]) {
+        if (lastRegionId) {
+          that.data.memberList1[i][j].checked = false
+          that.data.memberList1[i][j].disabled = false
+        }
+        if ((did == i && that.data.memberList1[i][j].flag == 1) || that.data.memberList1[i][j].extra_depart.indexOf(did) != -1) {
+          that.data.memberList1[i][j].checked = true
+          that.data.memberList1[i][j].disabled = true
+        }
+      }
+    }
+    // for (var i in that.data.memberList1[did]) {
+    //   if (that.data.memberList1[did][i].flag == 1) {
+    //     that.data.memberList1[did][i].checked = true
+    //     that.data.memberList1[did][i].disabled = true
+    //   }
+    // }
+    that.setData({
+      memberList: that.data.memberList,
+      memberList1: that.data.memberList1
+    })
+  },
+
   getCheckedMember: function (e) {
     var ret = []
     app.globalData.members = this.data.memberList
@@ -275,13 +476,26 @@ Page({
     return ret
   },
 
+  getCheckedMember1: function (e) {
+    var ret = []
+    app.globalData.members1 = this.data.memberList1
+    app.globalData.selectAll1 = this.data.selectAll1
+    for (var i in this.data.memberList1) {
+      for (var j in this.data.memberList1[i]) {
+        if (this.data.memberList1[i][j]["checked"]) {
+          ret.push(this.data.memberList1[i][j]["id"])
+        }
+      }
+    }
+    console.log(ret)
+    return ret
+  },
+
   validateInfo: function (data) {
-    if (!data['question']) return '标题'
-    if (!data['reason']) return '原因'
-    if (!data['solve']) return '解决办法'
-    // if (!data['region']) return '区域'
+    if (!data['title']) return '问题简述'
     if (!data['position']) return '部位'
-    if (data['report_id'] == 0 && data['project_id'] == 0) return '区域和项目'
+    if (!data['term']) return '处理期限'
+    if (data['report_id'] == 0 && data['project_sub_id'] == 0) return '区域和项目'
     if (data['report_id'] == 0 && data['industry_id'] == 0) return '专业'
     return 'success'
   },
@@ -308,20 +522,45 @@ Page({
     var data = {
       userid: wx.getStorageSync('userId'),
       task_time: util.formatTime(new Date()),
-      region: value.region,
       position: value.position,
-      question: value.question,
-      reason: value.reason,
+      title: value.title,
       solve: value.solve,
+      term: value.term,
+      content: value.content,
+      department_id: that.data.regionId,
+      department_sub_id: that.data.subRegionId,
       project_id: that.data.projectId,
+      project_sub_id: that.data.subProjectId,
       industry_id: that.data.systemId,
+      problem_id: that.data.quesId,
       report_id: that.data.id,
-      pjr_id: that.getCheckedMember()
+      pjr_id: that.getCheckedMember(),
+      csr_id: that.getCheckedMember1()
     }
+    console.log(data)
     var valid = that.validateInfo(data)
     if (valid != "success") {
       wx.showToast({
         title: valid + '不能为空',
+        icon: 'none',
+      })
+      return
+    }
+    let did = that.data.subRegionId
+    let flag = false
+    for (var i in that.data.memberList[did]) {
+      if (that.data.memberList[did][i].flag == 1 && that.data.memberList[did][i].checked == false) {
+        flag = true
+      }
+    }
+    for (var i in that.data.memberList1[did]) {
+      if (that.data.memberList1[did][i].flag == 1 && that.data.memberList1[did][i].checked == false) {
+        flag = true
+      }
+    }
+    if (flag) {
+      wx.showToast({
+        title: '必须勾选当前公司的负责人',
         icon: 'none',
       })
       return
@@ -527,6 +766,18 @@ Page({
       header: {'content-type': 'application/x-www-form-urlencoded'},
       success: function (res) {
         if (res.data.status == 1) {
+          app.globalData.title = ''
+          app.globalData.position = ''
+          app.globalData.solve = ''
+          app.globalData.term = ''
+          app.globalData.content = ''
+          that.setData({
+            title: '',
+            position: '',
+            solve: '',
+            term: '',
+            content: '',
+          })
           wx.showToast({
             title: '提交成功',
             icon: 'success',
@@ -574,15 +825,70 @@ Page({
 
   openFile: function (e) {
     var that = this
+    let fileName = new Date().valueOf()
     wx.downloadFile({
       url: that.data.fileUrl,
+      header: {
+        'content-type': 'application/word'
+      },
+      filePath: wx.env.USER_DATA_PATH + '/' + fileName + '.doc',
       success (res) {
           wx.openDocument({
-              filePath: res.tempFilePath
+            filePath: wx.env.USER_DATA_PATH + '/' + fileName + '.doc',
+            showMenu: true
           })
       }
   })
   },
+
+  // fetchRegionList: function () {
+  //   var that = this
+  //   // 获取部门信息
+  //   api.phpRequest({
+  //     url: 'department.php',
+  //     success: function (res) {
+  //       var departList = util.formatDepartment(res.data)
+  //       departList = departList.slice(1)
+  //       departList = that.data.regionList.concat(departList)
+  //       that.setData({
+  //         regionList: departList
+  //       }, () => {
+  //         if (that.data.regionIdx != 0) {
+  //           that.fetchProjectList(() => {
+  //             if (app.globalData.proIdx != 0) {
+  //               that.setData({
+  //                 proIdx: app.globalData.proIdx,
+  //                 projectId: that.data.projectList[app.globalData.proIdx].project_id
+  //               })
+  //             }
+  //           })
+  //         }
+  //       })
+  //     }
+  //   })
+  // },
+
+  // fetchProjectList: function (fn1, fn2) {
+  //   var that = this;
+  //   api.phpRequest({
+  //     url: 'project.php',
+  //     data: {
+  //       userid: wx.getStorageSync('userId'),
+  //       qymc: that.data.regionList[that.data.regionIdx]
+  //     },
+  //     success: function (res) {
+  //       var list = res.data
+  //       list = that.data.projectList.concat(list)
+  //       that.setData({
+  //         projectList: list
+  //       })
+  //       if (fn1) {
+  //         fn1(fn2)
+  //       }
+  //     }
+  //   })
+  // },
+
 
   fetchRegionList: function () {
     var that = this
@@ -590,21 +896,43 @@ Page({
     api.phpRequest({
       url: 'department.php',
       success: function (res) {
-        console.log(res)
-        var departList = util.formatDepartment(res.data)
-        departList = departList.slice(1)
-        departList = that.data.regionList.concat(departList)
+        var list = res.data
+        list = that.data.regionList.concat(list)
         that.setData({
-          regionList: departList
+          regionList: list
+        })
+        if (app.globalData.regionIdx) {
+          let regionObj = list[app.globalData.regionIdx]
+          that.setData({
+            regionIdx: app.globalData.regionIdx,
+            regionId: regionObj.department_id
+          }, that.fetchSubRegionList)
+        }
+      }
+    })
+  },
+
+  fetchSubRegionList: function () {
+    var that = this
+    // 获取部门信息
+    api.phpRequest({
+      url: 'department_sub.php',
+      data: {
+        'department_id': that.data.regionId
+      },
+      success: function (res) {
+        var list = res.data
+        list = that.data.subRegionList.concat(list)
+        that.setData({
+          subRegionList: list
         }, () => {
-          if (that.data.regionIdx != 0) {
-            that.fetchProjectList(() => {
-              if (app.globalData.proIdx != 0) {
-                that.setData({
-                  proIdx: app.globalData.proIdx,
-                  projectId: that.data.projectList[app.globalData.proIdx].project_id
-                })
-              }
+          if (app.globalData.subRegionIdx != 0) {
+            let subRegionObj = list[app.globalData.subRegionIdx]
+            that.setData({
+              subRegionIdx: app.globalData.subRegionIdx,
+              subRegionId: subRegionObj.department_sub_id
+            }, () => {
+              that.fetchProjectList()
             })
           }
         })
@@ -612,23 +940,54 @@ Page({
     })
   },
 
-  fetchProjectList: function (fn1, fn2) {
-    var that = this;
+  fetchProjectList: function () {
+    var that = this
+    // 获取项目列表
     api.phpRequest({
       url: 'project.php',
       data: {
-        userid: wx.getStorageSync('userId'),
-        qymc: that.data.regionList[that.data.regionIdx]
+        'department_sub_id': that.data.subRegionId
       },
       success: function (res) {
         var list = res.data
         list = that.data.projectList.concat(list)
         that.setData({
           projectList: list
+        }, () => {
+          if (app.globalData.proIdx) {
+            let proObj = list[app.globalData.proIdx]
+            that.setData({
+              proIdx: app.globalData.proIdx,
+              projectId: proObj.project_id
+            }, that.fetchSubProjectList)
+          }
         })
-        if (fn1) {
-          fn1(fn2)
-        }
+      }
+    })
+  },
+
+  fetchSubProjectList: function () {
+    var that = this
+    // 获取子项目列表
+    api.phpRequest({
+      url: 'project_sub.php',
+      data: {
+        'project_id': that.data.projectId
+      },
+      success: function (res) {
+        var list = res.data
+        list = that.data.subProjectList.concat(list)
+        that.setData({
+          subProjectList: list
+        }, () => {
+          if (app.globalData.subProIdx) {
+            let proObj = list[app.globalData.subProIdx]
+            that.setData({
+              subProIdx: app.globalData.subProIdx,
+              subProjectId: proObj.project_sub_id
+            })
+          }
+        })
       }
     })
   },
@@ -648,10 +1007,10 @@ Page({
           that.setData({
             systemList: list
           }, () => {
-            if (that.data.sysIdx != 0) {
+            if (app.globalData.sysIdx != 0) {
               that.setData({
                 sysIdx: app.globalData.sysIdx,
-                systemId: that.data.systemList[app.globalData.sysIdx].industry_id
+                systemId: list[app.globalData.sysIdx].industry_id
               })
             }
           })
@@ -660,6 +1019,101 @@ Page({
           }
         }
       })
+    })
+  },
+
+  fetchQuesList: function () {
+    var that = this
+    // 获取问题类型列表
+    api.phpRequest({
+      url: 'problem.php',
+      success: function (res) {
+        var list = res.data
+        list = that.data.quesList.concat(list)
+        that.setData({
+          quesList: list
+        }, () => {
+          if (app.globalData.quesIdx != 0) {
+            that.setData({
+              quesIdx: app.globalData.quesIdx,
+              quesId: list[app.globalData.quesIdx].problem_id
+            })
+          }
+        })
+      }
+    })
+  },
+
+  bindRegionChange: function (e) {
+    var idx = e.detail.value
+    var that = this
+    that.setData({
+      regionIdx: idx,
+      regionId: that.data.regionList[idx].department_id
+    }, () => {
+      app.globalData.regionIdx = idx
+      console.log(app.globalData)
+      if (that.data.regionIdx != 0) {
+        that.initSubRegionList(that.fetchSubRegionList)
+      } else {
+        that.initSubRegionList()
+      }
+    })
+  },
+
+  bindSubRegionChange: function (e) {
+    var idx = e.detail.value
+    var that = this
+    var lastRegionId = that.data.subRegionId
+    that.setData({
+      subRegionIdx: idx,
+      subRegionId: that.data.subRegionList[idx].department_sub_id
+    }, () => {
+      that.forceSelectManager(lastRegionId)
+      app.globalData.subRegionIdx = idx
+      console.log(app.globalData)
+      if (that.data.subRegionIdx != 0) {
+        that.initProjectList(that.fetchProjectList)
+      } else {
+        that.initProjectList()
+      }
+    })
+  },
+
+  bindProjectChange: function (e) {
+    var idx = e.detail.value
+    var that = this
+    that.setData({
+      proIdx: idx,
+      projectId: this.data.projectList[idx].project_id
+    }, () => {
+      app.globalData.proIdx = idx
+      console.log(app.globalData)
+      if (that.data.proIdx != 0) {
+        that.initSubProjectList(that.fetchSubProjectList)
+      } else {
+        that.initSubProjectList()
+      }
+    })
+  },
+
+  bindSubProjectChange: function (e) {
+    var idx = e.detail.value
+    this.setData({
+      subProIdx: idx,
+      subProjectId: this.data.subProjectList[idx].project_sub_id
+    })
+    app.globalData.subProIdx = idx
+  },
+
+  initSubRegionList: function (fn) {
+    this.setData({
+      subRegionList: [{"name": "请选择公司", "department_id": 0}],
+      subRegionIdx: 0,
+      subRegionId: 0
+    }, () => {
+      app.globalData.subRegionIdx = 0
+      if (fn) { fn() }
     })
   },
 
@@ -674,29 +1128,15 @@ Page({
     })
   },
 
-  bindRegionChange: function (e) {
-    var idx = e.detail.value
-    var that = this
-    that.setData({
-      regionIdx: idx
-    }, () => {
-      app.globalData.regionIdx = idx
-      console.log(app.globalData)
-      if (that.data.regionIdx != 0) {
-        that.initProjectList(that.fetchProjectList)
-      } else {
-        that.initProjectList()
-      }
-    })
-  },
-
-  bindProjectChange: function (e) {
-    var idx = e.detail.value
+  initSubProjectList: function (fn) {
     this.setData({
-      proIdx: idx,
-      projectId: this.data.projectList[idx].project_id
+      subProjectList: [{"name": "请选择子项目", "project_id": 0}],
+      subProIdx: 0,
+      subProjectId: 0
+    }, () => {
+      app.globalData.subProIdx = 0
+      if (fn) { fn() }
     })
-    app.globalData.proIdx = idx
   },
 
   bindSystemChange: function (e) {
@@ -706,5 +1146,102 @@ Page({
       systemId: this.data.systemList[idx].industry_id
     })
     app.globalData.sysIdx = idx
+  },
+
+  bindQuesChange: function (e) {
+    var idx = e.detail.value
+    this.setData({
+      quesIdx: e.detail.value,
+      quesId: this.data.quesList[idx].problem_id
+    })
+    app.globalData.quesIdx = idx
+  },
+
+  bindSetTitle: function (res) {
+    var that = this
+    that.bindInput = (res) => {
+      that.setData({
+        title: res
+      })
+    }
+    manager.start({
+      lang: "zh_CN"
+    })
+  },
+  
+  bindSetPosition: function (res) {
+    var that = this
+    that.bindInput = (res) => {
+      that.setData({
+        position: res
+      })
+    }
+    manager.start({
+      lang: "zh_CN"
+    })
+  },
+  
+  bindSetSolve: function (res) {
+    var that = this
+    that.bindInput = (res) => {
+      that.setData({
+        solve: res
+      }) 
+    }
+    manager.start({
+      lang: "zh_CN"
+    })
+  },
+  
+  bindSetContent: function (res) {
+    var that = this
+    that.bindInput = (res) => {
+      that.setData({
+        content: res
+      })
+    }
+    manager.start({
+      lang: "zh_CN"
+    })
+  },
+
+  bindTouchUp: function () {
+    var that = this
+    manager.stop()
+    wx.showToast({
+      title: '正在解析……',
+      icon: 'loading',
+      duration: 2000
+    })
+  },
+
+  bindInputTitle: function (e) {
+    this.setData({
+      title: e.detail.value
+    })
+  },
+  
+  bindInputPosition: function (e) {
+    this.setData({
+      position: e.detail.value
+    })
+  },
+  
+  bindInputSolve: function (e) {
+    this.setData({
+      solve: e.detail.value
+    })
+  },
+  
+  bindInputTerm: function (e) {
+    this.setData({
+      term: e.detail.value
+    })
+  },
+  
+  bindInputContent: function (e) {
+    this.setData({
+      content: e.detail.value
+    })
   },
 })

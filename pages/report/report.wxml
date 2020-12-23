@@ -1,7 +1,7 @@
 <form bindsubmit="bindSubmitForm" bindreset="bindBackToIndex">
 <view class="page-wrapper">
   <view class="header" wx:if="{{id != 0}}">
-    <view class="title">{{reportInfo.title}}</view>
+    <view class="title">{{reportInfo.head_title}}</view>
     <view class="opt-wrapper">
       <image bindtap="download" src="/imgs/report/2.png"></image>
       <!-- <image src="/imgs/regist_name.png"></image> -->
@@ -9,23 +9,52 @@
   </view>
   <view class="nav" wx:if="{{id == 0}}">
     <view class="region">
-      <picker bindchange="bindRegionChange" value="{{regionIdx}}" range="{{regionList}}">
+      <picker bindchange="bindRegionChange" value="{{regionIdx}}" range="{{regionList}}" range-key="name">
         <view class="picker">
-          当前区域：{{regionList[regionIdx]}}
+          <text>{{regionList[regionIdx].name}}</text>
+          <image src="/imgs/down.png"></image>
+        </view>
+      </picker>
+    </view>
+    <view class="sub-region">
+      <picker bindchange="bindSubRegionChange" value="{{subRegionIdx}}" range="{{subRegionList}}" range-key="name">
+        <view class="picker">
+          <text>{{subRegionList[subRegionIdx].name}}</text>
+          <image src="/imgs/down.png"></image>
         </view>
       </picker>
     </view>
     <view class="project">
       <picker bindchange="bindProjectChange" value="{{proIdx}}" range="{{projectList}}" range-key="name">
         <view class="picker">
-          当前项目：{{projectList[proIdx].name}}
+          <text>{{projectList[proIdx].name}}</text>
+          <image src="/imgs/down.png"></image>
+        </view>
+      </picker>
+    </view>
+  </view>
+  <view class="nav" wx:if="{{id == 0}}">
+    <view class="sub-project">
+      <picker bindchange="bindSubProjectChange" value="{{subProIdx}}" range="{{subProjectList}}" range-key="name">
+        <view class="picker">
+          <text>{{subProjectList[subProIdx].name}}</text>
+          <image src="/imgs/down.png"></image>
         </view>
       </picker>
     </view>
     <view class="system">
       <picker bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
         <view class="picker">
-          当前专业：{{systemList[sysIdx].name}}
+          <text>{{systemList[sysIdx].name}}</text>
+          <image src="/imgs/down.png"></image>
+        </view>
+      </picker>
+    </view>
+    <view class="question">
+      <picker bindchange="bindQuesChange" value="{{quesIdx}}" range="{{quesList}}" range-key="name">
+        <view class="picker">
+          <text>{{quesList[quesIdx].name}}</text>
+          <image src="/imgs/down.png"></image>
         </view>
       </picker>
     </view>
@@ -35,35 +64,60 @@
     <view>巡检时间：{{reportInfo.time}}</view>
   </view>
   <view class="summary" wx:if="{{id!=0}}">
-    <view>任务编号：{{reportInfo.bgbh}}</view>
-    <view>发起时间：{{reportInfo.task_time}}</view>
+    <view>
+      <text>任务编号：{{reportInfo.bgbh}}</text>
+    </view>
+    <view>
+      <text>区域：{{reportInfo.qymc}}</text>
+      <text>公司：{{reportInfo.gsmc}}</text>
+    </view>
+    <view>
+      <text>项目名称：{{reportInfo.xmmc}}</text>
+    </view>
+    <view>
+      <text>子项目名称：{{reportInfo.sub_xmmc}}</text>
+    </view>
+    <view>
+      <text>专业名称：{{reportInfo.zymc}}</text>
+      <text>问题类型：{{reportInfo.wtlx}}</text>
+    </view>
+    <view>
+      <text>推送给：{{reportInfo.pjrlb}}</text>
+    </view>
+    <view>
+      <text>抄送给：{{reportInfo.csrlb}}</text>
+    </view>
+    <view>
+      <text>发起时间：{{reportInfo.task_time}}</text>
+    </view>
   </view>
   <view class="description">
     <view class="item-wrapper">
-      <view class="label">标题<text class="co-red">*</text></view>
-      <view class="input"><textarea value="{{reportInfo.question}}" name="question"></textarea></view>
+      <view class="label">问题简述<text class="co-red">*</text></view>
+      <view class="input">
+        <textarea bindinput="bindInputTitle" value="{{reportInfo.title || title}}" name="title" wx:if="{{id==0 || isFb==0}}"></textarea>
+        <text wx:else>{{reportInfo.title}}</text>
+        <view bindtouchstart="bindSetTitle"
+          bindtouchend="bindTouchUp"
+          class="btn-speak" wx:if="{{id==0 || isFb==0}}">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
     </view>
-    <view class="item-wrapper">
-      <view class="label">原因<text class="co-red">*</text></view>
-      <view class="input"><textarea value="{{reportInfo.reason}}" name="reason"></textarea></view>
-    </view>
-    <view class="item-wrapper">
-      <view class="label">解决办法<text class="co-red">*</text></view>
-      <view class="input"><textarea value="{{reportInfo.solve}}" name="solve"></textarea></view>
-    </view>
-    <!-- <view class="item-wrapper">
-      <view class="label">区域</view>
-      <view class="input"><textarea value="{{reportInfo.region}}" name="region"></textarea></view>
-    </view> -->
     <view class="item-wrapper">
       <view class="label">部位<text class="co-red">*</text></view>
-      <view class="input"><textarea value="{{reportInfo.position}}" name="position"></textarea></view>
+      <view class="input">
+        <textarea bindinput="bindInputPosition" value="{{reportInfo.position || position}}" name="position" wx:if="{{id==0 || isFb==0}}"></textarea>
+        <text wx:else>{{reportInfo.position}}</text>
+        <view bindtouchstart="bindSetPosition"
+          bindtouchend="bindTouchUp"
+          class="btn-speak" wx:if="{{id==0 || isFb==0}}">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
     </view>
-    <!-- <view class="item-wrapper">
-      <view class="label">设计要求</view>
-    </view> -->
     <view class="item-wrapper">
-      <view class="label small-label">现场图片</view>
+      <view class="label small-label">添加照片</view>
       <view class="image-wrapper">
         <view class="img-upload-container">
           <view class="img-preview-container" wx:for="{{imageList}}" wx:key="index">
@@ -77,7 +131,18 @@
       </view>
     </view>
     <view class="item-wrapper">
-      <view class="label small-label">参照做法和要求</view>
+      <view class="label">建议解决办法</view>
+      <view class="input">
+        <textarea bindinput="bindInputSolve" value="{{reportInfo.solve || solve || ''}}" name="solve" wx:if="{{id==0 || isFb==0}}"></textarea>
+        <text wx:else>{{reportInfo.solve || ''}}</text>
+        <view bindtouchstart="bindSetSolve"
+          bindtouchend="bindTouchUp"
+          class="btn-speak" wx:if="{{id==0 || isFb==0}}">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
+    </view>
+    <view class="item-wrapper">
       <view class="image-wrapper">
         <view class="img-upload-container" data-index="1">
           <view class="img-preview-container" wx:for="{{image1List}}" wx:key="index">
@@ -91,23 +156,57 @@
       </view>
     </view>
     <view class="item-wrapper">
+      <view class="label">处理期限(天)<text class="co-red">*</text></view>
+      <view class="input">
+        <input bindinput="bindInputTerm" value="{{reportInfo.term || term}}" name="term" type="number" wx:if="{{id==0 || isFb==0}}"></input>
+        <text wx:else>{{reportInfo.term}}</text>
+      </view>
+    </view>
+    <view class="item-wrapper">
       <view class="label">备注</view>
-      <view class="input"><textarea value="{{reportInfo.remark}}" name="remark"></textarea></view>
+      <view class="input">
+        <textarea bindinput="bindInputContent" value="{{reportInfo.content || content || ''}}" name="content" wx:if="{{id==0 || isFb==0}}"></textarea>
+        <text wx:else>{{reportInfo.content || ''}}</text>
+        <view bindtouchstart="bindSetContent"
+          bindtouchend="bindTouchUp"
+          class="btn-speak" wx:if="{{id==0 || isFb==0}}">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
     </view>
   </view>
   <view class="assign" wx:if="{{id==0 || isFb==0}}">
+  <!-- <view class="assign"> -->
     <view class="title">推送给：</view>
     <scroll-view class="scroll-view-con" scroll-y>
       <view class="member-container" wx:for="{{memberList}}" wx:for-index="index" wx:for-item="value">
-        <view class="title-wrapper">{{departmentList[index]}}:</view>
+        <view class="title-wrapper">{{departmentList[index].name}}:</view>
         <view class="check-wrapper">
           <view class="select-all">
-            <checkbox bindtap="bindSelectAll" data-sidx="{{index}}" checked="{{selectAll[index]}}">全选</checkbox>
+            <checkbox disabled="{{checkboxDisable}}" bindtap="bindSelectAll" data-sidx="{{index}}" checked="{{selectAll[index]}}">全选</checkbox>
           </view>
           <view class="select-list">
             <checkbox-group bindchange="checkboxChange">
               <view class="checkbox" wx:for="{{value}}" wx:key="index" wx:for-index="midx">
-              <checkbox bindtap="bindSelect" value="{{value[midx].id}}" checked="{{value[midx].checked}}" data-sidx="{{index}}" data-midx="{{midx}}">{{value[midx].realname}}</checkbox>
+              <checkbox disabled="{{value[midx].disabled}}" bindtap="bindSelect" value="{{value[midx].id}}" checked="{{value[midx].checked}}" data-sidx="{{index}}" data-midx="{{midx}}">{{value[midx].realname}}</checkbox>
+              </view>
+            </checkbox-group>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+    <view class="title">抄送给：</view>
+    <scroll-view class="scroll-view-con" scroll-y>
+      <view class="member-container" wx:for="{{memberList1}}" wx:for-index="index" wx:for-item="value">
+        <view class="title-wrapper">{{departmentList[index].name}}:</view>
+        <view class="check-wrapper">
+          <view class="select-all">
+            <checkbox bindtap="bindSelectAll1" data-sidx="{{index}}" checked="{{selectAll1[index]}}">全选</checkbox>
+          </view>
+          <view class="select-list">
+            <checkbox-group bindchange="checkboxChange">
+              <view class="checkbox" wx:for="{{value}}" wx:key="index" wx:for-index="midx">
+              <checkbox disabled="{{value[midx].disabled}}" bindtap="bindSelect1" value="{{value[midx].id}}" checked="{{value[midx].checked}}" data-sidx="{{index}}" data-midx="{{midx}}">{{value[midx].realname}}</checkbox>
               </view>
             </checkbox-group>
           </view>
