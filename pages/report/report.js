@@ -40,9 +40,9 @@ Page({
     memberList1: {},
     memberCheckedList1: [],
     title: "",
+    reason: "",
     position: "",
     solve: "",
-    term: "",
     content: "",
     didx: 0,
     //最多可上传的图片数量
@@ -81,7 +81,7 @@ Page({
         title: app.globalData.title,
         position: app.globalData.position,
         solve: app.globalData.solve,
-        term: app.globalData.term,
+        reason: app.globalData.reason,
         content: app.globalData.content,
       })
     } else {
@@ -167,7 +167,7 @@ Page({
       app.globalData.title = that.data.title
       app.globalData.position = that.data.position
       app.globalData.solve = that.data.solve
-      app.globalData.term = that.data.term
+      app.globalData.reason = that.data.reason
       app.globalData.content = that.data.content
     }
   },
@@ -488,9 +488,11 @@ Page({
   validateInfo: function (data) {
     if (!data['title']) return '问题简述'
     if (!data['position']) return '部位'
-    if (!data['term']) return '处理期限'
+    if (!data['reason']) return '原因'
+    if (!data['solve']) return '解决办法'
     if (data['report_id'] == 0 && data['project_id'] == 0) return '区域和项目'
     if (data['report_id'] == 0 && data['industry_id'] == 0) return '专业'
+    if (data['report_id'] == 0 && data['problem_id'] == 0) return '问题类型'
     return 'success'
   },
 
@@ -519,7 +521,7 @@ Page({
       position: value.position,
       title: value.title,
       solve: value.solve,
-      term: value.term,
+      reason: value.reason,
       content: value.content,
       department_id: that.data.regionId,
       project_id: that.data.projectId,
@@ -761,13 +763,13 @@ Page({
           app.globalData.title = ''
           app.globalData.position = ''
           app.globalData.solve = ''
-          app.globalData.term = ''
+          app.globalData.reason = ''
           app.globalData.content = ''
           that.setData({
             title: '',
             position: '',
             solve: '',
-            term: '',
+            reason: '',
             content: '',
           })
           wx.showToast({
@@ -1115,9 +1117,9 @@ Page({
     })
   },
   
-  bindInputTerm: function (e) {
+  bindInputReason: function (e) {
     this.setData({
-      term: e.detail.value
+      reason: e.detail.value
     })
   },
   

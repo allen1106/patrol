@@ -77,7 +77,6 @@
         </view>
         <view class="note">
           <text>任务生成时间：{{item.task_time}}</text>
-          <text>处理期限：{{item.term}}天</text>
         </view>
       </view>
     </view>

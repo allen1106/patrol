@@ -40,8 +40,12 @@
   </view>
   <view class="description">
     <view class="item-wrapper">
-      <view class="label">问题简述</view>
+      <view class="label">标题</view>
       <view class="input">{{reportInfo.title}}</view>
+    </view>
+    <view class="item-wrapper">
+      <view class="label">原因</view>
+      <view class="input">{{reportInfo.reason}}</view>
     </view>
     <view class="item-wrapper">
       <view class="label">部位</view>
@@ -77,10 +81,6 @@
           </view> -->
         </view>
       </view>
-    </view>
-    <view class="item-wrapper">
-      <view class="label">处理期限(天)</view>
-      <view class="input">{{reportInfo.term}}</view>
     </view>
     <view class="item-wrapper">
       <view class="label">备注</view>

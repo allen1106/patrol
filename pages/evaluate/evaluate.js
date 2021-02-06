@@ -69,7 +69,7 @@ Page({
     }
     // 获取部门信息
     api.phpRequest({
-      url: 'department_sub_list.php',
+      url: 'department_list.php',
       success: function (res) {
         console.log(res.data)
         that.setData({
