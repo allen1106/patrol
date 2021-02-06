@@ -19,11 +19,11 @@ Page({
       url: 'department.php',
       success: function (res) {
         console.log(res)
-        var departList = util.formatDepartment(res.data)
+        var departList = res.data
         console.log(departList)
         that.setData({
           departmentList: departList,
-          department: departList[0]
+          department: departList[0].name
         })
       }
     })
@@ -31,7 +31,7 @@ Page({
 
   bindPickerChange: function (e) {
     this.setData({
-      department: this.data.departmentList[e.detail.value]
+      department: this.data.departmentList[e.detail.value].name
     })
   },
 
