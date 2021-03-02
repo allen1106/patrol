@@ -133,6 +133,7 @@ Page({
         }
         that.setData({
           departmentList: that.data.departmentList
+          // departmentList: res.data
         }, () => {
           that.fetchMemberListWrapper()
           that.fetchMemberListWrapper1()
@@ -987,10 +988,12 @@ Page({
   bindRegionChange: function (e) {
     var idx = e.detail.value
     var that = this
+    var lastRegionId = that.data.regionId
     that.setData({
       regionIdx: idx,
       regionId: that.data.regionList[idx].department_id
     }, () => {
+      that.forceSelectManager(lastRegionId)
       app.globalData.regionIdx = idx
       console.log(app.globalData)
       if (that.data.regionIdx != 0) {

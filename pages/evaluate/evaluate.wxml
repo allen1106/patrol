@@ -13,13 +13,7 @@
     </view>
     <view>
       <text>区域：{{reportInfo.qymc}}</text>
-      <text>公司：{{reportInfo.gsmc}}</text>
-    </view>
-    <view>
       <text>项目名称：{{reportInfo.xmmc}}</text>
-    </view>
-    <view>
-      <text>子项目名称：{{reportInfo.sub_xmmc}}</text>
     </view>
     <view>
       <text>专业名称：{{reportInfo.zymc}}</text>
