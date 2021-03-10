@@ -21,16 +21,17 @@ Page({
     reportInfo: null,
     isFb: 0,
     departmentList: {},
-    regionList: [{"name": "请选择区域", "department_id": 0}],
+    departmentList1: {},
+    regionList: [{"name": "请选择公司", "department_id": 0}],
     regionIdx: 0,
     regionId: 0,
-    subRegionList: [{"name": "请选择公司", "sub_department_id": 0}],
+    subRegionList: [{"name": "请选择子公司", "sub_department_id": 0}],
     subRegionIdx: 0,
     subRegionId: 0,
     projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
     projectId: 0,
-    subProjectList: [{"name": "请选择子项目", "sub_project_id": 0}],
+    subProjectList: [{"name": "请选择区域", "sub_project_id": 0}],
     subProIdx: 0,
     subProjectId: 0,
     systemList: [{"name": "请选择专业", "industry_id": 0}],
@@ -135,10 +136,18 @@ Page({
       success: function (res) {
         for (let i in res.data) {
           let key = res.data[i].department_id
-          that.data.departmentList[key] = res.data[i]
+          if (res.data[i].type == 0) {
+            that.data.departmentList[key] = res.data[i]
+          } else if (res.data[i].type == 1) {
+            that.data.departmentList1[key] = res.data[i]
+          } else {
+            that.data.departmentList[key] = res.data[i]
+            that.data.departmentList1[key] = res.data[i]
+          }
         }
         that.setData({
-          departmentList: that.data.departmentList
+          departmentList: that.data.departmentList,
+          departmentList1: that.data.departmentList1,
         }, () => {
           that.fetchMemberListWrapper()
           that.fetchMemberListWrapper1()
@@ -290,8 +299,8 @@ Page({
 
   fetchMemberList1: function () {
     var that = this
-    for (var i in that.data.departmentList) {
-      let key = that.data.departmentList[i].department_id
+    for (var i in that.data.departmentList1) {
+      let key = that.data.departmentList1[i].department_id
       that.data.memberList1[key] = []
       that.data.selectAll1[key] = false
       that.fetchMember1(key)

@@ -198,7 +198,7 @@
     <view class="title">抄送给：</view>
     <scroll-view class="scroll-view-con" scroll-y>
       <view class="member-container" wx:for="{{memberList1}}" wx:for-index="index" wx:for-item="value">
-        <view class="title-wrapper">{{departmentList[index].name}}:</view>
+        <view class="title-wrapper">{{departmentList1[index].name}}:</view>
         <view class="check-wrapper">
           <view class="select-all">
             <checkbox bindtap="bindSelectAll1" data-sidx="{{index}}" checked="{{selectAll1[index]}}">全选</checkbox>
