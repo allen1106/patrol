@@ -20,6 +20,10 @@ page {
   color: #fff;
 }
 
+.header text {
+  display: block;
+}
+
 .date-wrapper {
   position: absolute;
   bottom: 150rpx;

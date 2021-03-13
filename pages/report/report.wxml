@@ -16,14 +16,6 @@
         </view>
       </picker>
     </view>
-    <view class="sub-region">
-      <picker bindchange="bindSubRegionChange" value="{{subRegionIdx}}" range="{{subRegionList}}" range-key="name">
-        <view class="picker">
-          <text>{{subRegionList[subRegionIdx].name}}</text>
-          <image src="/imgs/down.png"></image>
-        </view>
-      </picker>
-    </view>
     <view class="project">
       <picker bindchange="bindProjectChange" value="{{proIdx}}" range="{{projectList}}" range-key="name">
         <view class="picker">
@@ -32,8 +24,6 @@
         </view>
       </picker>
     </view>
-  </view>
-  <view class="nav" wx:if="{{id == 0}}">
     <view class="sub-project">
       <picker bindchange="bindSubProjectChange" value="{{subProIdx}}" range="{{subProjectList}}" range-key="name">
         <view class="picker">
@@ -42,6 +32,8 @@
         </view>
       </picker>
     </view>
+  </view>
+  <view class="nav" wx:if="{{id == 0}}">
     <view class="system">
       <picker bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
         <view class="picker">
@@ -68,7 +60,6 @@
       <text>任务编号：{{reportInfo.bgbh}}</text>
     </view>
     <view>
-      <text>区域：{{reportInfo.qymc}}</text>
       <text>公司：{{reportInfo.gsmc}}</text>
     </view>
     <view>
@@ -236,17 +227,30 @@
     <view class="comment-wrapper">
       <text wx:for="{{commonList}}"></text>
     </view>
-    <view class="btn-wrapper" wx:if="{{isFb==0}}">
+    <view class="btn-wrapper" wx:if="{{isFb==1}}">
       <button form-type="submit" data-id="1">提交</button>
       <button form-type="reset">取消</button>
       <button form-type="submit" data-id="0" wx:if="{{id==0}}">保存草稿</button>
       <button form-type="submit" data-id="0" wx:if="{{id!=0}}">删除</button>
     </view>
-    <view class="btn-wrapper" wx:if="{{isFb==1}}">
+    <block wx:if="{{isFb==0}}">
+    <view class="item-wrapper">
+      <view class="label">驳回原因</view>
+      <view class="input">
+        <textarea bindinput="bindInputRejectRes" name="rejectRes"></textarea>
+        <view bindtouchstart="bindSetRejectRes"
+          bindtouchend="bindTouchUp"
+          class="btn-speak">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
+    </view>
+    <view class="btn-wrapper">
       <button form-type="submit" data-id="2">解决成功</button>
       <button form-type="submit" data-id="3">驳回处理</button>
       <button form-type="submit" data-id="4">删除</button>
     </view>
+    </block>
   </view>
 </view>
 </form>

@@ -1,6 +1,9 @@
 <!--index.wxml-->
 <image src="/imgs/index/bg.png" class="page-wrapper">
-  <view class="header">绿地控股集团房地产事业二部品质控制平台</view>
+  <view class="header">
+    <text>绿地控股集团房地产</text>
+    <text>事业二部品质控制平台</text>
+  </view>
   <view class="date-wrapper">
     <text>{{date}}</text>
     <text>{{workDay}}</text>

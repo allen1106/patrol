@@ -36,7 +36,6 @@ App({
   globalData: {
     userInfo: null,
     regionIdx: 0,
-    subRegionIdx: 0,
     proIdx: 0,
     subProIdx: 0,
     sysIdx: 0,
