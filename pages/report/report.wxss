@@ -289,3 +289,141 @@ checkbox .wx-checkbox-input {
   width: 100%;
   color: #4876FF;
 }
+
+.scroll-view-common {
+  width: 100%;
+  border: 2rpx solid #DCDCDC;
+  background-color: #fff;
+}
+
+.name-pannel {
+  height: 150rpx;
+  padding: 0 20rpx;
+}
+
+.name-pannel .member-item {
+  width: 50%;
+  height: 50rpx;
+  font-size: 28rpx;
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+}
+
+.name-pannel .member-item image {
+  width: 20rpx;
+  height: 20rpx;
+}
+
+.depart-wrapper {
+  width: 100%;
+  margin-top: 20rpx;
+}
+
+.depart-pannel {
+  display: inline-block;
+  height: 400rpx;
+}
+
+.depart-pannel:nth-child(1) {
+  border-right: none;
+  width: calc(30% - 2rpx);
+}
+
+.depart-pannel:nth-child(2) {
+  border-left: none;
+  width: calc(70% - 2rpx);
+  background-color: #F6F6F6;
+}
+
+.region-item,
+.depart-item {
+  width: 80%;
+  margin: 10rpx auto;
+  padding: 10rpx;
+  border-radius: 10rpx;
+  text-align: center;
+}
+
+.region-item.active {
+  background-color: #4876FF;
+  color: #fff;
+}
+
+.depart-item {
+  text-align: left;
+  padding: 10rpx 30rpx;
+  border-bottom: 1rpx solid #DCDCDC;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.mask{
+  width:100%;
+  height:100%;
+  position:fixed;
+  background-color: rgba(153,153,153,0.6);
+  z-index:9999;
+  top:0;
+  left:0;
+}
+.member-pannel {
+  width: 90%;
+  height: 500rpx;
+  margin: 50% auto;
+  padding: 20rpx;
+  background-color: #fff;
+  font-size: 32rpx;
+}
+
+
+.search-pannel {
+  margin-top: 20rpx;
+  width: calc(100% - 40rpx);
+  height: 80rpx;
+  background-color: #DCDCDC;
+  padding: 10rpx 20rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input-pannel {
+  height: 100%;
+  padding: 0 20rpx;
+  border-radius: 10rpx;
+  background-color: #fff;
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  width: calc(100% - 100rpx);
+}
+
+.btn-cancel {
+  width: 100rpx;
+  color: #4876FF;
+  font-size: 36rpx;
+  text-align: center;
+}
+
+.input-pannel image {
+  width: 50rpx;
+  height: 50rpx;
+}
+
+.input-pannel input {
+  margin-left: 20rpx;
+}
+
+.choose-pannel .checkbox {
+  width: 33.3%;
+  display: inline-block;
+  height: 50rpx;
+  margin-top: 30rpx;
+}

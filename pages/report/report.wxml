@@ -166,45 +166,32 @@
       </view>
     </view>
   </view>
+
+
   <view class="assign" wx:if="{{id==0 || isFb==0}}">
-  <!-- <view class="assign"> -->
     <view class="title">推送给：</view>
-    <scroll-view class="scroll-view-con" scroll-y>
-      <view class="member-container" wx:for="{{memberList}}" wx:for-index="index" wx:for-item="value">
-        <view class="title-wrapper">{{departmentList[index].name}}:</view>
-        <view class="check-wrapper">
-          <view class="select-all">
-            <checkbox disabled="{{checkboxDisable}}" bindtap="bindSelectAll" data-sidx="{{index}}" checked="{{selectAll[index]}}">全选</checkbox>
-          </view>
-          <view class="select-list">
-            <checkbox-group bindchange="checkboxChange">
-              <view class="checkbox" wx:for="{{value}}" wx:key="index" wx:for-index="midx">
-              <checkbox disabled="{{value[midx].disabled}}" bindtap="bindSelect" value="{{value[midx].id}}" checked="{{value[midx].checked}}" data-sidx="{{index}}" data-midx="{{midx}}">{{value[midx].realname}}</checkbox>
-              </view>
-            </checkbox-group>
-          </view>
-        </view>
+    <scroll-view class="scroll-view-common name-pannel" scroll-y>
+      <view class="member-item" wx:for="{{checkedMember}}" wx:for-item="memObj">
+        <image src="/imgs/report/delete.png" bindtap="delMember" data-id="{{memObj.id}}"></image>
+        <text>{{memObj.realname}}</text>
       </view>
     </scroll-view>
-    <view class="title">抄送给：</view>
-    <scroll-view class="scroll-view-con" scroll-y>
-      <view class="member-container" wx:for="{{memberList1}}" wx:for-index="index" wx:for-item="value">
-        <view class="title-wrapper">{{departmentList[index].name}}:</view>
-        <view class="check-wrapper">
-          <view class="select-all">
-            <checkbox bindtap="bindSelectAll1" data-sidx="{{index}}" checked="{{selectAll1[index]}}">全选</checkbox>
-          </view>
-          <view class="select-list">
-            <checkbox-group bindchange="checkboxChange">
-              <view class="checkbox" wx:for="{{value}}" wx:key="index" wx:for-index="midx">
-              <checkbox disabled="{{value[midx].disabled}}" bindtap="bindSelect1" value="{{value[midx].id}}" checked="{{value[midx].checked}}" data-sidx="{{index}}" data-midx="{{midx}}">{{value[midx].realname}}</checkbox>
-              </view>
-            </checkbox-group>
-          </view>
+    <view class="depart-wrapper">
+      <scroll-view class="scroll-view-common depart-pannel" scroll-y>
+        <view class="region-item {{curRegionIdx == ridx ? 'active': ''}}" wx:for="{{memberRegionList}}" wx:for-index="ridx" wx:for-item="regionObj" bindtap="bindClickRegion" data-idx="{{ridx}}">
+          {{regionObj.name}}
         </view>
-      </view>
-    </scroll-view>
+      </scroll-view>
+      <scroll-view class="scroll-view-common depart-pannel" scroll-y>
+        <view class="depart-item {{curDepartIdx == didx ? 'active': ''}}" wx:for="{{memberRegionList[curRegionIdx].departList}}" wx:for-index="didx" wx:for-item="departObj" bindtap="bindClickDepart" data-didx="{{didx}}">
+          <text>{{departObj.name}}</text>
+          <text style="font-size: 28rpx;">></text>
+        </view>
+      </scroll-view>
+    </view>
   </view>
+
+
   <view class="comment-list">
     <view class="comment-item" wx:for="{{comments}}" wx:key="index">
       <text class="content">{{comments[index].evaluate_content}}</text>
@@ -227,13 +214,13 @@
     <view class="comment-wrapper">
       <text wx:for="{{commonList}}"></text>
     </view>
-    <view class="btn-wrapper" wx:if="{{isFb==1}}">
+    <view class="btn-wrapper" wx:if="{{isFb==0}}">
       <button form-type="submit" data-id="1">提交</button>
       <button form-type="reset">取消</button>
       <button form-type="submit" data-id="0" wx:if="{{id==0}}">保存草稿</button>
       <button form-type="submit" data-id="0" wx:if="{{id!=0}}">删除</button>
     </view>
-    <block wx:if="{{isFb==0}}">
+    <block wx:if="{{isFb==1}}">
     <view class="item-wrapper">
       <view class="label">驳回原因</view>
       <view class="input">
@@ -254,3 +241,25 @@
   </view>
 </view>
 </form>
+
+<view class="mask" wx:if="{{showMember}}">
+  <view class="member-pannel">
+    <view class="title">事业部本部--技发部</view>
+    <view class="search-pannel">
+      <view class="input-pannel">
+        <image src="/imgs/report/ci-yqi-search.svg"></image>
+        <input placeholder="搜索" bindinput="searchName"></input>
+      </view>
+      <view class="btn-cancel" bindtap="bindHideMask">取消</view>
+    </view>
+    <view class="choose-pannel">
+      <checkbox-group bindchange="bindPickMember">
+        <block wx:for="{{memberBox}}" wx:key="index" wx:for-index="midx" wx:for-item="member">
+          <view class="checkbox" wx:if="{{!member.hide}}">
+          <checkbox value="{{member.id}}" checked="{{member.checked}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
+          </view>
+        </block>
+      </checkbox-group>
+    </view>
+  </view>
+</view>
