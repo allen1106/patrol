@@ -53,8 +53,7 @@ Page({
     curRegionIdx: 0,
     curDepartIdx: 0,
     showMember: 0,
-    memberBox: [],
-    checkedMember: [],
+    currentTab: 0,
   },
 
   /**
@@ -125,6 +124,8 @@ Page({
           }
         })
       }
+      
+      that.fetchRegionList()
     }
   },
 
@@ -233,6 +234,9 @@ Page({
     }
 
     var url = btnId == "0" ? 'report_save.php' : 'report_submit.php'
+    let checkedMem = that.getCheckedMember()
+    if (!checkedMem) return
+    let {pjr_id, csr_id} = checkedMem
     var data = {
       userid: wx.getStorageSync('userId'),
       task_time: util.formatTime(new Date()),
@@ -247,33 +251,14 @@ Page({
       industry_id: that.data.systemId,
       problem_id: that.data.quesId,
       report_id: that.data.id,
-      pjr_id: that.getCheckedMember(),
-      csr_id: that.getCheckedMember1()
+      pjr_id: pjr_id,
+      csr_id: csr_id
     }
     console.log(data)
     var valid = that.validateInfo(data)
     if (valid != "success") {
       wx.showToast({
         title: valid + '不能为空',
-        icon: 'none',
-      })
-      return
-    }
-    let did = that.data.regionId
-    let flag = false
-    for (var i in that.data.memberList[did]) {
-      if (that.data.memberList[did][i].flag == 1 && that.data.memberList[did][i].checked == false) {
-        flag = true
-      }
-    }
-    for (var i in that.data.memberList1[did]) {
-      if (that.data.memberList1[did][i].flag == 1 && that.data.memberList1[did][i].checked == false) {
-        flag = true
-      }
-    }
-    if (flag) {
-      wx.showToast({
-        title: '必须勾选当前公司的负责人',
         icon: 'none',
       })
       return
@@ -694,7 +679,6 @@ Page({
       regionId: that.data.regionList[idx].department_id
     }, () => {
       app.globalData.regionIdx = idx
-      console.log(app.globalData)
       that.forceSelectManager(lastRegionId)
       if (that.data.regionIdx != 0) {
         that.initProjectList(that.fetchProjectList)
@@ -876,6 +860,12 @@ Page({
     })
   },
 
+  switchAssignTab: function (e) {
+    let that = this
+    let tabid = Number(e.currentTarget.dataset.tab)
+    that.setData({currentTab: tabid})
+  },
+
   bindClickRegion: function (e) {
     let that = this
     let idx = e.currentTarget.dataset.idx
@@ -902,6 +892,17 @@ Page({
                 departmentid: regionList[i].departList[j].department_sub_id
               },
               success: function (res) {
+                if (that.data.id != 0) {
+                  let {pjr_id, csr_id} = that.data.reportInfo
+                  for (let i in res.data) {
+                    if (pjr_id && pjr_id.indexOf(res.data[i].id) != -1) {
+                      res.data[i].checked = true
+                    }
+                    if (csr_id && csr_id.indexOf(res.data[i].id) != -1) {
+                      res.data[i].checked1 = true
+                    }
+                  }
+                }
                 regionList[i].departList[j].memberList = res.data
                 that.setData({
                   memberRegionList: regionList,
@@ -923,7 +924,6 @@ Page({
     that.setData({
       curDepartIdx: didx,
       showMember: 1,
-      memberBox: that.data.memberRegionList[that.data.curRegionIdx].departList[didx].memberList
     })
   },
 
@@ -934,69 +934,62 @@ Page({
   },
 
   searchName: function (e) {
+    let that = this
+    let {curRegionIdx, curDepartIdx, memberRegionList} = that.data
+    let memberBox = memberRegionList[curRegionIdx].departList[curDepartIdx].memberList
     let reg = e.detail.value
-    for (let i in this.data.memberBox) {
-      this.data.memberBox[i].hide = 0
-      if (this.data.memberBox[i].realname.indexOf(reg) == -1) {
-        this.data.memberBox[i].hide = 1
+    for (let i in memberBox) {
+      memberBox[i].hide = 0
+      if (memberBox[i].realname.indexOf(reg) == -1) {
+        memberBox[i].hide = 1
       }
     }
-    this.setData({memberBox: this.data.memberBox})
+    that.setData({memberRegionList: memberRegionList})
   },
 
   bindPickMember: function (e) {
     var that = this
     var values = e.detail.value
-    let memberBox = that.data.memberBox
-    let checkedMember = []
+    let {curRegionIdx, curDepartIdx, memberRegionList, currentTab} = that.data
+    let memberBox = memberRegionList[curRegionIdx].departList[curDepartIdx].memberList
     for (let i in memberBox) {
-      memberBox[i].checked = false
+      if (currentTab == 1) {
+        memberBox[i].checked1 = false
+      } else {
+        memberBox[i].checked = false
+      }
+      
       for (let j in values) {
         if (memberBox[i].id === values[j]) {
-          memberBox[i].checked = true
+          if (currentTab == 1) {
+            memberBox[i].checked1 = true
+          } else {
+            memberBox[i].checked = true
+          }
           break
         }
       }
     }
     that.setData({
-      memberBox: memberBox,
-    }, () => {
-      for (let i in that.data.memberRegionList) {
-        for (let j in that.data.memberRegionList[i].departList) {
-          for (let k in that.data.memberRegionList[i].departList[j].memberList) {
-            if (that.data.memberRegionList[i].departList[j].memberList[k].checked) {
-              checkedMember.push(that.data.memberRegionList[i].departList[j].memberList[k])
-            }
-          }
-        }
-      }
-      that.setData({
-        checkedMember: checkedMember,
-      })
+      memberRegionList: memberRegionList,
     })
   },
 
   delMember: function (e) {
     let that = this
-    let mid = e.currentTarget.dataset.id
-    for (let i in that.data.checkedMember) {
-      let delObj = that.data.checkedMember[i]
-      if (delObj.id == mid) {
-        delObj.checked = false
-        that.data.checkedMember.splice(that.data.checkedMember.indexOf(delObj), 1)
-        break
-      }
+    let {ridx, didx, midx} = e.currentTarget.dataset
+    let {memberRegionList, currentTab} = that.data
+    if (currentTab == 1) {
+      memberRegionList[ridx].departList[didx].memberList[midx].checked1 = false
+    } else {
+      memberRegionList[ridx].departList[didx].memberList[midx].checked = false
     }
-    that.setData({
-      checkedMember: that.data.checkedMember
-    })
+    that.setData({memberRegionList: memberRegionList})
   },
 
   forceSelectManager: function (lastRegionId) {
     var that = this
     var did = Number(that.data.regionId)
-    
-    let checkedMember = []
 
     for (let i in that.data.memberRegionList) {
       let depart = that.data.memberRegionList[i]
@@ -1006,52 +999,47 @@ Page({
           
           if (depart.department_id == lastRegionId) {
             memberObj.checked = false
+            memberObj.checked1 = false
           }
 
           if ((memberObj.flag == 1 && depart.department_id == did) || (memberObj.extra_depart.indexOf(did) != -1)) {
             memberObj.checked = true
-          }
-          
-          if (memberObj.checked) {
-            checkedMember.push(memberObj)
+            memberObj.checked1 = true
           }
         }
       }
     }
     that.setData({
-      memberRegionList: that.data.memberRegionList,
-      checkedMember: checkedMember,
+      memberRegionList: that.data.memberRegionList
     })
   },
 
-  getCheckedMember: function (e) {
-    var ret = []
-    app.globalData.members = this.data.memberList
-    app.globalData.selectAll = this.data.selectAll
-    for (var i in this.data.memberList) {
-      for (var j in this.data.memberList[i]) {
-        if (this.data.memberList[i][j]["checked"]) {
-          ret.push(this.data.memberList[i][j]["id"])
+  getCheckedMember: function () {
+    let that = this
+    let ret = {'pjr_id': [], 'csr_id': []}
+    let {memberRegionList, regionId} = that.data
+    for (let i in memberRegionList) {
+      for (let j in memberRegionList[i].departList) {
+        for (let k in memberRegionList[i].departList[j].memberList) {
+          let memberObj = memberRegionList[i].departList[j].memberList[k]
+
+          if (memberRegionList[i].department_id == regionId && memberObj.flag == 1 && (!memberObj.checked || !memberObj.checked1)) {
+            wx.showToast({
+              title: '必须勾选当前公司的负责人',
+              icon: 'none',
+              })
+              return null
+          }
+
+          if (memberObj.checked) {
+            ret.pjr_id.push(memberObj.id)
+          }
+          if (memberObj.checked1) {
+            ret.csr_id.push(memberObj.id)
+          }
         }
       }
     }
-    console.log(ret)
     return ret
-  },
-
-  getCheckedMember1: function (e) {
-    var ret = []
-    app.globalData.members1 = this.data.memberList1
-    app.globalData.selectAll1 = this.data.selectAll1
-    for (var i in this.data.memberList1) {
-      for (var j in this.data.memberList1[i]) {
-        if (this.data.memberList1[i][j]["checked"]) {
-          ret.push(this.data.memberList1[i][j]["id"])
-        }
-      }
-    }
-    console.log(ret)
-    return ret
-  },
-
+  }
 })

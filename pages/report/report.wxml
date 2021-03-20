@@ -169,12 +169,33 @@
 
 
   <view class="assign" wx:if="{{id==0 || isFb==0}}">
-    <view class="title">推送给：</view>
-    <scroll-view class="scroll-view-common name-pannel" scroll-y>
-      <view class="member-item" wx:for="{{checkedMember}}" wx:for-item="memObj">
-        <image src="/imgs/report/delete.png" bindtap="delMember" data-id="{{memObj.id}}"></image>
-        <text>{{memObj.realname}}</text>
-      </view>
+    <view class="title">
+      <text class="{{currentTab==0 ? 'active' : ''}}" bindtap="switchAssignTab" data-tab="0">推送给：</text>
+      <text class="{{currentTab==1 ? 'active' : ''}}" bindtap="switchAssignTab" data-tab="1">抄送给：</text>
+    </view>
+    <scroll-view wx:if="{{currentTab==0}}" class="scroll-view-common name-pannel" scroll-y>
+      <block wx:for="{{memberRegionList}}" wx:for-item="regionObj" wx:for-index="ridx">
+        <block wx:for="{{regionObj.departList}}" wx:for-item="departObj" wx:for-index="didx">
+          <block wx:for="{{departObj.memberList}}" wx:for-item="memberObj" wx:for-index="midx">
+            <view class="member-item" wx:if="{{memberObj.checked}}">
+              <image src="/imgs/report/delete.png" bindtap="delMember" data-ridx="{{ridx}}" data-didx="{{didx}}" data-midx="{{midx}}"></image>
+              <text>{{memberObj.realname}}</text>
+            </view>
+          </block>
+        </block>
+      </block>
+    </scroll-view>
+    <scroll-view wx:if="{{currentTab==1}}" class="scroll-view-common name-pannel" scroll-y>
+      <block wx:for="{{memberRegionList}}" wx:for-item="regionObj" wx:for-index="ridx">
+        <block wx:for="{{regionObj.departList}}" wx:for-item="departObj" wx:for-index="didx">
+          <block wx:for="{{departObj.memberList}}" wx:for-item="memberObj" wx:for-index="midx">
+            <view class="member-item" wx:if="{{memberObj.checked1}}">
+              <image src="/imgs/report/delete.png" bindtap="delMember" data-ridx="{{ridx}}" data-didx="{{didx}}" data-midx="{{midx}}"></image>
+              <text>{{memberObj.realname}}</text>
+            </view>
+          </block>
+        </block>
+      </block>
     </scroll-view>
     <view class="depart-wrapper">
       <scroll-view class="scroll-view-common depart-pannel" scroll-y>
@@ -254,9 +275,10 @@
     </view>
     <view class="choose-pannel">
       <checkbox-group bindchange="bindPickMember">
-        <block wx:for="{{memberBox}}" wx:key="index" wx:for-index="midx" wx:for-item="member">
+        <block wx:for="{{memberRegionList[curRegionIdx].departList[curDepartIdx].memberList}}" wx:key="index" wx:for-index="midx" wx:for-item="member">
           <view class="checkbox" wx:if="{{!member.hide}}">
-          <checkbox value="{{member.id}}" checked="{{member.checked}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
+          <checkbox wx:if="{{currentTab==0}}" value="{{member.id}}" checked="{{member.checked}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
+          <checkbox wx:if="{{currentTab==1}}" value="{{member.id}}" checked="{{member.checked1}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
           </view>
         </block>
       </checkbox-group>
