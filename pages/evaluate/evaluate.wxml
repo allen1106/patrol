@@ -12,7 +12,6 @@
       <text>任务编号：{{reportInfo.bgbh}}</text>
     </view>
     <view>
-      <text>区域：{{reportInfo.qymc}}</text>
       <text>公司：{{reportInfo.gsmc}}</text>
     </view>
     <view>

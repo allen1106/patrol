@@ -17,9 +17,6 @@ Page({
     regionList: [{"name": "请选择公司", "department_id": 0}],
     regionIdx: 0,
     regionId: 0,
-    subRegionList: [{"name": "请选择子公司", "sub_department_id": 0}],
-    subRegionIdx: 0,
-    subRegionId: 0,
     projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
     projectId: 0,
@@ -96,31 +93,13 @@ Page({
     })
   },
 
-  fetchSubRegionList: function () {
-    var that = this
-    // 获取部门信息
-    api.phpRequest({
-      url: 'department_sub.php',
-      data: {
-        'department_id': that.data.regionId
-      },
-      success: function (res) {
-        var list = res.data
-        list = that.data.subRegionList.concat(list)
-        that.setData({
-          subRegionList: list
-        })
-      }
-    })
-  },
-
   fetchProjectList: function () {
     var that = this
     // 获取项目列表
     api.phpRequest({
       url: 'project.php',
       data: {
-        'department_sub_id': that.data.subRegionId
+        'department_id': that.data.regionId
       },
       success: function (res) {
         var list = res.data
@@ -195,22 +174,6 @@ Page({
       regionId: that.data.regionList[idx].department_id
     }, () => {
       if (that.data.regionIdx != 0) {
-        that.initSubRegionList(that.fetchSubRegionList)
-      } else {
-        that.initSubRegionList()
-      }
-      that.fetchTaskList()
-    })
-  },
-
-  bindSubRegionChange: function (e) {
-    var idx = e.detail.value
-    var that = this
-    that.setData({
-      subRegionIdx: idx,
-      subRegionId: that.data.subRegionList[idx].department_sub_id
-    }, () => {
-      if (that.data.subRegionIdx != 0) {
         that.initProjectList(that.fetchProjectList)
       } else {
         that.initProjectList()
@@ -251,16 +214,6 @@ Page({
     }, this.fetchTaskList)
   },
 
-  initSubRegionList: function (fn) {
-    this.setData({
-      subRegionList: [{"name": "请选择公司", "department_id": 0}],
-      subRegionIdx: 0,
-      subRegionId: 0
-    }, () => {
-      if (fn) { fn() }
-    })
-  },
-
   initProjectList: function (fn) {
     this.setData({
       projectList: [{"name": "请选择项目", "project_id": 0}],
@@ -273,7 +226,7 @@ Page({
 
   initSubProjectList: function (fn) {
     this.setData({
-      subProjectList: [{"name": "请选择子项目", "project_id": 0}],
+      subProjectList: [{"name": "请选择子项目", "project_sub_id": 0}],
       subProIdx: 0,
       subProjectId: 0
     }, () => {
@@ -320,7 +273,6 @@ Page({
     }
     console.log(that.data)
     if (that.data.regionIdx != 0) {data["department_id"] = that.data.regionId}
-    if (that.data.subRegionIdx != 0) {data["department_sub_id"] = that.data.subRegionId}
     if (that.data.projectId != 0) {data["project_id"] = that.data.projectId}
     if (that.data.subProjectId != 0) {data["project_sub_id"] = that.data.subProjectId}
     if (that.data.systemId != 0) {data["industry_id"] = that.data.systemId}

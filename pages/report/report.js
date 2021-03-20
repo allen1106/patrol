@@ -25,9 +25,6 @@ Page({
     regionList: [{"name": "请选择公司", "department_id": 0}],
     regionIdx: 0,
     regionId: 0,
-    subRegionList: [{"name": "请选择子公司", "sub_department_id": 0}],
-    subRegionIdx: 0,
-    subRegionId: 0,
     projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
     projectId: 0,
@@ -47,10 +44,8 @@ Page({
     memberList1: {},
     memberCheckedList1: [],
     title: "",
-    position: "",
     solve: "",
     term: "",
-    content: "",
     didx: 0,
     //最多可上传的图片数量
     count: 3,
@@ -58,7 +53,8 @@ Page({
     image1List: [],
     fileUrl: '',
     comments: [],
-    checkboxDisable: false
+    checkboxDisable: false,
+    rejectRes: ''
   },
 
   /**
@@ -86,10 +82,8 @@ Page({
       that.fetchQuesList()
       that.setData({
         title: app.globalData.title,
-        position: app.globalData.position,
         solve: app.globalData.solve,
         term: app.globalData.term,
-        content: app.globalData.content,
       })
     } else {
       that.setData({
@@ -180,10 +174,8 @@ Page({
     var that = this
     if (that.data.id == 0) {
       app.globalData.title = that.data.title
-      app.globalData.position = that.data.position
       app.globalData.solve = that.data.solve
       app.globalData.term = that.data.term
-      app.globalData.content = that.data.content
     }
   },
 
@@ -439,13 +431,7 @@ Page({
 
   forceSelectManager: function (lastRegionId) {
     var that = this
-    var did = Number(that.data.subRegionId)
-    // for (var i in that.data.memberList[did]) {
-    //   if (that.data.memberList[did][i].flag == 1) {
-    //     that.data.memberList[did][i].checked = true
-    //     that.data.memberList[did][i].disabled = true
-    //   }
-    // }
+    var did = Number(that.data.regionId)
     for (var i in that.data.memberList1) {
       for (var j in that.data.memberList1[i]) {
         if (lastRegionId) {
@@ -458,12 +444,6 @@ Page({
         }
       }
     }
-    // for (var i in that.data.memberList1[did]) {
-    //   if (that.data.memberList1[did][i].flag == 1) {
-    //     that.data.memberList1[did][i].checked = true
-    //     that.data.memberList1[did][i].disabled = true
-    //   }
-    // }
     that.setData({
       memberList: that.data.memberList,
       memberList1: that.data.memberList1
@@ -502,9 +482,8 @@ Page({
 
   validateInfo: function (data) {
     if (!data['title']) return '问题简述'
-    if (!data['position']) return '部位'
     if (!data['term']) return '处理期限'
-    if (data['report_id'] == 0 && data['project_sub_id'] == 0) return '区域和项目'
+    if (data['report_id'] == 0 && data['project_sub_id'] == 0) return '公司和项目'
     if (data['report_id'] == 0 && data['industry_id'] == 0) return '专业'
     return 'success'
   },
@@ -531,13 +510,10 @@ Page({
     var data = {
       userid: wx.getStorageSync('userId'),
       task_time: util.formatTime(new Date()),
-      position: value.position,
       title: value.title,
       solve: value.solve,
       term: value.term,
-      content: value.content,
       department_id: that.data.regionId,
-      department_sub_id: that.data.subRegionId,
       project_id: that.data.projectId,
       project_sub_id: that.data.subProjectId,
       industry_id: that.data.systemId,
@@ -555,7 +531,7 @@ Page({
       })
       return
     }
-    let did = that.data.subRegionId
+    let did = that.data.regionId
     let flag = false
     for (var i in that.data.memberList[did]) {
       if (that.data.memberList[did][i].flag == 1 && that.data.memberList[did][i].checked == false) {
@@ -639,7 +615,7 @@ Page({
     var that = this
     api.phpRequest({
       url: "report_reject.php",
-      data: {'report_id': that.data.id, 'userid': wx.getStorageSync('userId')},
+      data: {'report_id': that.data.id, 'userid': wx.getStorageSync('userId'), 'content': that.data.rejectRes || ''},
       method: 'post',
       header: {'content-type': 'application/x-www-form-urlencoded'},
       success: function (res) {
@@ -776,16 +752,12 @@ Page({
       success: function (res) {
         if (res.data.status == 1) {
           app.globalData.title = ''
-          app.globalData.position = ''
           app.globalData.solve = ''
           app.globalData.term = ''
-          app.globalData.content = ''
           that.setData({
             title: '',
-            position: '',
             solve: '',
             term: '',
-            content: '',
           })
           wx.showToast({
             title: '提交成功',
@@ -850,55 +822,6 @@ Page({
   })
   },
 
-  // fetchRegionList: function () {
-  //   var that = this
-  //   // 获取部门信息
-  //   api.phpRequest({
-  //     url: 'department.php',
-  //     success: function (res) {
-  //       var departList = util.formatDepartment(res.data)
-  //       departList = departList.slice(1)
-  //       departList = that.data.regionList.concat(departList)
-  //       that.setData({
-  //         regionList: departList
-  //       }, () => {
-  //         if (that.data.regionIdx != 0) {
-  //           that.fetchProjectList(() => {
-  //             if (app.globalData.proIdx != 0) {
-  //               that.setData({
-  //                 proIdx: app.globalData.proIdx,
-  //                 projectId: that.data.projectList[app.globalData.proIdx].project_id
-  //               })
-  //             }
-  //           })
-  //         }
-  //       })
-  //     }
-  //   })
-  // },
-
-  // fetchProjectList: function (fn1, fn2) {
-  //   var that = this;
-  //   api.phpRequest({
-  //     url: 'project.php',
-  //     data: {
-  //       userid: wx.getStorageSync('userId'),
-  //       qymc: that.data.regionList[that.data.regionIdx]
-  //     },
-  //     success: function (res) {
-  //       var list = res.data
-  //       list = that.data.projectList.concat(list)
-  //       that.setData({
-  //         projectList: list
-  //       })
-  //       if (fn1) {
-  //         fn1(fn2)
-  //       }
-  //     }
-  //   })
-  // },
-
-
   fetchRegionList: function () {
     var that = this
     // 获取部门信息
@@ -915,36 +838,8 @@ Page({
           that.setData({
             regionIdx: app.globalData.regionIdx,
             regionId: regionObj.department_id
-          }, that.fetchSubRegionList)
+          }, that.fetchProjectList)
         }
-      }
-    })
-  },
-
-  fetchSubRegionList: function () {
-    var that = this
-    // 获取部门信息
-    api.phpRequest({
-      url: 'department_sub.php',
-      data: {
-        'department_id': that.data.regionId
-      },
-      success: function (res) {
-        var list = res.data
-        list = that.data.subRegionList.concat(list)
-        that.setData({
-          subRegionList: list
-        }, () => {
-          if (app.globalData.subRegionIdx != 0) {
-            let subRegionObj = list[app.globalData.subRegionIdx]
-            that.setData({
-              subRegionIdx: app.globalData.subRegionIdx,
-              subRegionId: subRegionObj.department_sub_id
-            }, () => {
-              that.fetchProjectList()
-            })
-          }
-        })
       }
     })
   },
@@ -955,7 +850,7 @@ Page({
     api.phpRequest({
       url: 'project.php',
       data: {
-        'department_sub_id': that.data.subRegionId
+        'department_id': that.data.regionId
       },
       success: function (res) {
         var list = res.data
@@ -1063,25 +958,6 @@ Page({
       app.globalData.regionIdx = idx
       console.log(app.globalData)
       if (that.data.regionIdx != 0) {
-        that.initSubRegionList(that.fetchSubRegionList)
-      } else {
-        that.initSubRegionList()
-      }
-    })
-  },
-
-  bindSubRegionChange: function (e) {
-    var idx = e.detail.value
-    var that = this
-    var lastRegionId = that.data.subRegionId
-    that.setData({
-      subRegionIdx: idx,
-      subRegionId: that.data.subRegionList[idx].department_sub_id
-    }, () => {
-      that.forceSelectManager(lastRegionId)
-      app.globalData.subRegionIdx = idx
-      console.log(app.globalData)
-      if (that.data.subRegionIdx != 0) {
         that.initProjectList(that.fetchProjectList)
       } else {
         that.initProjectList()
@@ -1092,12 +968,13 @@ Page({
   bindProjectChange: function (e) {
     var idx = e.detail.value
     var that = this
+    var lastRegionId = that.data.regionId
     that.setData({
       proIdx: idx,
       projectId: this.data.projectList[idx].project_id
     }, () => {
+      that.forceSelectManager(lastRegionId)
       app.globalData.proIdx = idx
-      console.log(app.globalData)
       if (that.data.proIdx != 0) {
         that.initSubProjectList(that.fetchSubProjectList)
       } else {
@@ -1113,17 +990,6 @@ Page({
       subProjectId: this.data.subProjectList[idx].project_sub_id
     })
     app.globalData.subProIdx = idx
-  },
-
-  initSubRegionList: function (fn) {
-    this.setData({
-      subRegionList: [{"name": "请选择公司", "department_id": 0}],
-      subRegionIdx: 0,
-      subRegionId: 0
-    }, () => {
-      app.globalData.subRegionIdx = 0
-      if (fn) { fn() }
-    })
   },
 
   initProjectList: function (fn) {
@@ -1178,18 +1044,6 @@ Page({
     })
   },
   
-  bindSetPosition: function (res) {
-    var that = this
-    that.bindInput = (res) => {
-      that.setData({
-        position: res
-      })
-    }
-    manager.start({
-      lang: "zh_CN"
-    })
-  },
-  
   bindSetSolve: function (res) {
     var that = this
     that.bindInput = (res) => {
@@ -1201,12 +1055,12 @@ Page({
       lang: "zh_CN"
     })
   },
-  
-  bindSetContent: function (res) {
+
+  bindSetRejectRes: function (res) {
     var that = this
     that.bindInput = (res) => {
       that.setData({
-        content: res
+        rejectRes: res
       })
     }
     manager.start({
@@ -1215,7 +1069,6 @@ Page({
   },
 
   bindTouchUp: function () {
-    var that = this
     manager.stop()
     wx.showToast({
       title: '正在解析……',
@@ -1230,12 +1083,6 @@ Page({
     })
   },
   
-  bindInputPosition: function (e) {
-    this.setData({
-      position: e.detail.value
-    })
-  },
-  
   bindInputSolve: function (e) {
     this.setData({
       solve: e.detail.value
@@ -1247,10 +1094,10 @@ Page({
       term: e.detail.value
     })
   },
-  
-  bindInputContent: function (e) {
+
+  bindInputRejectRes: function (e) {
     this.setData({
-      content: e.detail.value
+      rejectRes: e.detail.value
     })
-  },
+  }
 })
