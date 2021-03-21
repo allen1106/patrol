@@ -20,9 +20,6 @@ Page({
     projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
     projectId: 0,
-    subProjectList: [{"name": "请选择区域", "sub_project_id": 0}],
-    subProIdx: 0,
-    subProjectId: 0,
     systemList: [{"name": "请选择专业", "industry_id": 0}],
     sysIdx: 0,
     systemId: 0,
@@ -111,24 +108,6 @@ Page({
     })
   },
 
-  fetchSubProjectList: function () {
-    var that = this
-    // 获取子项目列表
-    api.phpRequest({
-      url: 'project_sub.php',
-      data: {
-        'project_id': that.data.projectId
-      },
-      success: function (res) {
-        var list = res.data
-        list = that.data.subProjectList.concat(list)
-        that.setData({
-          subProjectList: list
-        })
-      }
-    })
-  },
-
   fetchSystemList: function (fn) {
     return new Promise(resolve => {
       var that = this;
@@ -188,22 +167,7 @@ Page({
     that.setData({
       proIdx: idx,
       projectId: this.data.projectList[idx].project_id
-    }, () => {
-      if (that.data.proIdx != 0) {
-        that.initSubProjectList(that.fetchSubProjectList)
-      } else {
-        that.initSubProjectList()
-      }
-      that.fetchTaskList()
-    })
-  },
-
-  bindSubProjectChange: function (e) {
-    var idx = e.detail.value
-    this.setData({
-      subProIdx: idx,
-      subProjectId: this.data.subProjectList[idx].project_sub_id
-    }, this.fetchTaskList)
+    }, that.fetchTaskList)
   },
 
   bindQuesChange: function (e) {
@@ -219,16 +183,6 @@ Page({
       projectList: [{"name": "请选择项目", "project_id": 0}],
       proIdx: 0,
       projectId: 0
-    }, () => {
-      if (fn) { fn() }
-    })
-  },
-
-  initSubProjectList: function (fn) {
-    this.setData({
-      subProjectList: [{"name": "请选择子项目", "project_sub_id": 0}],
-      subProIdx: 0,
-      subProjectId: 0
     }, () => {
       if (fn) { fn() }
     })
@@ -274,7 +228,6 @@ Page({
     console.log(that.data)
     if (that.data.regionIdx != 0) {data["department_id"] = that.data.regionId}
     if (that.data.projectId != 0) {data["project_id"] = that.data.projectId}
-    if (that.data.subProjectId != 0) {data["project_sub_id"] = that.data.subProjectId}
     if (that.data.systemId != 0) {data["industry_id"] = that.data.systemId}
     if (that.data.quesId != 0) {data["problem_id"] = that.data.quesId}
     if (that.data.startDate != "请选择开始时间") {data["startDate"] = that.data.startDate}

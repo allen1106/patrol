@@ -28,9 +28,6 @@ Page({
     projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
     projectId: 0,
-    subProjectList: [{"name": "请选择区域", "sub_project_id": 0}],
-    subProIdx: 0,
-    subProjectId: 0,
     systemList: [{"name": "请选择专业", "industry_id": 0}],
     sysIdx: 0,
     systemId: 0,
@@ -515,7 +512,6 @@ Page({
       term: value.term,
       department_id: that.data.regionId,
       project_id: that.data.projectId,
-      project_sub_id: that.data.subProjectId,
       industry_id: that.data.systemId,
       problem_id: that.data.quesId,
       report_id: that.data.id,
@@ -863,32 +859,6 @@ Page({
             that.setData({
               proIdx: app.globalData.proIdx,
               projectId: proObj.project_id
-            }, that.fetchSubProjectList)
-          }
-        })
-      }
-    })
-  },
-
-  fetchSubProjectList: function () {
-    var that = this
-    // 获取子项目列表
-    api.phpRequest({
-      url: 'project_sub.php',
-      data: {
-        'project_id': that.data.projectId
-      },
-      success: function (res) {
-        var list = res.data
-        list = that.data.subProjectList.concat(list)
-        that.setData({
-          subProjectList: list
-        }, () => {
-          if (app.globalData.subProIdx) {
-            let proObj = list[app.globalData.subProIdx]
-            that.setData({
-              subProIdx: app.globalData.subProIdx,
-              subProjectId: proObj.project_sub_id
             })
           }
         })
@@ -951,10 +921,12 @@ Page({
   bindRegionChange: function (e) {
     var idx = e.detail.value
     var that = this
+    var lastRegionId = that.data.regionId
     that.setData({
       regionIdx: idx,
       regionId: that.data.regionList[idx].department_id
     }, () => {
+      that.forceSelectManager(lastRegionId)
       app.globalData.regionIdx = idx
       console.log(app.globalData)
       if (that.data.regionIdx != 0) {
@@ -968,28 +940,12 @@ Page({
   bindProjectChange: function (e) {
     var idx = e.detail.value
     var that = this
-    var lastRegionId = that.data.regionId
     that.setData({
       proIdx: idx,
       projectId: this.data.projectList[idx].project_id
     }, () => {
-      that.forceSelectManager(lastRegionId)
       app.globalData.proIdx = idx
-      if (that.data.proIdx != 0) {
-        that.initSubProjectList(that.fetchSubProjectList)
-      } else {
-        that.initSubProjectList()
-      }
     })
-  },
-
-  bindSubProjectChange: function (e) {
-    var idx = e.detail.value
-    this.setData({
-      subProIdx: idx,
-      subProjectId: this.data.subProjectList[idx].project_sub_id
-    })
-    app.globalData.subProIdx = idx
   },
 
   initProjectList: function (fn) {
@@ -999,17 +955,6 @@ Page({
       projectId: 0
     }, () => {
       app.globalData.proIdx = 0
-      if (fn) { fn() }
-    })
-  },
-
-  initSubProjectList: function (fn) {
-    this.setData({
-      subProjectList: [{"name": "请选择子项目", "project_id": 0}],
-      subProIdx: 0,
-      subProjectId: 0
-    }, () => {
-      app.globalData.subProIdx = 0
       if (fn) { fn() }
     })
   },

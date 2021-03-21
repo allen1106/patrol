@@ -24,14 +24,6 @@
         </view>
       </picker>
     </view>
-    <view class="sub-project">
-      <picker bindchange="bindSubProjectChange" value="{{subProIdx}}" range="{{subProjectList}}" range-key="name">
-        <view class="picker">
-          <text>{{subProjectList[subProIdx].name}}</text>
-          <image src="/imgs/down.png"></image>
-        </view>
-      </picker>
-    </view>
   </view>
   <view class="nav" wx:if="{{id == 0}}">
     <view class="system">
