@@ -18,9 +18,6 @@
       <text>项目名称：{{reportInfo.xmmc}}</text>
     </view>
     <view>
-      <text>子项目名称：{{reportInfo.sub_xmmc}}</text>
-    </view>
-    <view>
       <text>专业名称：{{reportInfo.zymc}}</text>
       <text>问题类型：{{reportInfo.wtlx}}</text>
     </view>
@@ -41,10 +38,6 @@
     <view class="item-wrapper">
       <view class="label">问题简述</view>
       <view class="input">{{reportInfo.title}}</view>
-    </view>
-    <view class="item-wrapper">
-      <view class="label">部位</view>
-      <view class="input">{{reportInfo.position}}</view>
     </view>
     <view class="item-wrapper">
       <view class="small-label">添加照片</view>
@@ -80,10 +73,6 @@
     <view class="item-wrapper">
       <view class="label">处理期限(天)</view>
       <view class="input">{{reportInfo.term}}</view>
-    </view>
-    <view class="item-wrapper">
-      <view class="label">备注</view>
-      <view class="input">{{reportInfo.content || ''}}</view>
     </view>
   </view>
   <view class="item-wrapper" wx:if="{{!isFb}}">

@@ -4,7 +4,6 @@
     <view class="title">{{reportInfo.head_title}}</view>
     <view class="opt-wrapper">
       <image bindtap="download" src="/imgs/report/2.png"></image>
-      <!-- <image src="/imgs/regist_name.png"></image> -->
     </view>
   </view>
   <view class="nav" wx:if="{{id == 0}}">
@@ -56,9 +55,6 @@
     </view>
     <view>
       <text>项目名称：{{reportInfo.xmmc}}</text>
-    </view>
-    <view>
-      <text>子项目名称：{{reportInfo.sub_xmmc}}</text>
     </view>
     <view>
       <text>专业名称：{{reportInfo.zymc}}</text>
