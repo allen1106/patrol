@@ -69,11 +69,7 @@
         <view class="img-upload-container" data-index="1">
           <view class="img-preview-container" wx:for="{{image1List}}" wx:key="index">
             <image class="img-preview" src="{{image1List[index]}}" data-src="{{image1List[index]}}" data-index="1" bindtap="previewImage"></image>
-            <!-- <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{imageList[index]}}" data-index="1"></image> -->
           </view>
-          <!-- <view class="img-preview-container" data-index="1" bindtap="chooseImage" wx:if="{{image1List.length < count}}">
-            <image class="img-preview" src="/imgs/report/1.png"></image>
-          </view> -->
         </view>
       </view>
     </view>

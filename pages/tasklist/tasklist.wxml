@@ -94,12 +94,100 @@
 </view>
 
 <view class="btn-wrapper" wx:if="{{showCheckbox}}">
-  <view class="btn-cancel" bindtap="hideCheckbox">
+  <view class="btn-cancel btn" bindtap="hideCheckbox">
     <image src="/imgs/report/cancel.png"></image>
     <text>取消</text>
   </view>
-  <view class="btn-download" bindtap="bindBatchDownload">
+  <view class="btn-download btn" bindtap="bindBatchDownload">
     <image src="/imgs/report/download.png"></image>
     <text>下载</text>
+  </view>
+  <view class="btn-download btn" bindtap="bindShowAssign">
+    <image src="/imgs/report/download.png"></image>
+    <text>勾选并发布</text>
+  </view>
+</view>
+
+<view class="btn-wrapper assign-panel" wx:if="{{showAssign}}">
+  <view class="assign" wx:if="{{id==0 || isFb==0}}">
+    <view class="title">
+      <text class="{{currentTab==0 ? 'active' : ''}}" bindtap="switchAssignTab" data-tab="0">推送给：</text>
+      <text class="{{currentTab==1 ? 'active' : ''}}" bindtap="switchAssignTab" data-tab="1">抄送给：</text>
+    </view>
+
+    <scroll-view wx:if="{{currentTab==0}}" class="scroll-view-common name-pannel" scroll-y>
+      <block wx:for="{{memberRegionList}}" wx:for-item="regionObj" wx:for-index="ridx">
+        <block wx:for="{{regionObj.departList}}" wx:for-item="departObj" wx:for-index="didx">
+          <block wx:for="{{departObj.memberList}}" wx:for-item="memberObj" wx:for-index="midx">
+            <view class="member-item" wx:if="{{memberObj.checked}}">
+              <image src="/imgs/report/delete.png" bindtap="delMember" data-ridx="{{ridx}}" data-didx="{{didx}}" data-midx="{{midx}}"></image>
+              <text>{{memberObj.realname}}</text>
+            </view>
+          </block>
+        </block>
+      </block>
+    </scroll-view>
+
+    <scroll-view wx:if="{{currentTab==1}}" class="scroll-view-common name-pannel" scroll-y>
+      <block wx:for="{{memberRegionList}}" wx:for-item="regionObj" wx:for-index="ridx">
+        <block wx:for="{{regionObj.departList}}" wx:for-item="departObj" wx:for-index="didx">
+          <block wx:for="{{departObj.memberList}}" wx:for-item="memberObj" wx:for-index="midx">
+            <view class="member-item" wx:if="{{memberObj.checked1}}">
+              <image src="/imgs/report/delete.png" bindtap="delMember" data-ridx="{{ridx}}" data-didx="{{didx}}" data-midx="{{midx}}"></image>
+              <text>{{memberObj.realname}}</text>
+            </view>
+          </block>
+        </block>
+      </block>
+    </scroll-view>
+
+    <view class="depart-wrapper">
+      <scroll-view class="scroll-view-common depart-pannel" scroll-y>
+        <view class="region-item {{curRegionIdx == ridx ? 'active': ''}}" wx:for="{{memberRegionList}}" wx:for-index="ridx" wx:for-item="regionObj" bindtap="bindClickRegion" data-idx="{{ridx}}">
+          {{regionObj.name}}
+        </view>
+      </scroll-view>
+      <scroll-view class="scroll-view-common depart-pannel" scroll-y>
+        <view class="depart-item {{curDepartIdx == didx ? 'active': ''}}" wx:for="{{memberRegionList[curRegionIdx].departList}}" wx:for-index="didx" wx:for-item="departObj" bindtap="bindClickDepart" data-didx="{{didx}}">
+          <text>{{departObj.name}}</text>
+          <text style="font-size: 28rpx;">></text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="btn-pannel">
+      <view class="btn-cancel btn" bindtap="hideShowAssign">
+        <image src="/imgs/report/cancel.png"></image>
+        <text>取消</text>
+      </view>
+      <view class="btn-download btn" bindtap="bindBatchPost">
+        <image src="/imgs/report/download.png"></image>
+        <text>发布</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+
+<view class="mask" wx:if="{{showMember}}">
+  <view class="member-pannel">
+    <view class="title">事业部本部--技发部</view>
+    <view class="search-pannel">
+      <view class="input-pannel">
+        <image src="/imgs/report/ci-yqi-search.svg"></image>
+        <input placeholder="搜索" bindinput="searchName"></input>
+      </view>
+      <view class="btn-cancel" bindtap="bindHideMask">取消</view>
+    </view>
+    <view class="choose-pannel">
+      <checkbox-group bindchange="bindPickMember">
+        <block wx:for="{{memberRegionList[curRegionIdx].departList[curDepartIdx].memberList}}" wx:key="index" wx:for-index="midx" wx:for-item="member">
+          <view class="checkbox" wx:if="{{!member.hide}}">
+          <checkbox wx:if="{{currentTab==0}}" value="{{member.id}}" checked="{{member.checked}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
+          <checkbox wx:if="{{currentTab==1}}" value="{{member.id}}" checked="{{member.checked1}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
+          </view>
+        </block>
+      </checkbox-group>
+    </view>
   </view>
 </view>
