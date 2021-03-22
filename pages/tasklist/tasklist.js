@@ -351,9 +351,24 @@ Page({
     })
   },
   checkboxChange: function (e) {
+    let that = this
+    let oldReportIds = that.data.reportIds
+    let submitList = that.data.submitList
     var rids = e.detail.value
+    let oldReportId = oldReportIds && oldReportIds[oldReportIds.length - 1] || 0
+    let newReportId = rids && rids[rids.length - 1] || 0
+    let oldRegionId, newRegionId = 0
+    for (let i in submitList) {
+      if (submitList[i].id == oldReportId) oldRegionId = submitList[i].department_id
+      if (submitList[i].id == newReportId) newRegionId = submitList[i].department_id
+    }
+    console.log("======")
+    console.log(oldRegionId, newRegionId)
     this.setData({
-      reportIds: rids
+      reportIds: rids,
+      checkedRegionId: newRegionId
+    }, () => {
+      that.forceSelectManager(oldRegionId)
     })
   },
   bindBatchDownload: function () {
@@ -515,7 +530,7 @@ Page({
 
   forceSelectManager: function (lastRegionId) {
     var that = this
-    var did = Number(that.data.regionId)
+    var did = Number(that.data.checkedRegionId)
 
     for (let i in that.data.memberRegionList) {
       let depart = that.data.memberRegionList[i]
@@ -543,13 +558,13 @@ Page({
   getCheckedMember: function () {
     let that = this
     let ret = {'pjr_id': [], 'csr_id': []}
-    let {memberRegionList, regionId} = that.data
+    let {memberRegionList, checkedRegionId} = that.data
     for (let i in memberRegionList) {
       for (let j in memberRegionList[i].departList) {
         for (let k in memberRegionList[i].departList[j].memberList) {
           let memberObj = memberRegionList[i].departList[j].memberList[k]
 
-          if (memberRegionList[i].department_id == regionId && memberObj.flag == 1 && (!memberObj.checked || !memberObj.checked1)) {
+          if (memberRegionList[i].department_id == checkedRegionId && memberObj.flag == 1 && (!memberObj.checked || !memberObj.checked1)) {
             wx.showToast({
               title: '必须勾选当前公司的负责人',
               icon: 'none',
@@ -591,7 +606,7 @@ Page({
             title: '处理成功',
             icon: 'success',
             success: function () {
-              setTimeout(that.bindBackToIndex, 1500);
+              that.hideShowAssign()
             }
           })
         } else {
