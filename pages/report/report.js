@@ -123,6 +123,7 @@ Page({
         })
       }
     }
+    that.fetchRegionList()
   },
 
   onShow: function () {
