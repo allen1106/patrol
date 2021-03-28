@@ -20,8 +20,6 @@ Page({
     id: 0,
     reportInfo: null,
     isFb: 0,
-    departmentList: {},
-    departmentList1: {},
     regionList: [{"name": "请选择公司", "department_id": 0}],
     regionIdx: 0,
     regionId: 0,
@@ -34,12 +32,6 @@ Page({
     quesList: [{"name": "请选择问题类型", "ques_id": 0}],
     quesIdx: 0,
     quesId: 0,
-    selectAll: {},
-    memberList: {},
-    memberCheckedList: [],
-    selectAll1: {},
-    memberList1: {},
-    memberCheckedList1: [],
     title: "",
     solve: "",
     term: "",
@@ -51,7 +43,12 @@ Page({
     fileUrl: '',
     comments: [],
     checkboxDisable: false,
-    rejectRes: ''
+    rejectRes: '',
+    memberRegionList: [],
+    curRegionIdx: 0,
+    curDepartIdx: 0,
+    showMember: 0,
+    currentTab: 0,
   },
 
   /**
@@ -126,30 +123,6 @@ Page({
         })
       }
     }
-    // 获取部门信息
-    api.phpRequest({
-      url: 'department_sub_list.php',
-      success: function (res) {
-        for (let i in res.data) {
-          let key = res.data[i].department_id
-          if (res.data[i].type == 0) {
-            that.data.departmentList[key] = res.data[i]
-          } else if (res.data[i].type == 1) {
-            that.data.departmentList1[key] = res.data[i]
-          } else {
-            that.data.departmentList[key] = res.data[i]
-            that.data.departmentList1[key] = res.data[i]
-          }
-        }
-        that.setData({
-          departmentList: that.data.departmentList,
-          departmentList1: that.data.departmentList1,
-        }, () => {
-          that.fetchMemberListWrapper()
-          that.fetchMemberListWrapper1()
-        })
-      }
-    })
   },
 
   onShow: function () {
@@ -227,261 +200,6 @@ Page({
     }
   },
 
-  fetchMemberListWrapper: function () {
-    var that = this
-    if (that.data.id != 0) {
-      api.phpRequest({
-        url: 'report_cs.php',
-        data: {
-          report_id: that.data.id
-        },
-        success: function (res) {
-          console.log(res.data)
-          that.setData({
-            memberCheckedList: res.data
-          }, that.fetchMemberList)
-        }
-      })
-    } else {
-      if (app.globalData.members) {
-        that.setData({
-          memberList: app.globalData.members,
-          selectAll: app.globalData.selectAll
-        })
-      } else {
-        that.fetchMemberList()
-      }
-    }
-  },
-
-  fetchMemberListWrapper1: function () {
-    var that = this
-    if (that.data.id != 0) {
-      api.phpRequest({
-        url: 'report_cs1.php',
-        data: {
-          report_id: that.data.id
-        },
-        success: function (res) {
-          console.log(res.data)
-          that.setData({
-            memberCheckedList1: res.data
-          }, that.fetchMemberList1)
-        }
-      })
-    } else {
-      if (app.globalData.members1) {
-        that.setData({
-          memberList1: app.globalData.members1,
-          selectAll1: app.globalData.selectAll1
-        })
-      } else {
-        that.fetchMemberList1()
-      }
-    }
-  },
-
-  fetchMemberList: function () {
-    var that = this
-    for (var i in that.data.departmentList) {
-      let key = that.data.departmentList[i].department_id
-      that.data.memberList[key] = []
-      that.data.selectAll[key] = false
-      that.fetchMember(key)
-    }
-  },
-
-  fetchMemberList1: function () {
-    var that = this
-    for (var i in that.data.departmentList1) {
-      let key = that.data.departmentList1[i].department_id
-      that.data.memberList1[key] = []
-      that.data.selectAll1[key] = false
-      that.fetchMember1(key)
-    }
-  },
-
-  fetchMember: function (did) {
-    var that = this
-    api.phpRequest({
-      url: 'user.php',
-      data: {
-        departmentid: did
-      },
-      success: function (res) {
-        var flag = 0
-        for (var j in res.data) {
-          if (that.data.memberCheckedList.indexOf(res.data[j].id) != -1) {
-            res.data[j].checked = true
-            flag++
-          }
-        }
-        that.data.selectAll[did] = res.data.length != 0 && res.data.length == flag
-        that.data.memberList[did] = res.data
-        that.setData({
-          memberList: that.data.memberList,
-          selectAll: that.data.selectAll
-        }, () => {
-          that.forceSelectManager(0)
-        })
-      }
-    })
-  },
-
-  fetchMember1: function (did) {
-    var that = this
-    api.phpRequest({
-      url: 'user.php',
-      data: {
-        departmentid: did
-      },
-      success: function (res) {
-        var flag = 0
-        for (var j in res.data) {
-          if (that.data.memberCheckedList1.indexOf(res.data[j].id) != -1) {
-            res.data[j].checked = true
-            flag++
-          }
-        }
-        that.data.selectAll1[did] = res.data.length != 0 && res.data.length == flag
-        that.data.memberList1[did] = res.data
-        that.setData({
-          memberList1: that.data.memberList1,
-          selectAll1: that.data.selectAll1
-        }, () => {
-          that.forceSelectManager(0)
-        })
-      }
-    })
-  },
-
-  bindSelectAll: function (e) {
-    var that = this
-    var did = e.currentTarget.dataset.sidx
-    var isAll = that.data.selectAll[did]
-    that.data.selectAll[did] = !isAll
-    var memberOjbs = that.data.memberList[did]
-    for (var i in memberOjbs) {
-      if (memberOjbs[i].disabled) {
-        continue
-      }
-      memberOjbs[i]["checked"] = !isAll
-    }
-    that.setData({
-      memberList: that.data.memberList,
-      selectAll: that.data.selectAll
-    })
-  },
-
-  bindSelectAll1: function (e) {
-    var that = this
-    var did = e.currentTarget.dataset.sidx
-    var isAll = that.data.selectAll1[did]
-    that.data.selectAll1[did] = !isAll
-    var memberOjbs = that.data.memberList1[did]
-    for (var i in memberOjbs) {
-      if (memberOjbs[i].disabled) {
-        continue
-      }
-      memberOjbs[i]["checked"] = !isAll
-    }
-    that.setData({
-      memberList1: that.data.memberList1,
-      selectAll1: that.data.selectAll1
-    })
-  },
-
-  bindSelect: function (e) {
-    var that = this
-    var value = e.currentTarget.dataset
-    var memberOjbs = that.data.memberList[value.sidx]
-    memberOjbs[value.midx]["checked"] = !memberOjbs[value.midx]["checked"]
-    that.setData({
-      memberList: that.data.memberList
-    })
-    var flag = 0
-    for (var i in that.data.memberList[value.sidx]) {
-      if (that.data.memberList[value.sidx][i].checked) {
-        flag++
-      }
-    }
-    that.data.selectAll[value.sidx] = that.data.memberList[value.sidx].length != 0 && that.data.memberList[value.sidx].length == flag
-    that.setData({
-      selectAll: that.data.selectAll
-    })
-  },
-
-  bindSelect1: function (e) {
-    var that = this
-    var value = e.currentTarget.dataset
-    var memberOjbs = that.data.memberList1[value.sidx]
-    memberOjbs[value.midx]["checked"] = !memberOjbs[value.midx]["checked"]
-    that.setData({
-      memberList1: that.data.memberList1
-    })
-    var flag = 0
-    for (var i in that.data.memberList1[value.sidx]) {
-      if (that.data.memberList1[value.sidx][i].checked) {
-        flag++
-      }
-    }
-    that.data.selectAll1[value.sidx] = that.data.memberList1[value.sidx].length != 0 && that.data.memberList1[value.sidx].length == flag
-    that.setData({
-      selectAll1: that.data.selectAll1
-    })
-  },
-
-  forceSelectManager: function (lastRegionId) {
-    var that = this
-    var did = Number(that.data.regionId)
-    for (var i in that.data.memberList1) {
-      for (var j in that.data.memberList1[i]) {
-        if (lastRegionId) {
-          that.data.memberList1[i][j].checked = false
-          that.data.memberList1[i][j].disabled = false
-        }
-        if ((did == i && that.data.memberList1[i][j].flag == 1) || that.data.memberList1[i][j].extra_depart.indexOf(did) != -1) {
-          that.data.memberList1[i][j].checked = true
-          that.data.memberList1[i][j].disabled = true
-        }
-      }
-    }
-    that.setData({
-      memberList: that.data.memberList,
-      memberList1: that.data.memberList1
-    })
-  },
-
-  getCheckedMember: function (e) {
-    var ret = []
-    app.globalData.members = this.data.memberList
-    app.globalData.selectAll = this.data.selectAll
-    for (var i in this.data.memberList) {
-      for (var j in this.data.memberList[i]) {
-        if (this.data.memberList[i][j]["checked"]) {
-          ret.push(this.data.memberList[i][j]["id"])
-        }
-      }
-    }
-    console.log(ret)
-    return ret
-  },
-
-  getCheckedMember1: function (e) {
-    var ret = []
-    app.globalData.members1 = this.data.memberList1
-    app.globalData.selectAll1 = this.data.selectAll1
-    for (var i in this.data.memberList1) {
-      for (var j in this.data.memberList1[i]) {
-        if (this.data.memberList1[i][j]["checked"]) {
-          ret.push(this.data.memberList1[i][j]["id"])
-        }
-      }
-    }
-    console.log(ret)
-    return ret
-  },
-
   validateInfo: function (data) {
     if (!data['title']) return '问题简述'
     if (!data['term']) return '处理期限'
@@ -509,6 +227,11 @@ Page({
     }
 
     var url = btnId == "0" ? 'report_save.php' : 'report_submit.php'
+
+    let checkedMem = that.getCheckedMember()
+    if (!checkedMem) return
+    let {pjr_id, csr_id} = checkedMem
+
     var data = {
       userid: wx.getStorageSync('userId'),
       task_time: util.formatTime(new Date()),
@@ -520,8 +243,8 @@ Page({
       industry_id: that.data.systemId,
       problem_id: that.data.quesId,
       report_id: that.data.id,
-      pjr_id: that.getCheckedMember(),
-      csr_id: that.getCheckedMember1()
+      pjr_id: pjr_id,
+      csr_id: csr_id
     }
     console.log(data)
     var valid = that.validateInfo(data)
@@ -532,25 +255,7 @@ Page({
       })
       return
     }
-    let did = that.data.regionId
-    let flag = false
-    for (var i in that.data.memberList[did]) {
-      if (that.data.memberList[did][i].flag == 1 && that.data.memberList[did][i].checked == false) {
-        flag = true
-      }
-    }
-    for (var i in that.data.memberList1[did]) {
-      if (that.data.memberList1[did][i].flag == 1 && that.data.memberList1[did][i].checked == false) {
-        flag = true
-      }
-    }
-    if (flag) {
-      wx.showToast({
-        title: '必须勾选当前公司的负责人',
-        icon: 'none',
-      })
-      return
-    }
+
     // 获取位置信息，如果没有弹出提示框
     wx.getSetting({
       success: function (res) {
@@ -829,10 +534,14 @@ Page({
     api.phpRequest({
       url: 'department.php',
       success: function (res) {
-        var list = res.data
-        list = that.data.regionList.concat(list)
+        let regions = res.data
+        let list = that.data.regionList.concat(regions)
         that.setData({
-          regionList: list
+          regionList: list,
+          memberRegionList: regions
+        }, () => {
+          // 初始化人员选择的pannel,并默认选中第一个region
+          that.chooseMemberRegion(0)
         })
         if (app.globalData.regionIdx) {
           let regionObj = list[app.globalData.regionIdx]
@@ -931,9 +640,8 @@ Page({
       regionIdx: idx,
       regionId: that.data.regionList[idx].department_id
     }, () => {
-      that.forceSelectManager(lastRegionId)
       app.globalData.regionIdx = idx
-      console.log(app.globalData)
+      that.forceSelectManager(lastRegionId)
       if (that.data.regionIdx != 0) {
         that.initProjectList(that.fetchProjectList)
       } else {
@@ -1049,5 +757,188 @@ Page({
     this.setData({
       rejectRes: e.detail.value
     })
+  },
+
+  switchAssignTab: function (e) {
+    let that = this
+    let tabid = Number(e.currentTarget.dataset.tab)
+    that.setData({currentTab: tabid})
+  },
+
+  bindClickRegion: function (e) {
+    let that = this
+    let idx = e.currentTarget.dataset.idx
+    that.setData({
+      curRegionIdx: idx
+    })
+  },
+
+  chooseMemberRegion: function (idx) {
+    let that = this
+    let regionList = that.data.memberRegionList
+    for (let i in regionList) {
+      api.phpRequest({
+        url: 'department_sub.php',
+        data: {
+          department_id: regionList[i].department_id
+        },
+        success: function (res) {
+          regionList[i].departList = res.data
+          for (let j in regionList[i].departList) {
+            api.phpRequest({
+              url: 'user.php',
+              data: {
+                departmentid: regionList[i].departList[j].department_sub_id
+              },
+              success: function (res) {
+                if (that.data.id != 0) {
+                  let {pjr_id, csr_id} = that.data.reportInfo
+                  for (let i in res.data) {
+                    if (pjr_id && pjr_id.indexOf(res.data[i].id) != -1) {
+                      res.data[i].checked = true
+                    }
+                    if (csr_id && csr_id.indexOf(res.data[i].id) != -1) {
+                      res.data[i].checked1 = true
+                    }
+                  }
+                }
+                regionList[i].departList[j].memberList = res.data
+                that.setData({
+                  memberRegionList: regionList,
+                })
+              }
+            })
+          }
+        }
+      })
+    }
+    that.setData({
+      curRegionIdx: idx
+    })
+  },
+
+  bindClickDepart: function (e) {
+    let that = this
+    let didx = e.currentTarget.dataset.didx
+    that.setData({
+      curDepartIdx: didx,
+      showMember: 1,
+    })
+  },
+
+  bindHideMask: function (e) {
+    this.setData({
+      showMember: 0
+    })
+  },
+
+  searchName: function (e) {
+    let that = this
+    let {curRegionIdx, curDepartIdx, memberRegionList} = that.data
+    let memberBox = memberRegionList[curRegionIdx].departList[curDepartIdx].memberList
+    let reg = e.detail.value
+    for (let i in memberBox) {
+      memberBox[i].hide = 0
+      if (memberBox[i].realname.indexOf(reg) == -1) {
+        memberBox[i].hide = 1
+      }
+    }
+    that.setData({memberRegionList: memberRegionList})
+  },
+
+  bindPickMember: function (e) {
+    var that = this
+    var values = e.detail.value
+    let {curRegionIdx, curDepartIdx, memberRegionList, currentTab} = that.data
+    let memberBox = memberRegionList[curRegionIdx].departList[curDepartIdx].memberList
+    for (let i in memberBox) {
+      if (currentTab == 1) {
+        memberBox[i].checked1 = false
+      } else {
+        memberBox[i].checked = false
+      }
+      
+      for (let j in values) {
+        if (memberBox[i].id === values[j]) {
+          if (currentTab == 1) {
+            memberBox[i].checked1 = true
+          } else {
+            memberBox[i].checked = true
+          }
+          break
+        }
+      }
+    }
+    that.setData({
+      memberRegionList: memberRegionList,
+    })
+  },
+
+  delMember: function (e) {
+    let that = this
+    let {ridx, didx, midx} = e.currentTarget.dataset
+    let {memberRegionList, currentTab} = that.data
+    if (currentTab == 1) {
+      memberRegionList[ridx].departList[didx].memberList[midx].checked1 = false
+    } else {
+      memberRegionList[ridx].departList[didx].memberList[midx].checked = false
+    }
+    that.setData({memberRegionList: memberRegionList})
+  },
+
+  forceSelectManager: function (lastRegionId) {
+    var that = this
+    var did = Number(that.data.regionId)
+
+    for (let i in that.data.memberRegionList) {
+      let depart = that.data.memberRegionList[i]
+      for (let j in that.data.memberRegionList[i].departList) {
+        for (let k in that.data.memberRegionList[i].departList[j].memberList) {
+          let memberObj = that.data.memberRegionList[i].departList[j].memberList[k]
+          
+          if (depart.department_id == lastRegionId) {
+            memberObj.checked = false
+            memberObj.checked1 = false
+          }
+
+          if ((memberObj.flag == 1 && depart.department_id == did) || (memberObj.extra_depart.indexOf(did) != -1)) {
+            memberObj.checked = true
+            memberObj.checked1 = true
+          }
+        }
+      }
+    }
+    that.setData({
+      memberRegionList: that.data.memberRegionList
+    })
+  },
+
+  getCheckedMember: function () {
+    let that = this
+    let ret = {'pjr_id': [], 'csr_id': []}
+    let {memberRegionList, regionId} = that.data
+    for (let i in memberRegionList) {
+      for (let j in memberRegionList[i].departList) {
+        for (let k in memberRegionList[i].departList[j].memberList) {
+          let memberObj = memberRegionList[i].departList[j].memberList[k]
+
+          if (memberRegionList[i].department_id == regionId && memberObj.flag == 1 && (!memberObj.checked || !memberObj.checked1)) {
+            wx.showToast({
+              title: '必须勾选当前公司的负责人',
+              icon: 'none',
+              })
+              return null
+          }
+
+          if (memberObj.checked) {
+            ret.pjr_id.push(memberObj.id)
+          }
+          if (memberObj.checked1) {
+            ret.csr_id.push(memberObj.id)
+          }
+        }
+      }
+    }
+    return ret
   }
 })
