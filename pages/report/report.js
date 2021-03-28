@@ -49,6 +49,8 @@ Page({
     curDepartIdx: 0,
     showMember: 0,
     currentTab: 0,
+    lng: 0,
+    lat: 0,
   },
 
   /**
@@ -59,6 +61,8 @@ Page({
     var that = this
     var id = Number(options.id)
     var isFb = Number(options.isFb)
+    let lng = Number(options.lng)
+    let lat = Number(options.lat)
     if (id == 0) {
       var info = app.globalData.userInfo
       that.setData({
@@ -68,10 +72,12 @@ Page({
           department: info.department,
           username: info.realname,
           time: util.formatTime(new Date())
-        }
+        },
+        lng: lng,
+        lat: lat,
       }),
       console.log(app.globalData)
-      that.fetchRegionList()
+      that.fetchRegionList(lng, lat)
       that.fetchSystemList()
       that.fetchQuesList()
       that.setData({
@@ -122,8 +128,8 @@ Page({
           }
         })
       }
+      that.fetchRegionList()
     }
-    that.fetchRegionList()
   },
 
   onShow: function () {
@@ -529,7 +535,7 @@ Page({
   })
   },
 
-  fetchRegionList: function () {
+  fetchRegionList: function (lng, lat) {
     var that = this
     // 获取部门信息
     api.phpRequest({
@@ -541,6 +547,28 @@ Page({
           regionList: list,
           memberRegionList: regions
         }, () => {
+          // 根据位置选择默认region
+          if (lng && lat) {
+            api.phpRequest({
+              url: 'location.php',
+              data: {
+                'lat': lat,
+                'lng': lng
+              },
+              success: function (res) {
+                let departId = res.data['location_department_id']
+                for (let i in list) {
+                  if (list[i].department_id == departId) {
+                    that.setData({
+                      regionIdx: i,
+                      regionId: departId
+                    })
+                    break
+                  }
+                }
+              }
+            })
+          }
           // 初始化人员选择的pannel,并默认选中第一个region
           that.chooseMemberRegion(0)
         })
@@ -584,7 +612,8 @@ Page({
   fetchSystemList: function (fn) {
     console.log("fetchSystemList")
     return new Promise(resolve => {
-      var that = this;
+      var that = this
+      var userInfo = app.globalData.userInfo
       api.phpRequest({
         url: 'system.php',
         data: {
@@ -593,8 +622,16 @@ Page({
         success: function (res) {
           var list = res.data
           list = that.data.systemList.concat(list)
+          let sysIdx = 0
+          for (let i in list) {
+            if (list[i].industry_id == userInfo.industry_id) {
+              sysIdx = i
+            }
+          }
           that.setData({
-            systemList: list
+            systemList: list,
+            sysIdx: sysIdx,
+            systemId: list[sysIdx].industry_id
           }, () => {
             if (app.globalData.sysIdx != 0) {
               that.setData({
