@@ -288,17 +288,17 @@
         <image src="/imgs/report/ci-yqi-search.svg"></image>
         <input placeholder="搜索" bindinput="searchName"></input>
       </view>
-      <view class="btn-cancel" bindtap="bindHideMask">取消</view>
+      <view class="btn-cancel" bindtap="bindHideMask">关闭</view>
     </view>
-    <view class="choose-pannel">
+    <scroll-view class="choose-pannel" scroll-y>
       <checkbox-group bindchange="bindPickMember">
         <block wx:for="{{memberRegionList[curRegionIdx].departList[curDepartIdx].memberList}}" wx:key="index" wx:for-index="midx" wx:for-item="member">
           <view class="checkbox" wx:if="{{!member.hide}}">
-          <checkbox wx:if="{{currentTab==0}}" value="{{member.id}}" checked="{{member.checked}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
+          <checkbox wx:if="{{currentTab==0}}" value="{{member.id}}" disabled="{{pjrDis && !member.checked}}" checked="{{member.checked}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
           <checkbox wx:if="{{currentTab==1}}" value="{{member.id}}" checked="{{member.checked1}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
           </view>
         </block>
       </checkbox-group>
-    </view>
+    </scroll-view>
   </view>
 </view>

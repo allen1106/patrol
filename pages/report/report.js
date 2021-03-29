@@ -507,15 +507,33 @@ Page({
   download: function () {
     var that = this
     if (that.data.id) {
-      api.phpRequest({
-        url: 'download.php',
-        data: {
-          report_id: that.data.id
-        },
-        success: function (res) {
-          that.setData({
-            fileUrl: res.data.file
-          }, that.openFile)
+      let fileType = 1
+      wx.showModal({
+        title: '下载',
+        content: '请选择文件类型',
+        cancelText: 'doc',
+        cancelColor: '#576B95',
+        confirmText: 'pdf',
+        success (res) {
+          if (res.confirm) {
+            fileType = 1
+          } else if (res.cancel) {
+            fileType = 2
+          }
+          api.phpRequest({
+            url: 'download.php',
+            data: {
+              report_id: that.data.id,
+              type: fileType
+            },
+            success: function (res) {
+              that.setData({
+                fileUrl: res.data.file
+              }, () => {
+                that.openFile(fileType)
+              })
+            }
+          })
         }
       })
     } else {
@@ -526,24 +544,21 @@ Page({
     }
   },
 
-  openFile: function (e) {
+  openFile: function (type) {
     var that = this
     let fileName = new Date().valueOf()
+    let suffix = (type == 1) ? '.pdf' : '.doc'
     wx.downloadFile({
       url: that.data.fileUrl,
-      header: {
-        'content-type': 'application/word'
-      },
-      filePath: wx.env.USER_DATA_PATH + '/' + fileName + '.doc',
+      filePath: wx.env.USER_DATA_PATH + '/' + fileName + suffix,
       success (res) {
           wx.openDocument({
-            filePath: wx.env.USER_DATA_PATH + '/' + fileName + '.doc',
+            filePath: wx.env.USER_DATA_PATH + '/' + fileName + suffix,
             showMenu: true
           })
       }
     })
   },
-
 
   fetchRegionList: function () {
     var that = this
@@ -933,16 +948,21 @@ Page({
   },
 
   bindHideMask: function (e) {
+    this.searchHandler('')
     this.setData({
       showMember: 0
     })
   },
 
   searchName: function (e) {
+    let reg = e.detail.value
+    this.searchHandler(reg)
+  },
+
+  searchHandler: function (reg) {
     let that = this
     let {curRegionIdx, curDepartIdx, memberRegionList} = that.data
     let memberBox = memberRegionList[curRegionIdx].departList[curDepartIdx].memberList
-    let reg = e.detail.value
     for (let i in memberBox) {
       memberBox[i].hide = 0
       if (memberBox[i].realname.indexOf(reg) == -1) {
@@ -957,21 +977,29 @@ Page({
     var values = e.detail.value
     let {curRegionIdx, curDepartIdx, memberRegionList, currentTab} = that.data
     let memberBox = memberRegionList[curRegionIdx].departList[curDepartIdx].memberList
-    for (let i in memberBox) {
-      if (currentTab == 1) {
+    if (currentTab == 1) {
+      for (let i in memberBox) {
         memberBox[i].checked1 = false
-      } else {
-        memberBox[i].checked = false
-      }
-      
-      for (let j in values) {
-        if (memberBox[i].id === values[j]) {
-          if (currentTab == 1) {
-            memberBox[i].checked1 = true
-          } else {
-            memberBox[i].checked = true
+        for (let j in values) {
+          if (memberBox[i].id === values[j]) {
+            if (currentTab == 1) {
+              memberBox[i].checked1 = true
+            }
+            break
           }
-          break
+        }
+      }
+    } else {
+      for (let i in memberRegionList) {
+        for (let j in memberRegionList[i].departList) {
+          for (let k in memberRegionList[i].departList[j].memberList) {
+            memberRegionList[i].departList[j].memberList[k].checked = false
+          }
+        }
+      }
+      for (let i in memberBox) {
+        if (memberBox[i].id === values[values.length - 1]) {
+          memberBox[i].checked = true
         }
       }
     }

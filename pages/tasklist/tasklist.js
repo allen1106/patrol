@@ -374,33 +374,48 @@ Page({
   bindBatchDownload: function () {
     var that = this
     var reportIds = that.data.reportIds.join(',')
-    api.phpRequest({
-      url: 'batch_download.php',
-      data: {'report_id_s': reportIds},
-      success: function (res) {
-        that.hideCheckbox()
-        that.setData({
-          fileUrl: res.data.file
-        }, that.openFile)
+    let fileType = 1
+    wx.showModal({
+      title: '下载',
+      content: '请选择文件类型',
+      cancelText: 'doc',
+      cancelColor: '#576B95',
+      confirmText: 'pdf',
+      success (res) {
+        if (res.confirm) {
+          fileType = 1
+        } else if (res.cancel) {
+          fileType = 2
+        }
+        api.phpRequest({
+          url: 'batch_download.php',
+          data: {'report_id_s': reportIds, 'type': fileType},
+          success: function (res) {
+            that.hideCheckbox()
+            that.setData({
+              fileUrl: res.data.file
+            }, () => {
+              that.openFile(fileType)
+            })
+          }
+        })
       }
     })
   },
-  openFile: function (e) {
+  openFile: function (type) {
     var that = this
     let fileName = new Date().valueOf()
+    let suffix = (type == 1) ? '.pdf' : '.doc'
     wx.downloadFile({
       url: that.data.fileUrl,
-      header: {
-        'content-type': 'application/word'
-      },
-      filePath: wx.env.USER_DATA_PATH + '/' + fileName + '.doc',
+      filePath: wx.env.USER_DATA_PATH + '/' + fileName + suffix,
       success (res) {
           wx.openDocument({
-            filePath: wx.env.USER_DATA_PATH + '/' + fileName + '.doc',
+            filePath: wx.env.USER_DATA_PATH + '/' + fileName + suffix,
             showMenu: true
           })
       }
-  })
+    })
   },
 
   // 批量勾选和发布
