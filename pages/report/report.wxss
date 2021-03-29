@@ -202,6 +202,7 @@ page {
 .assign .title {
   width: 100%;
   height: 50rpx;
+  margin: 10rpx 0;
   font-size: 32rpx;
   color: #9999A6;
 }
@@ -210,6 +211,9 @@ page {
   display: inline-block;
   padding: 5rpx 10rpx;
   border-radius: 10rpx;
+}
+.assign .title text:nth-child(2) {
+  margin-left: 20rpx;
 }
 .assign .title text.active {
   background-color: #4876FF;
@@ -335,8 +339,8 @@ checkbox .wx-checkbox-input {
 }
 
 .name-pannel .member-item image {
-  width: 20rpx;
-  height: 20rpx;
+  width: 30rpx;
+  height: 30rpx;
 }
 
 .depart-wrapper {
@@ -442,6 +446,10 @@ checkbox .wx-checkbox-input {
 
 .input-pannel input {
   margin-left: 20rpx;
+}
+
+.choose-pannel {
+  height: 300rpx;
 }
 
 .choose-pannel .checkbox {

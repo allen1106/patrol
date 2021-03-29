@@ -8,8 +8,10 @@ Page({
    * 页面的初始数据
    */
   data: {
-    departmentList: null,
-    department: null
+    departmentList: [],
+    didx: 0,
+    systemList: [],
+    sidx: 0
   },
 
   onLoad: function (e) {
@@ -18,23 +20,41 @@ Page({
     api.phpRequest({
       url: 'departmentlist.php',
       success: function (res) {
-        console.log(res)
-        let departList = []
-        for (var i in res.data) {
-          departList.push(res.data[i].name)
-        }
-        console.log(departList)
         that.setData({
-          departmentList: departList,
-          department: departList[0]
-        })
+          departmentList: res.data,
+          didx: 0
+        }, that.fetchSystemList)
       }
     })
   },
 
   bindPickerChange: function (e) {
     this.setData({
-      department: this.data.departmentList[e.detail.value]
+      didx: e.detail.value
+    }, this.fetchSystemList)
+  },
+
+  fetchSystemList: function () {
+    return new Promise(resolve => {
+      var that = this
+      api.phpRequest({
+        url: 'system.php',
+        data: {
+          department_id: that.data.departmentList[that.data.didx].id
+        },
+        success: function (res) {
+          that.setData({
+            systemList: res.data,
+            sidx: 0
+          })
+        }
+      })
+    })
+  },
+
+  bindSystemChange: function (e) {
+    this.setData({
+      sidx: e.detail.value
     })
   },
 
@@ -61,7 +81,10 @@ Page({
       'password': value.password,
       // 'idnum': value.idnum,
       'realname': value.realname,
-      'department': that.data.department
+      'department': that.data.departmentList[that.data.didx].name
+    }
+    if (that.data.systemList.length > 0) {
+      data['industry_id'] = that.data.systemList[that.data.sidx].industry_id
     }
     console.log("提交数据")
     console.log(data)

@@ -21,10 +21,16 @@
     <input placeholder="姓名" name="realname"></input>
     <image src="/imgs/register/5.png"></image>
   </view>
-  <picker bindchange="bindPickerChange" value="{{index}}" range="{{departmentList}}">
+  <picker bindchange="bindPickerChange" value="{{didx}}" range="{{departmentList}}" range-key="name">
     <view class="input-wrapper">
-          <input placeholder="所在部门" name="department" value="{{department}}" disabled="true"></input>
-          <image src="/imgs/register/6.png"></image>
+      <input placeholder="所在部门" name="department" value="{{departmentList[didx].name}}" disabled="true"></input>
+      <image src="/imgs/register/6.png"></image>
+    </view>
+  </picker>
+  <picker bindchange="bindSystemChange" value="{{sidx}}" range="{{systemList}}" range-key="name" wx:if="{{systemList.length > 0}}">
+    <view class="input-wrapper">
+      <input placeholder="所在专业" name="system" value="{{systemList[sidx].name}}" disabled="true"></input>
+      <image src="/imgs/register/6.png"></image>
     </view>
   </picker>
 </view>
