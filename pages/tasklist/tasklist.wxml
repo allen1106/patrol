@@ -102,7 +102,7 @@
     <image src="/imgs/report/download.png"></image>
     <text>下载</text>
   </view>
-  <view class="btn-download btn" bindtap="bindShowAssign">
+  <view class="btn-download btn" bindtap="bindShowAssign" wx:if="{{!isEvaluate && !isFb}}">
     <image src="/imgs/report/download.png"></image>
     <text>勾选并发布</text>
   </view>
