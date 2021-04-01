@@ -171,7 +171,7 @@
 
 <view class="mask" wx:if="{{showMember}}">
   <view class="member-pannel">
-    <view class="title">事业部本部--技发部</view>
+    <view class="title">{{memberRegionList[curRegionIdx].name}}--{{memberRegionList[curRegionIdx].departList[curDepartIdx].name}}</view>
     <view class="search-pannel">
       <view class="input-pannel">
         <image src="/imgs/report/ci-yqi-search.svg"></image>
