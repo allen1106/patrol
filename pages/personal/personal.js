@@ -9,7 +9,8 @@ Page({
    */
   data: {
     userInfo: null,
-    projectList: null
+    projectList: null,
+    showMask: 1
   },
 
   /**
@@ -71,4 +72,9 @@ Page({
       url: '/pages/tasklist/tasklist?isfb=1&isEvaluate=' + isEvaluate,
     })
   },
+  bindClose: function () {
+    this.setData({
+      showMask: 0
+    })
+  }
 })

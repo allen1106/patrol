@@ -10,7 +10,7 @@ Page({
     date: null,
     workDay: null,
     showLogin: true,
-    taskNum: 0
+    mailInfo: null,
   },
 
   /**
@@ -54,7 +54,7 @@ Page({
         },
         success: function (res) {
           that.setData({
-            taskNum: res.data.number,
+            mailInfo: res.data,
             showLogin: false
           })
         }
