@@ -12,6 +12,7 @@ Page({
     userId: null,
     isEvaluate: 0,
     isFb: 1,
+    isShare: 0,
     submitList: null,
     page: 1,
     regionList: [{"name": "请选择区域", "department_id": 0}],
@@ -48,10 +49,12 @@ Page({
     var that = this
     var isFb = Number(options.isfb)
     var isEvaluate = Number(options.isEvaluate)
+    var isShare = Number(options.isShare)
     console.log(isFb, isEvaluate)
     that.setData({
       isFb: isFb,
       isEvaluate: isEvaluate,
+      isShare: isShare,
       userId: wx.getStorageSync('userId')
     })
     var title = ""
@@ -316,8 +319,9 @@ Page({
     var data = {
       userid: that.data.userId,
       page: that.data.page,
-      is_fb: that.data.isFb
+      is_fb: that.data.isFb,
     }
+    if (that.data.isShare) {data['isshare'] = that.data.isShare}
     console.log(that.data)
     if (that.data.regionIdx != 0) {data["department_id"] = that.data.regionId}
     if (that.data.subRegionIdx != 0) {data["department_sub_id"] = that.data.subRegionId}

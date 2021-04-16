@@ -67,8 +67,9 @@ Page({
   },
   navigateToTaskList: function (e) {
     var isEvaluate = e.currentTarget.dataset.isevaluate
+    var isShare = e.currentTarget.dataset.isshare || 0
     wx.navigateTo({
-      url: '/pages/tasklist/tasklist?isfb=1&isEvaluate=' + isEvaluate,
+      url: '/pages/tasklist/tasklist?isfb=1&isEvaluate=' + isEvaluate + '&isShare=' + isShare,
     })
   },
 })

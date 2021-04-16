@@ -16,6 +16,10 @@
       <text>回复报告</text>
       <text>{{userInfo.evaluate}}</text>
     </view>
+    <view class="info-item" bindtap="navigateToTaskList"  data-isevaluate="1" data-isshare="1">
+      <text>查看任务</text>
+      <text>{{userInfo.task}}</text>
+    </view>
     <view class="info-item project">
       <view class="title-wrapper">项目列表</view>
       <view class="list-wrapper">
