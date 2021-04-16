@@ -44,8 +44,8 @@ Page({
         that.setData({
           id: id,
           reportInfo: res.data,
-          imageList: res.data.imgs && res.data.imgs.split('|'),
-          image1List: res.data.imgs1 && res.data.imgs1.split('|')
+          imageList: res.data.imgs && res.data.imgs.split(','),
+          image1List: res.data.imgs1 && res.data.imgs1.split(',')
         })
       }
     })
