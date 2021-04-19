@@ -984,16 +984,21 @@ Page({
   },
 
   bindHideMask: function (e) {
+    this.searchHandler('')
     this.setData({
       showMember: 0
     })
   },
 
   searchName: function (e) {
+    let reg = e.detail.value
+    this.searchHandler(reg)
+  },
+
+  searchHandler: function (reg) {
     let that = this
     let {curRegionIdx, curDepartIdx, memberRegionList} = that.data
     let memberBox = memberRegionList[curRegionIdx].departList[curDepartIdx].memberList
-    let reg = e.detail.value
     for (let i in memberBox) {
       memberBox[i].hide = 0
       if (memberBox[i].realname.indexOf(reg) == -1) {

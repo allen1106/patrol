@@ -259,15 +259,15 @@
 
 <view class="mask" wx:if="{{showMember}}">
   <view class="member-pannel">
-    <view class="title">事业部本部--技发部</view>
+    <view class="title">{{memberRegionList[curRegionIdx].name}}--{{memberRegionList[curRegionIdx].departList[curDepartIdx].name}}</view>
     <view class="search-pannel">
       <view class="input-pannel">
         <image src="/imgs/report/ci-yqi-search.svg"></image>
         <input placeholder="搜索" bindinput="searchName"></input>
       </view>
-      <view class="btn-cancel" bindtap="bindHideMask">取消</view>
+      <view class="btn-cancel" bindtap="bindHideMask">关闭</view>
     </view>
-    <view class="choose-pannel">
+    <scroll-view class="choose-pannel" scroll-y>
       <checkbox-group bindchange="bindPickMember">
         <block wx:for="{{memberRegionList[curRegionIdx].departList[curDepartIdx].memberList}}" wx:key="index" wx:for-index="midx" wx:for-item="member">
           <view class="checkbox" wx:if="{{!member.hide}}">
@@ -276,6 +276,6 @@
           </view>
         </block>
       </checkbox-group>
-    </view>
+    </scroll-view>
   </view>
 </view>
