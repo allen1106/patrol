@@ -80,3 +80,12 @@ page {
   top: 0; */
   /* display: inline-block; */
 }
+
+.btn-view {
+  background-color: #4876FF;
+  width: 200rpx;
+  border-radius: 80rpx;
+  color: #fff;
+  font-size: 36rpx;
+  text-align: center;
+}
