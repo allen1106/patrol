@@ -210,7 +210,7 @@ Page({
   validateInfo: function (data) {
     if (!data['title']) return '问题简述'
     if (!data['term']) return '处理期限'
-    if (data['report_id'] == 0 && data['project_sub_id'] == 0) return '公司和项目'
+    if (data['report_id'] == 0 && data['project_id'] == 0) return '公司和项目'
     if (data['report_id'] == 0 && data['industry_id'] == 0) return '专业'
     return 'success'
   },
