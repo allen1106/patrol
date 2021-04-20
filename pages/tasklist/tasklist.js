@@ -321,7 +321,11 @@ Page({
       page: that.data.page,
       is_fb: that.data.isFb,
     }
-    if (that.data.isShare) {data['isshare'] = that.data.isShare}
+    if (that.data.isShare) {
+      data = {
+        shareid: that.data.userId
+      }
+    }
     console.log(that.data)
     if (that.data.regionIdx != 0) {data["department_id"] = that.data.regionId}
     if (that.data.subRegionIdx != 0) {data["department_sub_id"] = that.data.subRegionId}
