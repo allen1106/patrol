@@ -37,7 +37,8 @@ Page({
     api.phpRequest({
       url: 'report_list.php',
       data: {
-        id: id
+        id: id,
+        userid: wx.getStorageSync('userId')
       },
       success: function (res) {
         console.log(res.data)

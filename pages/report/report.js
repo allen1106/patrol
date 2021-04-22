@@ -96,7 +96,8 @@ Page({
       api.phpRequest({
         url: 'report_list.php',
         data: {
-          id: id
+          id: id,
+          userid: wx.getStorageSync('userId')
         },
         success: function (res) {
           console.log(res.data)
@@ -1059,12 +1060,12 @@ Page({
           let memberObj = that.data.memberRegionList[i].departList[j].memberList[k]
 
           if (depart.department_id == lastRegionId) {
-            memberObj.checked = false
+            // memberObj.checked = false
             memberObj.checked1 = false
           }
 
           if ((memberObj.flag == 1 && depart.department_id == did) || (memberObj.extra_depart.indexOf(did) != -1)) {
-            memberObj.checked = true
+            // memberObj.checked = true
             memberObj.checked1 = true
           }
         }

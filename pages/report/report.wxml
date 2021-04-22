@@ -248,7 +248,7 @@
       <button form-type="submit" data-id="0" wx:if="{{id==0}}">保存草稿</button>
       <button form-type="submit" data-id="0" wx:if="{{id!=0}}">删除</button>
     </view>
-    <view class="btn-wrapper" wx:if="{{isFb==1}}">
+    <view class="btn-wrapper" wx:if="{{reportInfo.display == 1}}">
       <button form-type="submit" data-id="2">解决成功</button>
       <button form-type="submit" data-id="3">驳回处理</button>
       <button form-type="submit" data-id="4">删除</button>

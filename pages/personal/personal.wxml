@@ -24,7 +24,7 @@
         </view>
       </view>
     </view>
-    <view class="info-item btn-view" bindtap="navigateToTaskList"  data-isevaluate="1" data-isshare="1">
+    <view class="info-item btn-view" bindtap="navigateToTaskList"  data-isevaluate="0" data-isshare="1">
       <text>查看任务</text>
       <text wx:if="{{userInfo.task}}">{{userInfo.task}}</text>
     </view>
