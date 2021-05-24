@@ -1,5 +1,8 @@
 // pages/evaluate/evaluate.js
 var api = require("../../utils/api.js")
+var plugin = requirePlugin("WechatSI")
+
+let manager = plugin.getRecordRecognitionManager()
 
 Page({
 
@@ -21,6 +24,7 @@ Page({
     selectAll1: [],
     memberList1: {},
     memberCheckedList1: [],
+    commentContent: "",
   },
 
   /**
@@ -85,6 +89,26 @@ Page({
         })
       }
     })
+  },
+
+  onShow: function () {
+    var that = this
+    manager.onStop = (res) => {
+      that.bindInput(res.result)
+    }
+
+    manager.onStart = (res) => {
+      console.log("正在聆听", res)
+      wx.showToast({
+        title: "正在聆听，松开结束语音",
+      })
+    }
+    manager.onError = (res) => {
+      console.log("error msg", res.msg)
+      wx.showToast({
+        title: '说话时间太短，请重试',
+      })
+    }
   },
 
   getImgList: function (index) {
@@ -238,7 +262,7 @@ Page({
 
   bindSubmitForm: function (e) {
     var that = this
-    var comment = e.detail.value.comment
+    var comment = that.data.commentContent
     if (!comment) {
       wx.showToast({
         title: '评论不能为空',
@@ -356,76 +380,33 @@ Page({
     })
   },
 
-  // bindSelectAll: function (e) {
-  //   var that = this
-  //   var index = e.currentTarget.dataset.sidx
-  //   var isAll = that.data.selectAll[index]
-  //   that.data.selectAll[index] = !isAll
-  //   var memberOjbs = that.data.memberList[index]
-  //   for (var i in memberOjbs) {
-  //     memberOjbs[i]["checked"] = !isAll
-  //   }
-  //   that.setData({
-  //     memberList: that.data.memberList,
-  //     selectAll: that.data.selectAll
-  //   })
-  // },
+  bindTouchUp: function () {
+    manager.stop()
+    wx.showToast({
+      title: '正在解析……',
+      icon: 'loading',
+      duration: 2000
+    })
+  },
 
-  // bindSelectAll1: function (e) {
-  //   var that = this
-  //   var index = e.currentTarget.dataset.sidx
-  //   var isAll = that.data.selectAll1[index]
-  //   that.data.selectAll1[index] = !isAll
-  //   var memberOjbs = that.data.memberList1[index]
-  //   for (var i in memberOjbs) {
-  //     memberOjbs[i]["checked"] = !isAll
-  //   }
-  //   that.setData({
-  //     memberList1: that.data.memberList1,
-  //     selectAll1: that.data.selectAll1
-  //   })
-  // },
+  bindSetComment: function (res) {
+    var that = this
+    that.bindInput = (res) => {
+      that.setData({
+        commentContent: res
+      })
+    }
+    manager.start({
+      lang: "zh_CN"
+    })
+  },
 
-  // bindSelect: function (e) {
-  //   var that = this
-  //   var value = e.currentTarget.dataset
-  //   var memberOjbs = that.data.memberList[value.sidx]
-  //   memberOjbs[value.midx]["checked"] = !memberOjbs[value.midx]["checked"]
-  //   that.setData({
-  //     memberList: that.data.memberList
-  //   })
-  //   var flag = 0
-  //   for (var i in that.data.memberList[value.sidx]) {
-  //     if (that.data.memberList[value.sidx][i].checked) {
-  //       flag++
-  //     }
-  //   }
-  //   that.data.selectAll[value.sidx] = that.data.memberList[value.sidx].length != 0 && that.data.memberList[value.sidx].length == flag
-  //   that.setData({
-  //     selectAll: that.data.selectAll
-  //   })
-  // },
+  bindInputComment: function (e) {
+    this.setData({
+      commentContent: e.detail.value
+    })
+  },
 
-  // bindSelect1: function (e) {
-  //   var that = this
-  //   var value = e.currentTarget.dataset
-  //   var memberOjbs = that.data.memberList1[value.sidx]
-  //   memberOjbs[value.midx]["checked"] = !memberOjbs[value.midx]["checked"]
-  //   that.setData({
-  //     memberList1: that.data.memberList1
-  //   })
-  //   var flag = 0
-  //   for (var i in that.data.memberList1[value.sidx]) {
-  //     if (that.data.memberList1[value.sidx][i].checked) {
-  //       flag++
-  //     }
-  //   }
-  //   that.data.selectAll1[value.sidx] = that.data.memberList1[value.sidx].length != 0 && that.data.memberList1[value.sidx].length == flag
-  //   that.setData({
-  //     selectAll1: that.data.selectAll1
-  //   })
-  // },
-  
   bindBack: function () {
     wx.navigateBack({
       delta: 1

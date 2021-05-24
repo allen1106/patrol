@@ -84,7 +84,14 @@
   </view>
   <view class="item-wrapper" wx:if="{{!isFb}}">
     <view class="label">处理回复</view>
-    <view class="input"><textarea placeholder="请输入处理内容" name="comment"></textarea></view>
+    <view class="input">
+      <textarea placeholder="请输入处理内容" value="{{commentContent}}" name="comment" bindinput="bindInputComment"></textarea>
+      <view bindtouchstart="bindSetComment"
+        bindtouchend="bindTouchUp"
+        class="btn-speak">
+        <image src="/imgs/report/icon-speak.png"></image>
+      </view>
+    </view>
     <view class="image-wrapper">
       <view class="img-upload-container">
         <view class="img-preview-container" wx:for="{{commentImgList}}" wx:key="index">
