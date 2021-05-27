@@ -86,6 +86,10 @@ page {
   font-size: 28rpx;
 }
 
+.item-wrapper .input textarea.high {
+  height: 120rpx;
+}
+
 .item-wrapper .input .btn-speak {
   display: inline-block;
   width: 50rpx;
