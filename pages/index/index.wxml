@@ -10,10 +10,14 @@
 <view class="container">
   <view class="notification">
     <image src="/imgs/index/7.png">
-      <view>{{taskNum}}</view>
+      <view>{{mailInfo.number}}</view>
     </image>
     <text wx:if="{{showLogin}}">请先到个人中心进行登录</text>
-    <text wx:if="{{!showLogin}}" bindtap="navigateToEvaluate" data-isfb="0">您有{{taskNum}}条任务待解决，请加快解决</text>
+    <view class="text"  wx:if="{{!showLogin}}">
+      <text bindtap="navigateToEvaluate" data-isfb="0">您有{{mailInfo.number}}条任务待解决</text>
+      <text bindtap="navigateToTaskList" data-isfb="3">您收到{{mailInfo.number1}}条任务回复</text>
+      <text bindtap="navigateToEvaluate" data-isfb="1">您有{{mailInfo.number2}}任务解决通过</text>
+    </view>
   </view>
   <view class="menu-list">
     <view class="menu-line">

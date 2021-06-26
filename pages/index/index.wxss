@@ -84,10 +84,16 @@ page {
   color: #fff;
 }
 
+.notification .text {
+  width: calc(100% - 200rpx);
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+}
 
-.notification text {
-  height: 200rpx;
-  line-height: 200rpx;
+.notification .text text {
   font-size: 24rpx;
 }
 

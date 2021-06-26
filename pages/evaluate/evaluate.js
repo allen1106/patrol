@@ -1,6 +1,10 @@
 // pages/evaluate/evaluate.js
 var api = require("../../utils/api.js")
 
+var plugin = requirePlugin("WechatSI")
+
+let manager = plugin.getRecordRecognitionManager()
+
 Page({
 
   /**
@@ -21,6 +25,7 @@ Page({
     selectAll1: [],
     memberList1: {},
     memberCheckedList1: [],
+    commentContent: "",
   },
 
   /**
@@ -234,7 +239,7 @@ Page({
 
   bindSubmitForm: function (e) {
     var that = this
-    var comment = e.detail.value.comment
+    var comment = that.data.commentContent
     if (!comment) {
       wx.showToast({
         title: '评论不能为空',
@@ -421,6 +426,24 @@ Page({
   //     selectAll1: that.data.selectAll1
   //   })
   // },
+
+  bindSetComment: function (res) {
+    var that = this
+    that.bindInput = (res) => {
+      that.setData({
+        commentContent: res
+      })
+    }
+    manager.start({
+      lang: "zh_CN"
+    })
+  },
+
+  bindInputComment: function (e) {
+    this.setData({
+      commentContent: e.detail.value
+    })
+  },
   
   bindBack: function () {
     wx.navigateBack({

@@ -56,6 +56,7 @@ Page({
     curDepartIdx: 0,
     showMember: 0,
     currentTab: 0,
+    rejectRes: ""
   },
 
   /**
@@ -334,7 +335,7 @@ Page({
     var that = this
     api.phpRequest({
       url: "report_reject.php",
-      data: {'report_id': that.data.id, 'userid': wx.getStorageSync('userId')},
+      data: {'report_id': that.data.id, 'userid': wx.getStorageSync('userId'), 'content': that.data.rejectRes || ''},
       method: 'post',
       header: {'content-type': 'application/x-www-form-urlencoded'},
       success: function (res) {
@@ -877,6 +878,18 @@ Page({
     })
   },
 
+  bindSetRejectRes: function (res) {
+    var that = this
+    that.bindInput = (res) => {
+      that.setData({
+        rejectRes: res
+      })
+    }
+    manager.start({
+      lang: "zh_CN"
+    })
+  },
+
   bindTouchUp: function () {
     var that = this
     manager.stop()
@@ -914,6 +927,12 @@ Page({
   bindInputContent: function (e) {
     this.setData({
       content: e.detail.value
+    })
+  },
+
+  bindInputRejectRes: function (e) {
+    this.setData({
+      rejectRes: e.detail.value
     })
   },
 
