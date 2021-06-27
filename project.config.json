@@ -28,8 +28,13 @@
 		"userConfirmedUseCompilerModuleSwitch": false
 	},
 	"compileType": "miniprogram",
+<<<<<<< HEAD
 	"libVersion": "2.11.1",
 	"appid": "wx3d36f1c5466202b9",
+=======
+	"libVersion": "2.10.4",
+	"appid": "wxd159c06e88709fe1",
+>>>>>>> c3fcc02... upgrade login
 	"projectname": "patrol",
 	"debugOptions": {
 		"hidedInDevtools": []
