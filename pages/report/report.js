@@ -165,9 +165,10 @@ Page({
 
   chooseImage: function (e) {
     var index = Number(e.currentTarget.dataset.index)
-    var that = this;
+    var that = this
+    let imgList = index == '0' ? that.data.imageList : that.data.image1List
     wx.chooseImage({
-      count: that.data.count - that.data.imageList.length,
+      count: that.data.count - imgList.length,
       success: function (res) {
         if (index == "0") {
           that.setData({
