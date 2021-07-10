@@ -50,8 +50,8 @@ Page({
         that.setData({
           id: id,
           reportInfo: res.data,
-          imageList: res.data.imgs && res.data.imgs.split('|'),
-          image1List: res.data.imgs1 && res.data.imgs1.split('|')
+          imageList: res.data.imgs && res.data.imgs.split(','),
+          image1List: res.data.imgs1 && res.data.imgs1.split(',')
         })
       }
     })
@@ -87,6 +87,27 @@ Page({
       }
     })
   },
+
+  onShow: function () {
+    var that = this
+    manager.onStop = (res) => {
+      that.bindInput(res.result)
+    }
+
+    manager.onStart = (res) => {
+      console.log("正在聆听", res)
+      wx.showToast({
+        title: "正在聆听，松开结束语音",
+      })
+    }
+    manager.onError = (res) => {
+      console.log("error msg", res.msg)
+      wx.showToast({
+        title: '说话时间太短，请重试',
+      })
+    }
+  },
+
 
   getImgList: function (index) {
     var objMap = {
@@ -427,9 +448,21 @@ Page({
   //   })
   // },
 
+  
+  bindTouchUp: function () {
+    var that = this
+    manager.stop()
+    wx.showToast({
+      title: '正在解析……',
+      icon: 'loading',
+      duration: 2000
+    })
+  },
+
   bindSetComment: function (res) {
     var that = this
     that.bindInput = (res) => {
+      console.log(res)
       that.setData({
         commentContent: res
       })

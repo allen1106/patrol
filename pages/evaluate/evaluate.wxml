@@ -90,7 +90,7 @@
   <view class="item-wrapper" wx:if="{{!isFb}}">
     <view class="label">处理回复</view>
     <view class="input">
-      <textarea placeholder="请输入处理内容" value="{{commentContent}}" name="comment" bindinput="bindInputComment"></textarea>
+      <textarea placeholder="请输入处理内容" value="{{commentContent || ''}}" name="comment" bindinput="bindInputComment"></textarea>
       <view bindtouchstart="bindSetComment"
         bindtouchend="bindTouchUp"
         class="btn-speak">

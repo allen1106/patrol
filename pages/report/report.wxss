@@ -133,6 +133,11 @@ page {
   height: 80rpx;
   width: calc(100% - 100rpx);
 }
+.item-wrapper .input input  {
+  display: inline-block;
+  height: 80rpx;
+  width: 100%;
+}
 .item-wrapper .input text {
   display: inline-block;
   word-wrap: break-word; 

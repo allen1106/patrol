@@ -253,7 +253,7 @@
       <view class="item-wrapper">
         <view class="label">驳回原因</view>
         <view class="input">
-          <textarea bindinput="bindInputRejectRes" name="rejectRes"></textarea>
+          <textarea bindinput="bindInputRejectRes" name="rejectRes" value="{{rejectRes || ''}}"></textarea>
           <view bindtouchstart="bindSetRejectRes"
             bindtouchend="bindTouchUp"
             class="btn-speak">
