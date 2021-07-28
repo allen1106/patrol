@@ -16,7 +16,7 @@ Page({
     var that = this
     // 获取部门信息
     api.phpRequest({
-      url: 'departmentlist.php',
+      url: 'departmentlist1.php',
       success: function (res) {
         console.log(res)
         let departList = []

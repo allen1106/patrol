@@ -13,14 +13,6 @@
         </view>
       </picker>
     </view>
-    <view class="sub-region">
-      <picker bindchange="bindSubRegionChange" value="{{subRegionIdx}}" range="{{subRegionList}}" range-key="name">
-        <view class="picker">
-          <text>{{subRegionList[subRegionIdx].name}}</text>
-          <image src="/imgs/down.png"></image>
-        </view>
-      </picker>
-    </view>
     <view class="project">
       <picker bindchange="bindProjectChange" value="{{proIdx}}" range="{{projectList}}" range-key="name">
         <view class="picker">
@@ -29,28 +21,10 @@
         </view>
       </picker>
     </view>
-  </view>
-  <view class="common-filter">
-    <view class="sub-project">
-      <picker bindchange="bindSubProjectChange" value="{{subProIdx}}" range="{{subProjectList}}" range-key="name">
-        <view class="picker">
-          <text>{{subProjectList[subProIdx].name}}</text>
-          <image src="/imgs/down.png"></image>
-        </view>
-      </picker>
-    </view>
     <view class="system">
       <picker bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
         <view class="picker">
           <text>{{systemList[sysIdx].name}}</text>
-          <image src="/imgs/down.png"></image>
-        </view>
-      </picker>
-    </view>
-    <view class="question">
-      <picker bindchange="bindQuesChange" value="{{quesIdx}}" range="{{quesList}}" range-key="name">
-        <view class="picker">
-          <text>{{quesList[quesIdx].name}}</text>
           <image src="/imgs/down.png"></image>
         </view>
       </picker>
@@ -69,10 +43,9 @@
         <image src="/imgs/down.png"></image>
       </view>
     </picker>
-    <view class="opt-wrapper" bindtap="download">
+    <!-- <view class="opt-wrapper" bindtap="download">
       <image bindtap="download" src="/imgs/statistic/download.png"></image>
-      <!-- <image src="/imgs/regist_name.png"></image> -->
-    </view>
+    </view> -->
   </view>
 </view>
 <view class="item-detail">

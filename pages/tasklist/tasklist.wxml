@@ -8,14 +8,6 @@
       </view>
     </picker>
   </view>
-  <view class="sub-region">
-    <picker bindchange="bindSubRegionChange" value="{{subRegionIdx}}" range="{{subRegionList}}" range-key="name">
-      <view class="picker">
-        <text>{{subRegionList[subRegionIdx].name}}</text>
-        <image src="/imgs/down.png"></image>
-      </view>
-    </picker>
-  </view>
   <view class="project">
     <picker bindchange="bindProjectChange" value="{{proIdx}}" range="{{projectList}}" range-key="name">
       <view class="picker">
@@ -24,28 +16,10 @@
       </view>
     </picker>
   </view>
-</view>
-<view class="nav">
-  <view class="sub-project">
-    <picker bindchange="bindSubProjectChange" value="{{subProIdx}}" range="{{subProjectList}}" range-key="name">
-      <view class="picker">
-        <text>{{subProjectList[subProIdx].name}}</text>
-        <image src="/imgs/down.png"></image>
-      </view>
-    </picker>
-  </view>
   <view class="system">
     <picker bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
       <view class="picker">
         <text>{{systemList[sysIdx].name}}</text>
-        <image src="/imgs/down.png"></image>
-      </view>
-    </picker>
-  </view>
-  <view class="question">
-    <picker bindchange="bindQuesChange" value="{{quesIdx}}" range="{{quesList}}" range-key="name">
-      <view class="picker">
-        <text>{{quesList[quesIdx].name}}</text>
         <image src="/imgs/down.png"></image>
       </view>
     </picker>
@@ -93,7 +67,6 @@
         </view>
         <view class="note">
           <text>任务生成时间：{{item.task_time}}</text>
-          <text>处理期限：{{item.term}}天</text>
         </view>
       </view>
     </view>

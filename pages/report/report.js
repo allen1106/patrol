@@ -23,25 +23,16 @@ Page({
     regionList: [{"name": "请选择区域", "department_id": 0}],
     regionIdx: 0,
     regionId: 0,
-    subRegionList: [{"name": "请选择公司", "sub_department_id": 0}],
-    subRegionIdx: 0,
-    subRegionId: 0,
     projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
     projectId: 0,
-    subProjectList: [{"name": "请选择子项目", "sub_project_id": 0}],
-    subProIdx: 0,
-    subProjectId: 0,
     systemList: [{"name": "请选择专业", "industry_id": 0}],
     sysIdx: 0,
     systemId: 0,
-    quesList: [{"name": "请选择问题类型", "ques_id": 0}],
-    quesIdx: 0,
-    quesId: 0,
-    title: "",
-    position: "",
+    question: "",
+    reason: "",
     solve: "",
-    term: "",
+    position: "",
     content: "",
     didx: 0,
     //最多可上传的图片数量
@@ -56,7 +47,8 @@ Page({
     curDepartIdx: 0,
     showMember: 0,
     currentTab: 0,
-    rejectRes: ""
+    rejectRes: "",
+    searchReg: "",
   },
 
   /**
@@ -82,12 +74,11 @@ Page({
       that.fetchRegionList()
       that.fetchMemberRegionList()
       that.fetchSystemList()
-      that.fetchQuesList()
       that.setData({
-        title: app.globalData.title,
-        position: app.globalData.position,
+        question: app.globalData.question,
+        reason: app.globalData.reason,
         solve: app.globalData.solve,
-        term: app.globalData.term,
+        position: app.globalData.position,
         content: app.globalData.content,
       })
     } else {
@@ -146,7 +137,7 @@ Page({
       })
     }
     manager.onError = (res) => {
-      console.log("error msg", res.msg)
+      console.log("error msg", res)
       wx.showToast({
         title: '说话时间太短，请重试',
       })
@@ -156,10 +147,10 @@ Page({
   onUnload: function () {
     var that = this
     if (that.data.id == 0) {
-      app.globalData.title = that.data.title
-      app.globalData.position = that.data.position
+      app.globalData.question = that.data.question
+      app.globalData.reason = that.data.reason
       app.globalData.solve = that.data.solve
-      app.globalData.term = that.data.term
+      app.globalData.position = that.data.position
       app.globalData.content = that.data.content
     }
   },
@@ -212,10 +203,11 @@ Page({
   },
 
   validateInfo: function (data) {
-    if (!data['title']) return '问题简述'
+    if (!data['question']) return '标题'
+    if (!data['reason']) return '原因'
+    if (!data['solve']) return '解决办法'
     if (!data['position']) return '部位'
-    if (!data['term']) return '处理期限'
-    if (data['report_id'] == 0 && data['project_sub_id'] == 0) return '区域和项目'
+    if (data['report_id'] == 0 && data['project_id'] == 0) return '区域和项目'
     if (data['report_id'] == 0 && data['industry_id'] == 0) return '专业'
     return 'success'
   },
@@ -248,16 +240,13 @@ Page({
       userid: wx.getStorageSync('userId'),
       task_time: util.formatTime(new Date()),
       position: value.position,
-      title: value.title,
+      question: value.question,
+      reason: value.reason,
       solve: value.solve,
-      term: value.term,
       content: value.content,
       department_id: that.data.regionId,
-      department_sub_id: that.data.subRegionId,
       project_id: that.data.projectId,
-      project_sub_id: that.data.subProjectId,
       industry_id: that.data.systemId,
-      problem_id: that.data.quesId,
       report_id: that.data.id,
       pjr_id: pjr_id,
       csr_id: csr_id
@@ -472,16 +461,16 @@ Page({
       header: {'content-type': 'application/x-www-form-urlencoded'},
       success: function (res) {
         if (res.data.status == 1) {
-          app.globalData.title = ''
-          app.globalData.position = ''
+          app.globalData.question = ''
+          app.globalData.reason = ''
           app.globalData.solve = ''
-          app.globalData.term = ''
+          app.globalData.position = ''
           app.globalData.content = ''
           that.setData({
-            title: '',
-            position: '',
+            question: '',
+            reason: '',
             solve: '',
-            term: '',
+            position: '',
             content: '',
           })
           wx.showToast({
@@ -547,53 +536,49 @@ Page({
     })
   },
 
+  fetchSubRegionList: function (departId) {
+    let that = this
+    return new Promise((resolve,reject)=>{
+      api.phpRequest({
+        url: 'departmentlist_sub.php',
+        data: {
+          department_id: departId
+        },
+        success: function (res) {
+          let list = []
+          for (let i in res.data) {
+            list.push({
+              department_id: res.data[i].department_sub_id,
+              name: res.data[i].name,
+            })
+          }
+          that.setData({
+            regionList: that.data.regionList.concat(list)
+          })
+          resolve()
+        }
+      })
+    })
+  },
 
   fetchRegionList: function () {
     var that = this
     // 获取部门信息
     api.phpRequest({
-      url: 'department.php',
-      success: function (res) {
-        var list = res.data
-        list = that.data.regionList.concat(list)
-        that.setData({
-          regionList: list
-        })
-        if (app.globalData.regionIdx) {
-          let regionObj = list[app.globalData.regionIdx]
-          that.setData({
-            regionIdx: app.globalData.regionIdx,
-            regionId: regionObj.department_id
-          }, that.fetchSubRegionList)
-        }
-      }
-    })
-  },
-
-  fetchSubRegionList: function () {
-    var that = this
-    // 获取部门信息
-    api.phpRequest({
-      url: 'department_sub.php',
-      data: {
-        'department_id': that.data.regionId
-      },
-      success: function (res) {
-        var list = res.data
-        list = that.data.subRegionList.concat(list)
-        that.setData({
-          subRegionList: list
-        }, () => {
-          if (app.globalData.subRegionIdx != 0) {
-            let subRegionObj = list[app.globalData.subRegionIdx]
-            that.setData({
-              subRegionIdx: app.globalData.subRegionIdx,
-              subRegionId: subRegionObj.department_sub_id
-            }, () => {
-              that.fetchProjectList()
-            })
+      url: 'departmentlist.php',
+      success: (res) => {
+        (async (res) => {
+          for (let i in res.data) {
+            await that.fetchSubRegionList(res.data[i].department_id)
           }
-        })
+          if (app.globalData.regionIdx) {
+            let regionObj = that.data.regionList[app.globalData.regionIdx]
+            that.setData({
+              regionIdx: app.globalData.regionIdx,
+              regionId: regionObj.department_id
+            }, that.fetchProjectList)
+          }
+        })(res)
       }
     })
   },
@@ -602,7 +587,7 @@ Page({
     var that = this
     // 获取部门信息
     api.phpRequest({
-      url: 'department_sub_list.php',
+      url: 'departmentlist.php',
       success: function (res) {
         var list = res.data
         that.setData({
@@ -621,7 +606,8 @@ Page({
     api.phpRequest({
       url: 'project.php',
       data: {
-        'department_sub_id': that.data.subRegionId
+        userid: wx.getStorageSync('userId'),
+        qymc: that.data.regionList[that.data.regionIdx].name
       },
       success: function (res) {
         var list = res.data
@@ -634,32 +620,6 @@ Page({
             that.setData({
               proIdx: app.globalData.proIdx,
               projectId: proObj.project_id
-            }, that.fetchSubProjectList)
-          }
-        })
-      }
-    })
-  },
-
-  fetchSubProjectList: function () {
-    var that = this
-    // 获取子项目列表
-    api.phpRequest({
-      url: 'project_sub.php',
-      data: {
-        'project_id': that.data.projectId
-      },
-      success: function (res) {
-        var list = res.data
-        list = that.data.subProjectList.concat(list)
-        that.setData({
-          subProjectList: list
-        }, () => {
-          if (app.globalData.subProIdx) {
-            let proObj = list[app.globalData.subProIdx]
-            that.setData({
-              subProIdx: app.globalData.subProIdx,
-              subProjectId: proObj.project_sub_id
             })
           }
         })
@@ -697,56 +657,17 @@ Page({
     })
   },
 
-  fetchQuesList: function () {
-    var that = this
-    // 获取问题类型列表
-    api.phpRequest({
-      url: 'problem.php',
-      success: function (res) {
-        var list = res.data
-        list = that.data.quesList.concat(list)
-        that.setData({
-          quesList: list
-        }, () => {
-          if (app.globalData.quesIdx != 0) {
-            that.setData({
-              quesIdx: app.globalData.quesIdx,
-              quesId: list[app.globalData.quesIdx].problem_id
-            })
-          }
-        })
-      }
-    })
-  },
-
   bindRegionChange: function (e) {
     var idx = e.detail.value
     var that = this
+    var lastRegionId = that.data.regionId
     that.setData({
       regionIdx: idx,
       regionId: that.data.regionList[idx].department_id
     }, () => {
       app.globalData.regionIdx = idx
-      console.log(app.globalData)
-      if (that.data.regionIdx != 0) {
-        that.initSubRegionList(that.fetchSubRegionList)
-      } else {
-        that.initSubRegionList()
-      }
-    })
-  },
-
-  bindSubRegionChange: function (e) {
-    var idx = e.detail.value
-    var that = this
-    var lastRegionId = that.data.subRegionId
-    that.setData({
-      subRegionIdx: idx,
-      subRegionId: that.data.subRegionList[idx].department_sub_id
-    }, () => {
-      app.globalData.subRegionIdx = idx
       that.forceSelectManager(lastRegionId)
-      if (that.data.subRegionIdx != 0) {
+      if (that.data.regionIdx != 0) {
         that.initProjectList(that.fetchProjectList)
       } else {
         that.initProjectList()
@@ -760,35 +681,8 @@ Page({
     that.setData({
       proIdx: idx,
       projectId: this.data.projectList[idx].project_id
-    }, () => {
-      app.globalData.proIdx = idx
-      console.log(app.globalData)
-      if (that.data.proIdx != 0) {
-        that.initSubProjectList(that.fetchSubProjectList)
-      } else {
-        that.initSubProjectList()
-      }
     })
-  },
-
-  bindSubProjectChange: function (e) {
-    var idx = e.detail.value
-    this.setData({
-      subProIdx: idx,
-      subProjectId: this.data.subProjectList[idx].project_sub_id
-    })
-    app.globalData.subProIdx = idx
-  },
-
-  initSubRegionList: function (fn) {
-    this.setData({
-      subRegionList: [{"name": "请选择公司", "department_id": 0}],
-      subRegionIdx: 0,
-      subRegionId: 0
-    }, () => {
-      app.globalData.subRegionIdx = 0
-      if (fn) { fn() }
-    })
+    app.globalData.proIdx = idx
   },
 
   initProjectList: function (fn) {
@@ -802,17 +696,6 @@ Page({
     })
   },
 
-  initSubProjectList: function (fn) {
-    this.setData({
-      subProjectList: [{"name": "请选择子项目", "project_id": 0}],
-      subProIdx: 0,
-      subProjectId: 0
-    }, () => {
-      app.globalData.subProIdx = 0
-      if (fn) { fn() }
-    })
-  },
-
   bindSystemChange: function (e) {
     var idx = e.detail.value
     this.setData({
@@ -822,32 +705,24 @@ Page({
     app.globalData.sysIdx = idx
   },
 
-  bindQuesChange: function (e) {
-    var idx = e.detail.value
-    this.setData({
-      quesIdx: e.detail.value,
-      quesId: this.data.quesList[idx].problem_id
-    })
-    app.globalData.quesIdx = idx
-  },
-
-  bindSetTitle: function (res) {
+  bindSetQuestion: function (res) {
     var that = this
+    console.log("===>>>")
     that.bindInput = (res) => {
       that.setData({
-        title: res
+        question: res
       })
     }
     manager.start({
       lang: "zh_CN"
     })
   },
-  
-  bindSetPosition: function (res) {
+
+  bindSetReason: function (res) {
     var that = this
     that.bindInput = (res) => {
       that.setData({
-        position: res
+        reason: res
       })
     }
     manager.start({
@@ -861,6 +736,18 @@ Page({
       that.setData({
         solve: res
       }) 
+    }
+    manager.start({
+      lang: "zh_CN"
+    })
+  },
+  
+  bindSetPosition: function (res) {
+    var that = this
+    that.bindInput = (res) => {
+      that.setData({
+        position: res
+      })
     }
     manager.start({
       lang: "zh_CN"
@@ -901,15 +788,15 @@ Page({
     })
   },
 
-  bindInputTitle: function (e) {
+  bindInputQuestion: function (e) {
     this.setData({
-      title: e.detail.value
+      question: e.detail.value
     })
   },
-  
-  bindInputPosition: function (e) {
+
+  bindInputReason: function (e) {
     this.setData({
-      position: e.detail.value
+      reason: e.detail.value
     })
   },
   
@@ -919,9 +806,9 @@ Page({
     })
   },
   
-  bindInputTerm: function (e) {
+  bindInputPosition: function (e) {
     this.setData({
-      term: e.detail.value
+      position: e.detail.value
     })
   },
   
@@ -956,7 +843,7 @@ Page({
     let regionList = that.data.memberRegionList
     for (let i in regionList) {
       api.phpRequest({
-        url: 'department_sub.php',
+        url: 'departmentlist_sub.php',
         data: {
           department_id: regionList[i].department_id
         },
@@ -1011,9 +898,29 @@ Page({
     })
   },
 
+  bindHideAllMask: function (e) {
+    this.setData({
+      searchReg: '',
+      showAllMember: 0
+    })
+  },
+
   searchName: function (e) {
     let reg = e.detail.value
     this.searchHandler(reg)
+  },
+
+  searchAllName: function (e) {
+    let reg = e.detail.value
+    this.setData({
+      searchReg: reg
+    })
+  },
+
+  searchAllMember: function () {
+    this.setData({
+      showAllMember: 1,
+    })
   },
 
   searchHandler: function (reg) {
@@ -1049,6 +956,38 @@ Page({
             memberBox[i].checked = true
           }
           break
+        }
+      }
+    }
+    that.setData({
+      memberRegionList: memberRegionList,
+    })
+  },
+
+  bindPickAllMember: function (e) {
+    var that = this
+    var values = e.detail.value
+    let {curRegionIdx, curDepartIdx, memberRegionList, currentTab} = that.data
+    let memberBox = memberRegionList[curRegionIdx].departList[curDepartIdx].memberList
+    for (let i1 in that.data.memberRegionList) {
+      for (let i2 in that.data.memberRegionList[i1].departList) {
+        memberBox = that.data.memberRegionList[i1].departList[i2].memberList
+        for (let i in memberBox) {
+          if (currentTab == 1) {
+            memberBox[i].checked1 = false
+          } else {
+            memberBox[i].checked = false
+          }
+          for (let j in values) {
+            if (memberBox[i].id === values[j]) {
+              if (currentTab == 1) {
+                memberBox[i].checked1 = true
+              } else {
+                memberBox[i].checked = true
+              }
+              break
+            }
+          }
         }
       }
     }

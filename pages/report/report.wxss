@@ -35,10 +35,10 @@ page {
 
 .nav {
   display: flex;
-  width: calc(95% - 40rpx);
+  width: calc(100% - 20rpx);
   height: 80rpx;
   margin: 20rpx auto;
-  padding: 0 20rpx;
+  padding: 0 10rpx;
   background-color: #4876FF;
   border-radius: 20rpx;
   color: #fff;
@@ -147,6 +147,7 @@ page {
   border: 5rpx solid black;
 }
 
+.item-wrapper .input .btn-search image,
 .item-wrapper .input .btn-speak image {
   width: 50rpx;
   height: 50rpx;
@@ -443,4 +444,8 @@ checkbox .wx-checkbox-input {
   display: inline-block;
   height: 50rpx;
   margin-top: 30rpx;
+}
+
+.search-input {
+  width: calc(100%);
 }

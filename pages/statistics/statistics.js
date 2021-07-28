@@ -51,39 +51,45 @@ Page({
   onLoad: function (options) {
     this.fetchRegionList()
     this.fetchSystemList()
-    this.fetchQuesList()
     this.fetchList()
+  },
+
+  fetchSubRegionList: function (departId) {
+    let that = this
+    return new Promise((resolve,reject)=>{
+      api.phpRequest({
+        url: 'departmentlist_sub.php',
+        data: {
+          department_id: departId
+        },
+        success: function (res) {
+          let list = []
+          for (let i in res.data) {
+            list.push({
+              department_id: res.data[i].department_sub_id,
+              name: res.data[i].name,
+            })
+          }
+          that.setData({
+            regionList: that.data.regionList.concat(list)
+          })
+          resolve()
+        }
+      })
+    })
   },
 
   fetchRegionList: function () {
     var that = this
     // 获取部门信息
     api.phpRequest({
-      url: 'department.php',
-      success: function (res) {
-        var list = res.data
-        list = that.data.regionList.concat(list)
-        that.setData({
-          regionList: list
-        })
-      }
-    })
-  },
-
-  fetchSubRegionList: function () {
-    var that = this
-    // 获取部门信息
-    api.phpRequest({
-      url: 'department_sub.php',
-      data: {
-        'department_id': that.data.regionId
-      },
-      success: function (res) {
-        var list = res.data
-        list = that.data.subRegionList.concat(list)
-        that.setData({
-          subRegionList: list
-        })
+      url: 'departmentlist.php',
+      success: (res) => {
+        (async (res) => {
+          for (let i in res.data) {
+            await that.fetchSubRegionList(res.data[i].department_id)
+          }
+        })(res)
       }
     })
   },
@@ -94,31 +100,14 @@ Page({
     api.phpRequest({
       url: 'project.php',
       data: {
-        'department_sub_id': that.data.subRegionId
+        userid: wx.getStorageSync('userId'),
+        qymc: that.data.regionList[that.data.regionIdx].name
       },
       success: function (res) {
         var list = res.data
         list = that.data.projectList.concat(list)
         that.setData({
           projectList: list
-        })
-      }
-    })
-  },
-
-  fetchSubProjectList: function () {
-    var that = this
-    // 获取子项目列表
-    api.phpRequest({
-      url: 'project_sub.php',
-      data: {
-        'project_id': that.data.projectId
-      },
-      success: function (res) {
-        var list = res.data
-        list = that.data.subProjectList.concat(list)
-        that.setData({
-          subProjectList: list
         })
       }
     })
@@ -146,21 +135,6 @@ Page({
     })
   },
 
-  fetchQuesList: function () {
-    var that = this
-    // 获取问题类型列表
-    api.phpRequest({
-      url: 'problem.php',
-      success: function (res) {
-        var list = res.data
-        list = that.data.quesList.concat(list)
-        that.setData({
-          quesList: list
-        })
-      }
-    })
-  },
-
   bindRegionChange: function (e) {
     var idx = e.detail.value
     var that = this
@@ -169,27 +143,11 @@ Page({
       regionId: that.data.regionList[idx].department_id
     }, () => {
       if (that.data.regionIdx != 0) {
-        that.initSubRegionList(that.fetchSubRegionList)
-      } else {
-        that.initSubRegionList()
-      }
-      that.fetchList()
-    })
-  },
-
-  bindSubRegionChange: function (e) {
-    var idx = e.detail.value
-    var that = this
-    that.setData({
-      subRegionIdx: idx,
-      subRegionId: that.data.subRegionList[idx].department_sub_id
-    }, () => {
-      if (that.data.subRegionIdx != 0) {
         that.initProjectList(that.fetchProjectList)
       } else {
         that.initProjectList()
       }
-      that.fetchList()
+      that.fetchTaskList()
     })
   },
 
@@ -199,40 +157,7 @@ Page({
     that.setData({
       proIdx: idx,
       projectId: this.data.projectList[idx].project_id
-    }, () => {
-      if (that.data.proIdx != 0) {
-        that.initSubProjectList(that.fetchSubProjectList)
-      } else {
-        that.initSubProjectList()
-      }
-      that.fetchList()
-    })
-  },
-
-  bindSubProjectChange: function (e) {
-    var idx = e.detail.value
-    this.setData({
-      subProIdx: idx,
-      subProjectId: this.data.subProjectList[idx].project_sub_id
-    }, this.fetchList)
-  },
-
-  bindQuesChange: function (e) {
-    var idx = e.detail.value
-    this.setData({
-      quesIdx: idx,
-      quesId: this.data.quesList[idx].problem_id
-    }, this.fetchList)
-  },
-
-  initSubRegionList: function (fn) {
-    this.setData({
-      subRegionList: [{"name": "请选择公司", "department_id": 0}],
-      subRegionIdx: 0,
-      subRegionId: 0
-    }, () => {
-      if (fn) { fn() }
-    })
+    }, that.fetchTaskList)
   },
 
   initProjectList: function (fn) {
@@ -240,16 +165,6 @@ Page({
       projectList: [{"name": "请选择项目", "project_id": 0}],
       proIdx: 0,
       projectId: 0
-    }, () => {
-      if (fn) { fn() }
-    })
-  },
-
-  initSubProjectList: function (fn) {
-    this.setData({
-      subProjectList: [{"name": "请选择子项目", "project_id": 0}],
-      subProIdx: 0,
-      subProjectId: 0
     }, () => {
       if (fn) { fn() }
     })
@@ -282,11 +197,8 @@ Page({
       userid: wx.getStorageSync('userId')
     }
     if (that.data.regionIdx != 0) {data["department_id"] = that.data.regionId}
-    if (that.data.subRegionIdx != 0) {data["department_sub_id"] = that.data.subRegionId}
     if (that.data.projectId != 0) {data["project_id"] = that.data.projectId}
-    if (that.data.subProjectId != 0) {data["project_sub_id"] = that.data.subProjectId}
     if (that.data.systemId != 0) {data["industry_id"] = that.data.systemId}
-    if (that.data.quesId != 0) {data["problem_id"] = that.data.quesId}
     if (that.data.startDate != "请选择开始时间") {data["startDate"] = that.data.startDate}
     if (that.data.endDate != "请选择结束时间") {data["endDate"] = that.data.endDate}
     api.phpRequest({

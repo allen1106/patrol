@@ -19,12 +19,6 @@ Page({
     commentImgList: [],
     count: 3,
     comments: [],
-    selectAll: [],
-    memberList: {},
-    memberCheckedList: [],
-    selectAll1: [],
-    memberList1: {},
-    memberCheckedList1: [],
     commentContent: "",
   },
 
@@ -50,8 +44,8 @@ Page({
         that.setData({
           id: id,
           reportInfo: res.data,
-          imageList: res.data.imgs && res.data.imgs.split('|'),
-          image1List: res.data.imgs1 && res.data.imgs1.split('|')
+          imageList: res.data.imgs && res.data.imgs.split(','),
+          image1List: res.data.imgs1 && res.data.imgs1.split(',')
         })
       }
     })
@@ -73,19 +67,26 @@ Page({
         }
       })
     }
-    // 获取部门信息
-    api.phpRequest({
-      url: 'department_sub_list.php',
-      success: function (res) {
-        console.log(res.data)
-        that.setData({
-          departmentList: res.data
-        }, () => {
-          // that.fetchMemberListWrapper()
-          // that.fetchMemberListWrapper1()
-        })
-      }
-    })
+  },
+
+  onShow: function () {
+    var that = this
+    manager.onStop = (res) => {
+      that.bindInput(res.result)
+    }
+
+    manager.onStart = (res) => {
+      console.log("正在聆听", res)
+      wx.showToast({
+        title: "正在聆听，松开结束语音",
+      })
+    }
+    manager.onError = (res) => {
+      console.log("error msg", res)
+      wx.showToast({
+        title: '说话时间太短，请重试',
+      })
+    }
   },
 
   getImgList: function (index) {
@@ -256,177 +257,6 @@ Page({
     that.uploadImg(url, data)
   },
 
-  
-  fetchMemberListWrapper: function () {
-    var that = this
-    api.phpRequest({
-      url: 'report_cs.php',
-      data: {
-        report_id: that.data.id
-      },
-      success: function (res) {
-        console.log(res.data)
-        that.setData({
-          memberCheckedList: res.data
-        }, that.fetchMemberList)
-      }
-    })
-  },
-
-  fetchMemberListWrapper1: function () {
-    var that = this
-    api.phpRequest({
-      url: 'report_cs1.php',
-      data: {
-        report_id: that.data.id
-      },
-      success: function (res) {
-        console.log(res.data)
-        that.setData({
-          memberCheckedList1: res.data
-        }, that.fetchMemberList1)
-      }
-    })
-  },
-
-  fetchMemberList: function () {
-    var that = this
-    for (var i in that.data.departmentList) {
-      that.data.memberList[i] = []
-      that.data.selectAll.push(false)
-      that.fetchMember(i)
-    }
-  },
-
-  fetchMemberList1: function () {
-    var that = this
-    for (var i in that.data.departmentList) {
-      that.data.memberList1[i] = []
-      that.data.selectAll1.push(false)
-      that.fetchMember1(i)
-    }
-  },
-
-  fetchMember: function (i) {
-    var that = this
-    api.phpRequest({
-      url: 'user.php',
-      data: {
-        departmentid: that.data.departmentList[i].department_id
-      },
-      success: function (res) {
-        var flag = 0
-        for (var j in res.data) {
-          if (that.data.memberCheckedList.indexOf(res.data[j].id) != -1) {
-            res.data[j].checked = true
-            flag++
-          }
-        }
-        that.data.selectAll[i] = res.data.length != 0 && res.data.length == flag
-        that.data.memberList[i] = res.data
-        that.setData({
-          memberList: that.data.memberList,
-          selectAll: that.data.selectAll
-        })
-      }
-    })
-  },
-
-  fetchMember1: function (i) {
-    var that = this
-    api.phpRequest({
-      url: 'user.php',
-      data: {
-        departmentid: that.data.departmentList[i].department_id
-      },
-      success: function (res) {
-        var flag = 0
-        for (var j in res.data) {
-          if (that.data.memberCheckedList1.indexOf(res.data[j].id) != -1) {
-            res.data[j].checked = true
-            flag++
-          }
-        }
-        that.data.selectAll1[i] = res.data.length != 0 && res.data.length == flag
-        that.data.memberList1[i] = res.data
-        that.setData({
-          memberList1: that.data.memberList1,
-          selectAll1: that.data.selectAll1
-        })
-      }
-    })
-  },
-
-  // bindSelectAll: function (e) {
-  //   var that = this
-  //   var index = e.currentTarget.dataset.sidx
-  //   var isAll = that.data.selectAll[index]
-  //   that.data.selectAll[index] = !isAll
-  //   var memberOjbs = that.data.memberList[index]
-  //   for (var i in memberOjbs) {
-  //     memberOjbs[i]["checked"] = !isAll
-  //   }
-  //   that.setData({
-  //     memberList: that.data.memberList,
-  //     selectAll: that.data.selectAll
-  //   })
-  // },
-
-  // bindSelectAll1: function (e) {
-  //   var that = this
-  //   var index = e.currentTarget.dataset.sidx
-  //   var isAll = that.data.selectAll1[index]
-  //   that.data.selectAll1[index] = !isAll
-  //   var memberOjbs = that.data.memberList1[index]
-  //   for (var i in memberOjbs) {
-  //     memberOjbs[i]["checked"] = !isAll
-  //   }
-  //   that.setData({
-  //     memberList1: that.data.memberList1,
-  //     selectAll1: that.data.selectAll1
-  //   })
-  // },
-
-  // bindSelect: function (e) {
-  //   var that = this
-  //   var value = e.currentTarget.dataset
-  //   var memberOjbs = that.data.memberList[value.sidx]
-  //   memberOjbs[value.midx]["checked"] = !memberOjbs[value.midx]["checked"]
-  //   that.setData({
-  //     memberList: that.data.memberList
-  //   })
-  //   var flag = 0
-  //   for (var i in that.data.memberList[value.sidx]) {
-  //     if (that.data.memberList[value.sidx][i].checked) {
-  //       flag++
-  //     }
-  //   }
-  //   that.data.selectAll[value.sidx] = that.data.memberList[value.sidx].length != 0 && that.data.memberList[value.sidx].length == flag
-  //   that.setData({
-  //     selectAll: that.data.selectAll
-  //   })
-  // },
-
-  // bindSelect1: function (e) {
-  //   var that = this
-  //   var value = e.currentTarget.dataset
-  //   var memberOjbs = that.data.memberList1[value.sidx]
-  //   memberOjbs[value.midx]["checked"] = !memberOjbs[value.midx]["checked"]
-  //   that.setData({
-  //     memberList1: that.data.memberList1
-  //   })
-  //   var flag = 0
-  //   for (var i in that.data.memberList1[value.sidx]) {
-  //     if (that.data.memberList1[value.sidx][i].checked) {
-  //       flag++
-  //     }
-  //   }
-  //   that.data.selectAll1[value.sidx] = that.data.memberList1[value.sidx].length != 0 && that.data.memberList1[value.sidx].length == flag
-  //   that.setData({
-  //     selectAll1: that.data.selectAll1
-  //   })
-  // },
-
   bindSetComment: function (res) {
     var that = this
     that.bindInput = (res) => {
@@ -436,6 +266,16 @@ Page({
     }
     manager.start({
       lang: "zh_CN"
+    })
+  },
+
+  bindTouchUp: function () {
+    var that = this
+    manager.stop()
+    wx.showToast({
+      title: '正在解析……',
+      icon: 'loading',
+      duration: 2000
     })
   },
 
