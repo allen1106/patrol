@@ -208,23 +208,41 @@
   </view>
 
   <view class="comment-list">
-    <view class="comment-item" wx:for="{{comments}}" wx:key="index">
-      <text class="content">{{comments[index].evaluate_content}}</text>
-      <view class="image-wrapper">
-        <view class="img-upload-container" data-index="3">
-          <view class="img-preview-container" wx:for="{{comments[index].evaluate_imgs}}" wx:key="item" wx:for-item="url" wx:for-index="cidx">
-            <image class="img-preview" src="{{url}}" data-src="{{url}}" data-index="3" data-cidx="{{index}}" bindtap="previewImage"></image>
-            <!-- <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{imageList[index]}}" data-index="1"></image> -->
+    <view class="comment-item" wx:for="{{comments}}" wx:key="index" wx:for-item="commentObj">
+      <view class="title" wx:if="{{commentObj.evaluate_list.length > 0}}">驳回处理意见：</view>
+      <view class="title" wx:else>处理意见：</view>
+      <view class="content-item">
+        <text class="content">{{commentObj.evaluate_content}}</text>
+        <view class="image-wrapper">
+          <view class="img-upload-container" data-index="3">
+            <view class="img-preview-container" wx:for="{{commentObj.evaluate_imgs}}" wx:key="item" wx:for-item="url" wx:for-index="cidx">
+              <image class="img-preview" src="{{url}}" data-src="{{url}}" data-index="3" data-cidx="{{index}}" bindtap="previewImage"></image>
+            </view>
           </view>
-          <!-- <view class="img-preview-container" data-index="1" bindtap="chooseImage" wx:if="{{image1List.length < count}}">
-            <image class="img-preview" src="/imgs/report/1.png"></image>
-          </view> -->
+        </view>
+        <view class="raw-info">
+          <text>{{commentObj.evaluate_name}}</text>
+          <text>{{commentObj.evaluate_time}}</text>
         </view>
       </view>
-      <text>{{item.evaluate_name}}</text>
-      <text>{{item.evaluate_time}}</text>
+      <view class="content-item" wx:for="{{commentObj.evaluate_list}}" wx:for-item="contentObj">
+        <text class="content">{{contentObj.evaluate_content}}</text>
+        <view class="image-wrapper">
+          <view class="img-upload-container" data-index="3">
+            <view class="img-preview-container" wx:for="{{contentObj.evaluate_imgs}}" wx:key="item" wx:for-item="url" wx:for-index="cidx">
+              <image class="img-preview" src="{{url}}" data-src="{{url}}" data-index="3" data-cidx="{{index}}" bindtap="previewImage"></image>
+            </view>
+          </view>
+        </view>
+        <view class="raw-info">
+          <text>{{contentObj.evaluate_name}}</text>
+          <text>{{contentObj.evaluate_time}}</text>
+        </view>
+      </view>
     </view>
   </view>
+
+
   <view class="foot">
     <view class="comment-wrapper">
       <text wx:for="{{commonList}}"></text>

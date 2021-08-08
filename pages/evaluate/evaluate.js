@@ -60,6 +60,11 @@ Page({
           console.log(res.data)
           for (var i in res.data) {
             res.data[i].evaluate_imgs = res.data[i].evaluate_imgs && res.data[i].evaluate_imgs.split(',')
+            if (res.data[i].evaluate_list) {
+              for (let j in res.data[i].evaluate_list) {
+                res.data[i].evaluate_list[j].evaluate_imgs = res.data[i].evaluate_list[j].evaluate_imgs && res.data[i].evaluate_list[j].evaluate_imgs.split(',')
+              }
+            }
           }
           that.setData({
             comments: res.data,
