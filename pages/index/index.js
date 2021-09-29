@@ -113,40 +113,9 @@ Page({
       })
     } else {
       let rid = Number(e.currentTarget.dataset.id)
-      if (rid == 0) {
-        // 获取位置信息，如果没有弹出提示框
-        wx.getSetting({
-          success: function (res) {
-            wx.getLocation({
-              type: 'gcj02',
-              altitude: true,//高精度定位
-              //定位成功，更新定位结果
-              success (res) {
-                wx.navigateTo({
-                  url: '/pages/report/report?id=' + rid + '&lng=' + res.longitude + '&lat=' + res.latitude,
-                })
-              },
-              //定位失败回调
-              fail: function () {
-                wx.showModal({
-                  title: '警告',
-                  content: '您没有授权获取位置信息，将无法提交报告。请10分钟后再次点击授权，或者删除小程序重新进入。',
-                  showCancel: false,
-                  confirmText: '我知道了'
-                })
-              },
-              complete: function () {
-                //隐藏定位中信息进度
-                wx.hideLoading()
-              }
-            })
-          }
-        })
-      } else {
-        wx.navigateTo({
-          url: '/pages/report/report?id=' + rid,
-        })
-      }
+      wx.navigateTo({
+        url: '/pages/report/report?id=' + rid,
+      })
     }
   },
 

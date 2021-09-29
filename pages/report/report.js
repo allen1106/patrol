@@ -61,8 +61,6 @@ Page({
     var that = this
     var id = Number(options.id)
     var isFb = Number(options.isFb)
-    let lng = Number(options.lng)
-    let lat = Number(options.lat)
     if (id == 0) {
       var info = app.globalData.userInfo
       that.setData({
@@ -73,11 +71,9 @@ Page({
           username: info.realname,
           time: util.formatTime(new Date())
         },
-        lng: lng,
-        lat: lat,
       }),
       console.log(app.globalData)
-      that.fetchRegionList(lng, lat)
+      that.fetchRegionList()
       that.fetchSystemList()
       that.fetchQuesList()
       that.setData({
@@ -536,7 +532,7 @@ Page({
   })
   },
 
-  fetchRegionList: function (lng, lat) {
+  fetchRegionList: function () {
     var that = this
     // 获取部门信息
     api.phpRequest({
@@ -549,27 +545,27 @@ Page({
           memberRegionList: regions
         }, () => {
           // 根据位置选择默认region
-          if (lng && lat) {
-            api.phpRequest({
-              url: 'location.php',
-              data: {
-                'lat': lat,
-                'lng': lng
-              },
-              success: function (res) {
-                let departId = res.data['location_department_id']
-                for (let i in list) {
-                  if (list[i].department_id == departId) {
-                    that.setData({
-                      regionIdx: i,
-                      regionId: departId
-                    })
-                    break
-                  }
-                }
-              }
-            })
-          }
+          // if (lng && lat) {
+          //   api.phpRequest({
+          //     url: 'location.php',
+          //     data: {
+          //       'lat': lat,
+          //       'lng': lng
+          //     },
+          //     success: function (res) {
+          //       let departId = res.data['location_department_id']
+          //       for (let i in list) {
+          //         if (list[i].department_id == departId) {
+          //           that.setData({
+          //             regionIdx: i,
+          //             regionId: departId
+          //           })
+          //           break
+          //         }
+          //       }
+          //     }
+          //   })
+          // }
           // 初始化人员选择的pannel,并默认选中第一个region
           that.chooseMemberRegion(0)
         })

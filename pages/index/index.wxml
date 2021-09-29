@@ -1,6 +1,6 @@
 <!--index.wxml-->
 <image src="/imgs/index/bg.png" class="page-wrapper">
-  <view class="header">绿地安徽产品力质量巡检系统</view>
+  <view class="header">绿地京津冀品控巡检系统</view>
   <view class="date-wrapper">
     <text>{{date}}</text>
     <text>{{workDay}}</text>
