@@ -1,52 +1,87 @@
 <!--index.wxml-->
-<image src="/imgs/index/bg.png" class="page-wrapper">
-  <view class="header">浙江绿地品控巡检系统</view>
-  <view class="date-wrapper">
-    <text>{{date}}</text>
-    <text>{{workDay}}</text>
-  </view>
+<image src="/imgs/index/bg-top.png" class="page-top">
+  <view class="header">金达质量品控管理系统</view>
 </image>
 
 <view class="container">
-  <view class="notification">
-    <image src="/imgs/index/7.png">
-      <view>{{mailInfo.number}}</view>
-    </image>
-    <text wx:if="{{showLogin}}">请先到个人中心进行登录</text>
-    <view class="text"  wx:if="{{!showLogin}}">
-      <text bindtap="navigateToEvaluate" data-isfb="0">您有{{mailInfo.number}}条任务待解决</text>
-      <text bindtap="navigateToTaskList" data-isfb="3">您收到{{mailInfo.number1}}条任务回复</text>
-      <text bindtap="navigateToEvaluate" data-isfb="1">您有{{mailInfo.number2}}任务解决通过</text>
+  <image mode="scaleToFill" src="/imgs/index/bg-panel.png" class="notification">
+    <view class="panel-wrapper">
+      <view class="date-wrapper">
+        <text class="work-day">{{workDay}}</text>
+        <text class="date">{{date}}</text>
+      </view>
+      <view class="text center-text" wx:if="{{showLogin}}">
+        <view class="text-wrapper">
+          <text>请先到个人中心进行登录</text>
+        </view>
+      </view>
+      <view class="text"  wx:if="{{!showLogin}}">
+        <view class="text-wrapper">
+          <image src="/imgs/index/icon-task.png"></image>
+          <text bindtap="navigateToEvaluate" data-isfb="0">您有 <text class="co-red">{{mailInfo.number}}</text> 条任务待解决</text>
+        </view>
+        <view class="text-wrapper">
+          <image src="/imgs/index/icon-msg.png"></image>
+          <text bindtap="navigateToTaskList" data-isfb="3">您收到 <text class="co-red">{{mailInfo.number1}}</text> 条任务回复</text>
+        </view>
+        <view class="text-wrapper">
+          <image src="/imgs/index/icon-success.png"></image>
+          <text bindtap="navigateToEvaluate" data-isfb="1">您有 <text class="co-red">{{mailInfo.number2}}</text> 任务解决通过</text>
+        </view>
+      </view>
     </view>
-  </view>
+  </image>>
+
   <view class="menu-list">
     <view class="menu-line">
-      <view class="menu-item bg-2" bindtap="navigateToEvaluate" data-isfb="0">
-        <text class="text-wrapper">待处理报告</text>
-      </view>
-      <view class="menu-item bg-6" bindtap="navigateToEvaluate" data-isfb="1">
-        <text class="text-wrapper">已处理报告</text>
-      </view>
+      <image mode="scaleToFill" class="menu-item" bindtap="navigateToReport" data-id="0" data-menu="1" src="/imgs/index/1.png">
+        <view class="image-wrapper">
+          <image src="/imgs/index/icon1.png"></image>
+          <text>发布问题</text>
+        </view>
+      </image>
+      <image mode="scaleToFill" class="menu-item" bindtap="navigateToTaskList" data-isfb="0" data-menu="2" src="/imgs/index/2.png">
+        <view class="image-wrapper">
+          <image src="/imgs/index/icon2.png"></image>
+          <text>草稿箱</text>
+        </view>
+      </image>
     </view>
     <view class="menu-line">
-      <view class="menu-item bg-4" bindtap="navigateToReport" data-id="0">
-        <text class="text-wrapper">发布巡检报告</text>
-      </view>
-      <view class="menu-item bg-5" bindtap="navigateToTaskList" data-isfb="0">
-        <text class="text-wrapper">草稿箱</text>
-      </view>
+      <image mode="scaleToFill" class="menu-item" bindtap="navigateToTaskList" data-isfb="1" data-menu="3" src="/imgs/index/3.png">
+        <view class="image-wrapper">
+          <image src="/imgs/index/icon3.png"></image>
+          <text>我的处理</text>
+        </view>
+      </image>
+      <image mode="scaleToFill" class="menu-item" bindtap="navigateToTaskList" data-isfb="3" data-menu="4" src="/imgs/index/4.png">
+        <view class="image-wrapper">
+          <image src="/imgs/index/icon4.png"></image>
+          <text>我的发布</text>
+        </view>
+      </image>
     </view>
     <view class="menu-line">
-      <view class="menu-item bg-2" bindtap="navigateToTaskList" data-isfb="3">
-        <text class="text-wrapper">已发布巡检报告</text>
-      </view>
-      <view class="menu-item bg-6" bindtap="navigateToStatistics" data-tab="1">
-        <text class="text-wrapper">表格统计</text>
-      </view>
+      <image mode="scaleToFill" class="menu-item" src="/imgs/index/5.png" bindtap="navigateToStatistics" data-tab="1" data-menu="5">
+        <view class="image-wrapper">
+          <image src="/imgs/index/icon5.png"></image>
+          <text>统计</text>
+        </view>
+      </image>
+      <image mode="scaleToFill" class="menu-item" bindtap="navigateToTaskList" data-isfb="0" data-menu="6" src="/imgs/index/6.png">
+        <view class="image-wrapper">
+          <image src="/imgs/index/icon6.png"></image>
+          <text>问题查看</text>
+        </view>
+      </image>
     </view>
   </view>
+
   <view class="btn-wrapper">
     <button class="btn-logout" bindtap="navigateToPersonal">个人中心</button>
     <button class="btn-logout" wx:if="{{!showLogin}}" bindtap="logout">退出登录</button>
   </view>
 </view>
+
+<image src="/imgs/index/bg-bottom.png" class="page-bottom">
+</image>

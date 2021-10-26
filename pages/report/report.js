@@ -535,48 +535,109 @@ Page({
   fetchRegionList: function () {
     var that = this
     // 获取部门信息
-    api.phpRequest({
-      url: 'department.php',
-      success: function (res) {
-        let regions = res.data
-        let list = that.data.regionList.concat(regions)
-        that.setData({
-          regionList: list,
-          memberRegionList: regions
-        }, () => {
-          // 根据位置选择默认region
-          // if (lng && lat) {
-          //   api.phpRequest({
-          //     url: 'location.php',
-          //     data: {
-          //       'lat': lat,
-          //       'lng': lng
-          //     },
-          //     success: function (res) {
-          //       let departId = res.data['location_department_id']
-          //       for (let i in list) {
-          //         if (list[i].department_id == departId) {
-          //           that.setData({
-          //             regionIdx: i,
-          //             regionId: departId
-          //           })
-          //           break
-          //         }
-          //       }
-          //     }
-          //   })
-          // }
-          // 初始化人员选择的pannel,并默认选中第一个region
-          that.chooseMemberRegion(0)
-        })
-        if (app.globalData.regionIdx) {
-          let regionObj = list[app.globalData.regionIdx]
-          that.setData({
-            regionIdx: app.globalData.regionIdx,
-            regionId: regionObj.department_id
-          }, that.fetchProjectList)
-        }
-      }
+    // api.phpRequest({
+    //   url: 'department.php',
+    //   success: function (res) {
+    //     let regions = res.data
+    //     let list = that.data.regionList.concat(regions)
+    //     that.setData({
+    //       regionList: list,
+    //       memberRegionList: regions
+    //     }, () => {
+    //       // 初始化人员选择的pannel,并默认选中第一个region
+    //       that.chooseMemberRegion(0)
+    //     })
+    //     if (app.globalData.regionIdx) {
+    //       let regionObj = list[app.globalData.regionIdx]
+    //       that.setData({
+    //         regionIdx: app.globalData.regionIdx,
+    //         regionId: regionObj.department_id
+    //       }, that.fetchProjectList)
+    //     }
+    //   }
+    // })
+    that.setData({
+      rawRegionList: [
+        {
+          id: 1,
+          name: "region1",
+          subList: [
+            {
+              id: 4,
+              name: "region11",
+              subList: [
+                {
+                  id: 6,
+                  name: "region111"
+                },
+                {
+                  id: 7,
+                  name: "region112"
+                },
+              ]
+            },
+            {
+              id: 5,
+              name: "region12"
+            },
+          ]
+        },
+        {
+          id: 2,
+          name: "region2",
+          subList: [
+            {
+              id: 8,
+              name: "region21",
+            },
+            {
+              id: 9,
+              name: "region22"
+            },
+          ]
+        },
+        {
+          id: 3,
+          name: "region3"
+        },
+      ],
+      regionList: [
+        [
+          {
+            id: 1,
+            name: "region1",
+          },
+          {
+            id: 2,
+            name: "region1",
+          },
+          {
+            id: 3,
+            name: "region3"
+          }
+        ],
+        [
+          {
+            id: 4,
+            name: "region11",
+          },
+          {
+            id: 5,
+            name: "region12"
+          },
+        ],
+        [
+          {
+            id: 6,
+            name: "region111"
+          },
+          {
+            id: 7,
+            name: "region112"
+          },
+        ]
+      ],
+      regionIdx: [0]
     })
   },
 
@@ -668,20 +729,49 @@ Page({
   },
 
   bindRegionChange: function (e) {
-    var idx = e.detail.value
-    var that = this
-    var lastRegionId = that.data.regionId
-    that.setData({
-      regionIdx: idx,
-      regionId: that.data.regionList[idx].department_id
-    }, () => {
-      app.globalData.regionIdx = idx
-      that.forceSelectManager(lastRegionId)
-      if (that.data.regionIdx != 0) {
-        that.initProjectList(that.fetchProjectList)
-      } else {
-        that.initProjectList()
+    this.setData({
+      regionIdx: e.detail.value
+    })
+  },
+
+  bindRegionColumnChange: function (e) {
+    // var idx = e.detail.value
+    // var that = this
+    // var lastRegionId = that.data.regionId
+    // that.setData({
+    //   regionIdx: idx,
+    //   regionId: that.data.regionList[idx].department_id
+    // }, () => {
+    //   app.globalData.regionIdx = idx
+    //   that.forceSelectManager(lastRegionId)
+    //   if (that.data.regionIdx != 0) {
+    //     that.initProjectList(that.fetchProjectList)
+    //   } else {
+    //     that.initProjectList()
+    //   }
+    // })
+    console.log("======>>>>>>")
+    let idxs = this.data.regionIdx,
+        lists = [this.data.rawRegionList]
+    idxs[e.detail.column] = e.detail.value
+    idxs = idxs.splice(0, e.detail.column + 1)
+    let data = this.data.rawRegionList[idxs[0]]
+    console.log(e.detail.column, idxs)
+    
+    let i = 1
+    while (data.subList) {
+      if ((idxs.length) < i + 1) {
+        idxs.push(0)
       }
+      data = data.subList[idxs[i]]
+      lists.push(data)
+      console.log(idxs)
+      console.log(lists)
+      console.log(data)
+    }
+    this.setData({
+      regionIdx: idxs,
+      regionList: lists
     })
   },
 

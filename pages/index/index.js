@@ -74,20 +74,7 @@ Page({
       })
     } else {
       wx.navigateTo({
-        url: '/pages/tasklist/tasklist?isEvaluate=0&isfb=' + e.currentTarget.dataset.isfb,
-      })
-    }
-  },
-
-  navigateToEvaluate: function (e) {
-    if (this.data.showLogin) {
-      wx.showToast({
-        title: '尚未登录',
-        icon: 'error',
-      })
-    } else {
-      wx.navigateTo({
-        url: '/pages/tasklist/tasklist?isEvaluate=1&isfb=' + e.currentTarget.dataset.isfb,
+        url: '/pages/tasklist/tasklist?isEvaluate=0&isfb=' + e.currentTarget.dataset.isfb + '&menu=' + e.currentTarget.dataset.menu,
       })
     }
   },

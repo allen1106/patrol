@@ -1,0 +1,29 @@
+<!--pages/group/group.wxml-->
+<view class="page-wrapper">
+  <view class="input-wrapper">
+    <input placeholder="请输入新分组名称"></input>
+    <view class="btn-wrapper">
+      <image src="/imgs/plus.png"></image>
+      <text>添加分组</text>
+    </view>
+  </view>
+  <checkbox-group bindchange="checkboxChange">
+    <block wx:for="{{groupList}}" wx:key="item">
+    <view class="item-wrapper">
+      <view class="group-item" data-rid="{{item.id}}" data-isfb="{{item.is_fb}}">
+        <checkbox data-rid="{{item.id}}" value="{{item.id}}"></checkbox>
+        <view class="content-wrapper" bindtap="viewReport">
+          <view class="title">
+            <text>{{item.name}}</text>
+            <text wx:if="{{item.label}}" class="co-red">{{item.label}}</text>
+            <text wx:if="{{item.label1}}" class="co-green">{{item.label1}}</text>
+          </view>
+          <view class="note">
+            <text>任务生成时间：{{item.task_time}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    </block>
+  </checkbox-group>
+</view>

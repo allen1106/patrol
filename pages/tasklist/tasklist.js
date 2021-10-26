@@ -40,10 +40,12 @@ Page({
    */
   onLoad: function (options) {
     var that = this
+    var menu = Number(options.menu)
     var isFb = Number(options.isfb)
     var isEvaluate = Number(options.isEvaluate)
     console.log(isFb, isEvaluate)
     that.setData({
+      menu: menu,
       isFb: isFb,
       isEvaluate: isEvaluate,
       userId: wx.getStorageSync('userId')
