@@ -1,67 +1,60 @@
-.swiper-tab {
-	width: 100%;
-	border-bottom: 2rpx solid #777777;
-	text-align: center;
-  line-height: 80rpx;
+@import '../../components/cascaded-picker-view/cascaded-picker-view.wxss';
+
+.cascaded-picker-view {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding: 0;
+  width: 100%;
+  background-color: #EAE7E8;
 }
 
-.swiper-tab-list {
-  font-size: 30rpx;
-  display: inline-block;
-	width: 50%;
-	color: #777777;
-}
-
-.on {
-  color: #4876FF;
-  border-bottom: 5rpx solid #4876FF;
-}
-
-.swiper-box {
-  display: block;
-  height: 100%;
-  width: 98%;
-  margin: 0 auto;
-  overflow: hidden;
-}
-
-.swiper-box view {
-	text-align: center;
-}
-
-.common-filter,
-.date-filter {
-  display: flex;
-  width: calc(95% - 40rpx);
-  height: 80rpx;
+.page-wrapper {
+  width: 100%;
   margin: 20rpx auto;
-  padding: 0 20rpx;
-  background-color: #4876FF;
-  border-radius: 20rpx;
-  color: #fff;
-  align-items: center;
-  justify-content: space-between;
   font-size: 20rpx;
 }
 
-.opt-wrapper {
-  height: 50rpx;
-  width: 50rpx;
+.nav-wrapper {
+  width: 95%;
+  height: 80rpx;
+  margin: 20rpx auto;
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 }
 
-.opt-wrapper image {
-  height: 50rpx;
-  width: 50rpx;
+.nav {
+  height: 100%;
+  margin-left: 20rpx;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #486AF0;
+  border-radius: 10rpx;
+  color: #fff;
+  font-size: 20rpx;
+}
+
+.nav.bg-down {
+  background-color: #9059FF;
+}
+
+.nav:nth-child(1) {
+  margin-left: 0;
 }
 
 .picker {
+  display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .picker text {
-  font-size: 24rpx;
+  font-size: 28rpx;
 }
 
 .picker image {
@@ -69,27 +62,16 @@
   height: 30rpx;
 }
 
-.user-filter {
-  display: flex;
-  width: calc(30% - 5rpx);
-  height: 80rpx;
-  margin-left: 5rpx;
-  background-color: #EAE7E8;
-  align-items: center;
-  justify-content: center;
-}
-
-.user-filter image {
-  width: 50rpx;
-  height: 50rpx;
-}
-
 .item-detail {
   display: flex;
   width: 100%;
   height: 120rpx;
-  margin-top: 10rpx;
-  background-color: #EAE7E8;
+  margin-top: 3rpx;
+  background-color: #DBDBF7;
+}
+
+.item-detail:nth-child(2n+1) {
+  background-color: #EDECFC;
 }
 
 .item-detail .img-wrapper {

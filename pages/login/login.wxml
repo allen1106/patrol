@@ -1,31 +1,37 @@
 <!--pages/login/login.wxml-->
-<form bindsubmit="loginBind">
-<view class="container" wx:if="{{bindInfo}}">
-  <image class="title" src="/imgs/login/2.png"></image> 
-  <view class="input-wrapper">
-    <image src="/imgs/login/4.png"></image>
-    <input type="text" placeholder="请输入您的账号/手机号" name="username"></input>
+<view class="page-wrapper bind" wx:if="{{bindInfo}}">
+  <view class="header">金达质量品控管理系统</view>
+  <form bindsubmit="loginBind">
+  <view class="bind-container">
+    <view class="title">绑定账号</view>
+    <view class="panel">
+      <view class="input-wrapper">
+        <image src="/imgs/login/icon-tel.png"></image>
+        <input type="text" placeholder="请输入您的账号/手机号" name="username"></input>
+      </view>
+      <view class="input-wrapper">
+        <image src="/imgs/login/icon-pass.png"></image>
+        <input type="password" placeholder="请输入您的密码" name="password"></input>
+      </view>
+      <button class="btn-login" formType="submit">立即登录</button>
+      <view class="link-wrapper">
+        <view class="tip-msg">还没有账号</view>
+        <view class="register" bindtap="navigateToRegister">点击注册</view>
+      </view>
+    </view>
   </view>
-  <view class="input-wrapper">
-    <image src="/imgs/login/3.png"></image>
-    <input type="password" placeholder="请输入您的密码" name="password"></input>
-  </view>
-  <button class="btn-login" formType="submit">登 录</button>
-  <view class="link-wrapper">
-    <view class="register" bindtap="navigateToRegister">注册>></view>
-  </view>
+  </form>
 </view>
-</form>
 
-<view class="login-container" wx:if="{{!bindInfo}}">
-  <view class="logo">
-    <image src="" mode="widthFix"></image>
-  </view>
-  <view class="tip-msg">
-    <text>申请获取您的公开信息（昵称、头像等）</text>
-  </view>
-  <view class="btn-login">
-    <button open-type="getUserInfo" bindgetuserinfo="login">微信登录</button>
-    <button bindtap="backToHome">暂不登录</button>
+
+<view class="page-wrapper auth" wx:if="{{!bindInfo}}">
+  <view class="login-container">
+    <view class="tip-msg">
+      <text>申请获取您的公开信息（昵称、头像等）</text>
+    </view>
+    <view class="btn-login">
+      <button bindtap="login">微信登录</button>
+      <button bindtap="backToHome">暂不登录</button>
+    </view>
   </view>
 </view>

@@ -25,12 +25,17 @@
       </view>
     </view>
   </view>
+
+
+  <view class="btn-group" bindtap="navigateToGroup">
+    <text>我的分组</text>
+  </view>
 </view>
 
-<view class="mask" wx:if="{{!userInfo.flag && showMask}}">
+<!-- <view class="mask" wx:if="{{!userInfo.flag && showMask}}">
   <view class="member-pannel">
     <image src="/imgs/close.png" class="btn-close" bindtap="bindClose"></image>
     <text>扫描并关注公众号以及时接收消息通知</text>
     <image src="{{userInfo.img}}"></image>
   </view>
-</view>
+</view> -->

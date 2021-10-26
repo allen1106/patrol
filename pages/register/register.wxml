@@ -1,44 +1,47 @@
 <!--pages/register/register.wxml-->
+<import src="../../components/cascaded-picker-view/cascaded-picker-view.wxml" />
+
 <form bindsubmit="register">
+<view bindtap="hidePicker">
 <view class="container">
   <view class="input-wrapper">
-    <input placeholder="请输入您的手机号" name="tel"></input>
     <image src="/imgs/register/1.png"></image>
+    <input placeholder="请输入您的手机号" name="tel"></input>
   </view>
   <view class="input-wrapper">
-    <input placeholder="在这里输入您的密码" name="password" type="password"></input>
     <image src="/imgs/register/2.png"></image>
+    <input placeholder="在这里输入您的密码" name="password" type="password"></input>
   </view>
   <view class="input-wrapper">
-    <input placeholder="请再次确认一遍密码" name="repeatpass" type="password"></input>
     <image src="/imgs/register/3.png"></image>
+    <input placeholder="请再次确认一遍密码" name="repeatpass" type="password"></input>
   </view>
-  <!-- <view class="input-wrapper">
-    <input placeholder="身份证号码" name="idnum"></input>
-    <image src="/imgs/register/4.png"></image>
-  </view> -->
   <view class="input-wrapper">
-    <input placeholder="姓名" name="realname"></input>
     <image src="/imgs/register/5.png"></image>
+    <input placeholder="姓名" name="realname"></input>
   </view>
-  <picker bindchange="bindPickerChange" value="{{didx}}" range="{{departmentList}}" range-key="name">
+  <block wx:for="{{extraDepart}}" wx:for-index="didx" wx:for-item="did">
     <view class="input-wrapper">
-      <input placeholder="所在部门" name="department" value="{{departmentList[didx].name}}" disabled="true"></input>
       <image src="/imgs/register/6.png"></image>
+      <input placeholder="所在部门" name="department" value="{{nextListMap[did].text}}" disabled="true" data-didx="{{didx}}" catchtap="showPicker" hover-stop-propagation="true"></input>
+      <image class="small-img" src="/imgs/plus.png" bindtap="bindAddDepart" wx:if="{{didx == 0}}"></image>
+      <image src="/imgs/close.png" data-idx="{{didx}}" bindtap="bindDelDepart" wx:if="{{didx != 0}}"></image>
     </view>
-  </picker>
-  <picker bindchange="bindSystemChange" value="{{sidx}}" range="{{systemList}}" range-key="name" wx:if="{{systemList.length > 0}}">
-    <view class="input-wrapper">
-      <input placeholder="所在专业" name="system" value="{{systemList[sidx].name}}" disabled="true"></input>
-      <image src="/imgs/register/6.png"></image>
-    </view>
-  </picker>
+  </block>
 </view>
 <view class="menu-wrapper">
   <view bindtap="navigateToLogin">
     <image src="/imgs/register/left.png"></image>
-    <text>前往登录</text>
+    <view>
+      <text>已有账号</text>
+      <text class="co-blue">前往登录</text>
+    </view>
   </view>
-  <button form-type="submit">注册</button>
+  <button form-type="submit">立即注册</button>
+</view>
 </view>
 </form>
+
+<view class="picker-mask" catchtouchmove="move" wx:if="{{showPicker}}">
+<template is="cascaded-picker-view" data="{{ data: areaPickerData }}" />
+</view>

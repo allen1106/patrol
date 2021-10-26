@@ -1,0 +1,107 @@
+/* pages/notify/detail.wxss */
+page {
+  background-color: #F2F2FC;
+}
+
+.page-wrapper {
+  width: 95%;
+  margin: 0 auto;
+}
+
+.content-panel,
+.member-panel {
+  margin-top: 20rpx;
+  padding: 20rpx 30rpx;
+  background-color: #fff;
+  border: 2rpx solid #DCDCDC;
+  border-radius: 10rpx;
+}
+
+.item-wrapper {
+  margin-top: 20rpx;
+  color: #000;
+}
+
+.item-wrapper .content {
+  color: #A9A9A9;
+}
+
+.item-wrapper .image-panel {
+  background-color: #fff;
+  border: 2rpx solid #DCDCDC;
+  border-radius: 20rpx;
+}
+
+
+.img-upload-container {
+  width: 100%;
+  vertical-align: top;
+  overflow: hidden;
+}
+
+.img-upload-container view {
+  display: inline-block;
+  vertical-align: top;
+  width: 120rpx;
+  height: 120rpx;
+}
+
+.img-upload-container .img-preview {
+  width: 100%;
+  height: 100%;
+}
+
+.img-upload-container .img-preview-container {
+  position: relative;
+  padding: 20rpx;
+  float: left;
+}
+
+.img-upload-container .img-preview-container .img-close {
+  position: absolute;
+  width: 30rpx;
+  height: 30rpx;
+  right: 15rpx;
+  top: 15rpx;
+}
+
+.member-panel .header {
+  height: 60rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 28rpx;
+}
+
+.member-panel .header .switchTab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.member-panel .header .switchTab view.inactive {
+  color: #A9A9A9;
+}
+
+.member-panel .header .switchTab view:nth-child(2n+2) {
+  margin-left: 20rpx;
+}
+
+.member-panel .header .btn-view text:nth-child(2n+2) {
+  margin-left: 10rpx;
+}
+
+.member-panel .member-wrapper {
+  width: 100%;
+  padding: 20rpx 0;
+  height: 200rpx;
+}
+
+.member-panel .member-wrapper .text {
+  display: inline-flex;
+  width: 25%;
+  height: 50rpx;
+  align-items: center;
+  justify-content: center;
+}

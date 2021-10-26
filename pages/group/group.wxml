@@ -1,0 +1,42 @@
+<!--pages/group/group.wxml-->
+<view class="page-wrapper">
+  <view class="input-wrapper">
+    <input placeholder="请输入新分组名称" value="{{title}}" bindinput="bindInputTitle"></input>
+    <view class="btn-add" bindtap="navToAdd">
+      <image src="/imgs/plus.png"></image>
+      <text>添加分组</text>
+    </view>
+  </view>
+  <view class="item-list">
+    <checkbox-group bindchange="checkboxChange">
+      <block wx:for="{{groupList}}" wx:key="item">
+      <view class="item-wrapper">
+        <view class="group-item" data-rid="{{item.id}}">
+          <checkbox data-rid="{{item.id}}" value="{{item.id}}" checked="{{item.checked}}"></checkbox>
+          <view class="content-wrapper">
+            <view class="title">
+              <text>{{item.name}}</text>
+            </view>
+            <view class="num">
+              <text>{{item.num}}人</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      </block>
+    </checkbox-group>
+  </view>
+
+  <view class="btn-wrapper">
+    <view class="btn-download" bindtap="bindSelectAll">
+      <image src="/imgs/report/select.png"></image>
+      <text wx:if="{{selectAll}}">全不选</text>
+      <text wx:else>全选</text>
+    </view>
+    <view class="btn-download" bindtap="bindBatchDelete">
+      <image src="/imgs/report/download.png"></image>
+      <text>删除</text>
+    </view>
+  </view>
+
+</view>

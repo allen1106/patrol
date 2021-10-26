@@ -72,6 +72,11 @@ Page({
       url: '/pages/tasklist/tasklist?isfb=1&isEvaluate=' + isEvaluate,
     })
   },
+  navigateToGroup: function () {
+    wx.navigateTo({
+      url: '/pages/group/group'
+    })
+  },
   bindClose: function () {
     this.setData({
       showMask: 0

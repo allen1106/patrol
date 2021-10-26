@@ -1,0 +1,75 @@
+<!--pages/group/add.wxml-->
+<view class="page-wrapper">
+  <view class="assign">
+    <view class="header">
+      <text>本组人员</text>
+    </view>
+    <scroll-view class="scroll-view-common name-pannel" scroll-y>
+      <block wx:for="{{departMemberMap}}" wx:for-item="memberList" wx:for-index="did">
+        <block wx:for="{{memberList}}" wx:for-item="memberObj" wx:for-index="midx">
+          <view class="member-item" wx:if="{{memberObj.checked}}">
+            <text>{{memberObj.realname}}</text>
+            <image src="/imgs/close.png" bindtap="delMember" data-did="{{did}}" data-midx="{{midx}}"></image>
+          </view>
+        </block>
+      </block>
+    </scroll-view>
+
+    <view class="input-wrapper">
+      <input name="searchkey" value="{{reg}}" placeholder="请输入检索姓名" bindinput="bindInputReg"></input>
+      <view class="image" bindtap="searchName1">
+        <image src="/imgs/report/icon_search.png"></image>
+      </view>
+    </view>
+
+    <view class="depart-wrapper">
+      <view class="title" wx:if="{{stackLen > 1}}" bindtap="bindReturnRegion">
+        <image src="/imgs/report/icon_return.png"></image>
+        <text>上一级</text>
+      </view>
+      <scroll-view class="scroll-view-common depart-pannel" scroll-y>
+        <view class="region-item" wx:for="{{stackPeek}}" wx:for-item="regionObj" bindtap="bindClickRegion" data-region="{{regionObj}}">
+          <text>{{regionObj.text}}</text>
+          <image src="/imgs/register/left.png"></image>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</view>
+
+<view class="btn-wrapper">
+  <view bindtap="bindBackToIndex">
+    <image src="/imgs/report/select.png"></image>
+    <text>取消</text>
+  </view>
+  <view data-id="0" bindtap="bindBatchSubmit">
+    <image src="/imgs/report/download.png"></image>
+    <text>保存</text>
+  </view>
+</view>
+
+<view class="mask" wx:if="{{showMember}}">
+  <view class="member-pannel">
+    <view class="title">
+      <text>全部成员</text>
+      <image src="/imgs/close.png" bindtap="bindHideMask"></image>
+    </view>
+    <view class="search-pannel">
+      <view class="input-pannel">
+        <input placeholder="搜索" value="{{reg}}" bindinput="bindInputReg"></input>
+        <image src="/imgs/report/icon_search.png" bindtap="bindSearchHandler"></image>
+      </view>
+    </view>
+    <scroll-view class="choose-pannel" scroll-y>
+      <checkbox-group bindchange="bindPickMember">
+        <block wx:for="{{departMemberMap}}" wx:for-item="memberList">
+          <block wx:for="{{memberList}}" wx:for-item="member">
+            <view class="checkbox" wx:if="{{member.inbox && !member.hide}}">
+              <checkbox value="{{member.id}}" checked="{{member.checked}}">{{member.realname}}</checkbox>
+            </view>
+          </block>
+        </block>
+      </checkbox-group>
+    </scroll-view>
+  </view>
+</view>

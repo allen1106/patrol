@@ -17,19 +17,23 @@
 		"checkInvalidKey": true,
 		"checkSiteMap": true,
 		"uploadWithSourceMap": true,
-		"compileHotReLoad": false,
 		"babelSetting": {
 			"ignore": [],
 			"disablePlugins": [],
 			"outputPath": ""
 		},
-		"useIsolateContext": true,
 		"useCompilerModule": false,
-		"userConfirmedUseCompilerModuleSwitch": false
+		"userConfirmedUseCompilerModuleSwitch": false,
+		"compileHotReLoad": false,
+		"useIsolateContext": true,
+		"minifyWXML": true,
+		"useMultiFrameRuntime": true,
+		"useApiHook": true,
+		"useApiHostProcess": true
 	},
 	"compileType": "miniprogram",
-	"libVersion": "2.11.1",
-	"appid": "wx17ab7519ff5ebf2b",
+	"libVersion": "2.11.2",
+	"appid": "wx5e12a998476986a7",
 	"projectname": "patrol",
 	"debugOptions": {
 		"hidedInDevtools": []
@@ -39,11 +43,9 @@
 	"simulatorPluginLibVersion": {},
 	"condition": {
 		"search": {
-			"current": -1,
 			"list": []
 		},
 		"conversation": {
-			"current": -1,
 			"list": []
 		},
 		"game": {
@@ -51,7 +53,6 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": -1,
 			"list": []
 		}
 	}

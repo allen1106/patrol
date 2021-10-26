@@ -1,78 +1,48 @@
+<import src="../../components/cascaded-picker-view/cascaded-picker-view.wxml" />
+
 <form bindsubmit="bindSubmitForm" bindreset="bindBackToIndex">
-<view class="page-wrapper">
+<view class="page-wrapper" bindtap="hidePicker">
   <view class="header" wx:if="{{id != 0}}">
     <view class="title">{{reportInfo.head_title}}</view>
     <view class="opt-wrapper">
       <image bindtap="download" src="/imgs/report/2.png"></image>
     </view>
   </view>
-  <view class="nav" wx:if="{{id == 0}}">
-    <view class="region">
-      <picker bindchange="bindRegionChange" value="{{regionIdx}}" range="{{regionList}}" range-key="name">
+  <view class="nav-wrapper">
+    <view class="nav" wx:if="{{id == 0}}">
+      <view class="region" catchtap="showPicker" hover-stop-propagation="true">
         <view class="picker">
-          <text>{{regionList[regionIdx].name}}</text>
+          <text>{{nextListMap[departId].text || '请选择公司'}}</text>
           <image src="/imgs/down.png"></image>
         </view>
-      </picker>
+      </view>
     </view>
-    <view class="project">
-      <picker bindchange="bindProjectChange" value="{{proIdx}}" range="{{projectList}}" range-key="name">
-        <view class="picker">
+    <view class="nav" wx:if="{{id == 0}}">
+      <view class="project">
+        <picker class="picker" bindchange="bindProjectChange" value="{{proIdx}}" range="{{projectList}}" range-key="name">
           <text>{{projectList[proIdx].name}}</text>
           <image src="/imgs/down.png"></image>
-        </view>
-      </picker>
+        </picker>
+      </view>
     </view>
-  </view>
-  <view class="nav" wx:if="{{id == 0}}">
-    <view class="system">
-      <picker bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
-        <view class="picker">
+    <view class="nav" wx:if="{{id == 0}}">
+      <view class="system">
+        <picker class="picker" bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
           <text>{{systemList[sysIdx].name}}</text>
           <image src="/imgs/down.png"></image>
-        </view>
-      </picker>
-    </view>
-    <view class="question">
-      <picker bindchange="bindQuesChange" value="{{quesIdx}}" range="{{quesList}}" range-key="name">
-        <view class="picker">
-          <text>{{quesList[quesIdx].name}}</text>
-          <image src="/imgs/down.png"></image>
-        </view>
-      </picker>
+        </picker>
+      </view>
     </view>
   </view>
+
   <view class="summary" wx:if="{{id==0}}">
     <view>巡检人：{{reportInfo.username}}</view>
     <view>巡检时间：{{reportInfo.time}}</view>
   </view>
-  <view class="summary" wx:if="{{id!=0}}">
-    <view>
-      <text>任务编号：{{reportInfo.bgbh}}</text>
-    </view>
-    <view>
-      <text>公司：{{reportInfo.gsmc}}</text>
-    </view>
-    <view>
-      <text>项目名称：{{reportInfo.xmmc}}</text>
-    </view>
-    <view>
-      <text>专业名称：{{reportInfo.zymc}}</text>
-      <text>问题类型：{{reportInfo.wtlx}}</text>
-    </view>
-    <view>
-      <text>推送给：{{reportInfo.pjrlb}}</text>
-    </view>
-    <view>
-      <text>抄送给：{{reportInfo.csrlb}}</text>
-    </view>
-    <view>
-      <text>发起时间：{{reportInfo.task_time}}</text>
-    </view>
-  </view>
+
   <view class="description">
     <view class="item-wrapper">
-      <view class="label">问题简述<text class="co-red">*</text></view>
+      <view class="label">标题<text class="co-red">*</text></view>
       <view class="input">
         <textarea bindinput="bindInputTitle" value="{{reportInfo.title || title}}" name="title" wx:if="{{id==0 || isFb==0}}"></textarea>
         <text wx:else>{{reportInfo.title}}</text>
@@ -84,7 +54,43 @@
       </view>
     </view>
     <view class="item-wrapper">
-      <view class="label small-label">添加照片</view>
+      <view class="label">原因<text class="co-red">*</text></view>
+      <view class="input">
+        <textarea bindinput="bindInputReason" value="{{reportInfo.reason || reason}}" name="reason" wx:if="{{id==0 || isFb==0}}"></textarea>
+        <text wx:else>{{reportInfo.reason}}</text>
+        <view bindtouchstart="bindSetReason"
+          bindtouchend="bindTouchUp"
+          class="btn-speak" wx:if="{{id==0 || isFb==0}}">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
+    </view>
+    <view class="item-wrapper">
+      <view class="label">解决办法<text class="co-red">*</text></view>
+      <view class="input">
+        <textarea bindinput="bindInputSolve" value="{{reportInfo.solve || solve}}" name="solve" wx:if="{{id==0 || isFb==0}}"></textarea>
+        <text wx:else>{{reportInfo.solve}}</text>
+        <view bindtouchstart="bindSetSolve"
+          bindtouchend="bindTouchUp"
+          class="btn-speak" wx:if="{{id==0 || isFb==0}}">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
+    </view>
+    <view class="item-wrapper">
+      <view class="label">部位<text class="co-red">*</text></view>
+      <view class="input">
+        <textarea bindinput="bindInputPos" value="{{reportInfo.pos || pos}}" name="pos" wx:if="{{id==0 || isFb==0}}"></textarea>
+        <text wx:else>{{reportInfo.pos}}</text>
+        <view bindtouchstart="bindSetPos"
+          bindtouchend="bindTouchUp"
+          class="btn-speak" wx:if="{{id==0 || isFb==0}}">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
+    </view>
+    <view class="item-wrapper">
+      <view class="label small-label">现场图片</view>
       <view class="image-wrapper">
         <view class="img-upload-container">
           <view class="img-preview-container" wx:for="{{imageList}}" wx:key="index">
@@ -98,18 +104,7 @@
       </view>
     </view>
     <view class="item-wrapper">
-      <view class="label">建议解决办法</view>
-      <view class="input">
-        <textarea bindinput="bindInputSolve" value="{{reportInfo.solve || solve || ''}}" name="solve" wx:if="{{id==0 || isFb==0}}"></textarea>
-        <text wx:else>{{reportInfo.solve || ''}}</text>
-        <view bindtouchstart="bindSetSolve"
-          bindtouchend="bindTouchUp"
-          class="btn-speak" wx:if="{{id==0 || isFb==0}}">
-          <image src="/imgs/report/icon-speak.png"></image>
-        </view>
-      </view>
-    </view>
-    <view class="item-wrapper">
+      <view class="label small-label">参照做法和要求</view>
       <view class="image-wrapper">
         <view class="img-upload-container" data-index="1">
           <view class="img-preview-container" wx:for="{{image1List}}" wx:key="index">
@@ -129,47 +124,74 @@
         <text wx:else>{{reportInfo.term}}</text>
       </view>
     </view>
+    <view class="item-wrapper">
+      <view class="label">备注</view>
+      <view class="input">
+        <textarea bindinput="bindInputRemark" value="{{reportInfo.remark || remark}}" name="remark" wx:if="{{id==0 || isFb==0}}"></textarea>
+        <text wx:else>{{reportInfo.remark || ''}}</text>
+        <view bindtouchstart="bindSetRemark"
+          bindtouchend="bindTouchUp"
+          class="btn-speak" wx:if="{{id==0 || isFb==0}}">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
+    </view>
   </view>
 
-  <view class="assign" wx:if="{{id==0 || isFb==0}}">
+  <view class="assign" wx:if="{{id==0}}">
     <view class="title">
-      <text class="{{currentTab==0 ? 'active' : ''}}" bindtap="switchAssignTab" data-tab="0">推送给：</text>
-      <text class="{{currentTab==1 ? 'active' : ''}}" bindtap="switchAssignTab" data-tab="1">抄送给：</text>
+      <view class="{{currentTab==0 ? 'active' : ''}}" bindtap="switchAssignTab" data-tab="0">
+        <image src="/imgs/report/save_draft.png"></image>
+        <text>推送给Ta</text>
+      </view>
+      <view class="{{currentTab==1 ? 'active' : ''}}" bindtap="switchAssignTab" data-tab="1">
+        <image src="/imgs/report/save_draft.png"></image>
+        <text>抄送给Ta</text>
+      </view>
     </view>
     <scroll-view wx:if="{{currentTab==0}}" class="scroll-view-common name-pannel" scroll-y>
-      <block wx:for="{{memberRegionList}}" wx:for-item="regionObj" wx:for-index="ridx">
-        <block wx:for="{{regionObj.departList}}" wx:for-item="departObj" wx:for-index="didx">
-          <block wx:for="{{departObj.memberList}}" wx:for-item="memberObj" wx:for-index="midx">
-            <view class="member-item" wx:if="{{memberObj.checked}}">
-              <image src="/imgs/report/delete.png" bindtap="delMember" data-ridx="{{ridx}}" data-didx="{{didx}}" data-midx="{{midx}}"></image>
-              <text>{{memberObj.realname}}</text>
-            </view>
-          </block>
+      <block wx:for="{{departMemberMap}}" wx:for-item="memberList" wx:for-index="did">
+        <block wx:for="{{memberList}}" wx:for-item="memberObj" wx:for-index="midx">
+          <view class="member-item" wx:if="{{memberObj.checked}}">
+            <text>{{memberObj.realname}}</text>
+            <image src="/imgs/close.png" bindtap="delMember" data-did="{{did}}" data-midx="{{midx}}"></image>
+          </view>
         </block>
       </block>
     </scroll-view>
     <scroll-view wx:if="{{currentTab==1}}" class="scroll-view-common name-pannel" scroll-y>
-      <block wx:for="{{memberRegionList}}" wx:for-item="regionObj" wx:for-index="ridx">
-        <block wx:for="{{regionObj.departList}}" wx:for-item="departObj" wx:for-index="didx">
-          <block wx:for="{{departObj.memberList}}" wx:for-item="memberObj" wx:for-index="midx">
-            <view class="member-item" wx:if="{{memberObj.checked1}}">
-              <image src="/imgs/report/delete.png" bindtap="delMember" data-ridx="{{ridx}}" data-didx="{{didx}}" data-midx="{{midx}}"></image>
-              <text>{{memberObj.realname}}</text>
-            </view>
-          </block>
+      <block wx:for="{{departMemberMap}}" wx:for-item="memberList" wx:for-index="did">
+        <block wx:for="{{memberList}}" wx:for-item="memberObj" wx:for-index="midx">
+          <view class="member-item" wx:if="{{memberObj.checked1}}">
+            <text>{{memberObj.realname}}</text>
+            <image src="/imgs/close.png" bindtap="delMember" data-did="{{did}}" data-midx="{{midx}}"></image>
+          </view>
         </block>
       </block>
     </scroll-view>
+
+    <view class="input-wrapper">
+      <input name="searchkey" value="{{reg}}" placeholder="请输入检索姓名" bindinput="bindInputReg"></input>
+      <view class="image" bindtap="searchName1">
+        <image src="/imgs/report/icon_search.png"></image>
+      </view>
+    </view>
+
     <view class="depart-wrapper">
-      <scroll-view class="scroll-view-common depart-pannel" scroll-y>
-        <view class="region-item {{curRegionIdx == ridx ? 'active': ''}}" wx:for="{{memberRegionList}}" wx:for-index="ridx" wx:for-item="regionObj" bindtap="bindClickRegion" data-idx="{{ridx}}">
-          {{regionObj.name}}
+      <view class="header">
+        <view wx:if="{{stackLen > 1}}" bindtap="bindReturnRegion">
+          <image src="/imgs/report/icon_return.png"></image>
+          <text>上一级</text>
         </view>
-      </scroll-view>
+        <view bindtap="bindNavToAddGroup">
+          <image src="/imgs/report/icon_plus.png"></image>
+          <text>添加分组</text>
+        </view>
+      </view>
       <scroll-view class="scroll-view-common depart-pannel" scroll-y>
-        <view class="depart-item {{curDepartIdx == didx ? 'active': ''}}" wx:for="{{memberRegionList[curRegionIdx].departList}}" wx:for-index="didx" wx:for-item="departObj" bindtap="bindClickDepart" data-didx="{{didx}}">
-          <text>{{departObj.name}}</text>
-          <text style="font-size: 28rpx;">></text>
+        <view class="region-item" wx:for="{{stackPeek}}" wx:for-item="regionObj" bindtap="bindClickRegion" data-region="{{regionObj}}">
+          <text>{{regionObj.text}}</text>
+          <image src="/imgs/register/left.png"></image>
         </view>
       </scroll-view>
     </view>
@@ -210,60 +232,65 @@
     </view>
   </view>
 
-  <view class="foot">
-    <view class="comment-wrapper">
-      <text wx:for="{{commonList}}"></text>
-    </view>
-    
-    <block wx:if="{{isFb==0}}">
-      <view class="btn-wrapper">
-        <button form-type="submit" data-id="1">提交</button>
-        <button form-type="reset">取消</button>
-        <button form-type="submit" data-id="0" wx:if="{{id==0}}">保存草稿</button>
-        <button form-type="submit" data-id="0" wx:if="{{id!=0}}">删除</button>
-      </view>
-    </block>
-    <block wx:if="{{isFb==1}}">
-      <view class="item-wrapper">
-        <view class="label">驳回原因</view>
-        <view class="input">
-          <textarea bindinput="bindInputRejectRes" name="rejectRes" value="{{rejectRes}}"></textarea>
-          <view bindtouchstart="bindSetRejectRes"
-            bindtouchend="bindTouchUp"
-            class="btn-speak">
-            <image src="/imgs/report/icon-speak.png"></image>
-          </view>
-        </view>
-      </view>
-      <view class="btn-wrapper">
-        <button form-type="submit" data-id="2">解决成功</button>
-        <button form-type="submit" data-id="3">驳回处理</button>
-        <button form-type="submit" data-id="4">删除</button>
-      </view>
-    </block>
+
+  <view class="comment-wrapper">
+    <text wx:for="{{commonList}}"></text>
   </view>
+    
+  <view class="btn-wrapper" wx:if="{{id==0}}">
+    <view data-id="1" bindtap="bindSubmitForm">
+      <image src="/imgs/report/select.png"></image>
+      <text>提交</text>
+    </view>
+    <view bindtap="bindBackToIndex">
+      <image src="/imgs/report/select.png"></image>
+      <text>取消</text>
+    </view>
+    <view data-id="0" bindtap="bindSubmitForm">
+      <image src="/imgs/report/download.png"></image>
+      <text>保存草稿</text>
+    </view>
+  </view>
+
 </view>
 </form>
 
 <view class="mask" wx:if="{{showMember}}">
   <view class="member-pannel">
-    <view class="title">{{memberRegionList[curRegionIdx].name}}--{{memberRegionList[curRegionIdx].departList[curDepartIdx].name}}</view>
+    <view class="title">
+      <text>全部成员</text>
+      <image src="/imgs/close.png" bindtap="bindHideMask"></image>
+    </view>
     <view class="search-pannel">
       <view class="input-pannel">
-        <image src="/imgs/report/ci-yqi-search.svg"></image>
-        <input placeholder="搜索" bindinput="searchName"></input>
+        <input placeholder="搜索" value="{{reg}}" bindinput="bindInputReg"></input>
+        <image src="/imgs/report/icon_search.png" bindtap="bindSearchHandler"></image>
       </view>
-      <view class="btn-cancel" bindtap="bindHideMask">关闭</view>
     </view>
     <scroll-view class="choose-pannel" scroll-y>
       <checkbox-group bindchange="bindPickMember">
-        <block wx:for="{{memberRegionList[curRegionIdx].departList[curDepartIdx].memberList}}" wx:key="index" wx:for-index="midx" wx:for-item="member">
-          <view class="checkbox" wx:if="{{!member.hide}}">
-          <checkbox wx:if="{{currentTab==0}}" value="{{member.id}}" checked="{{member.checked}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
-          <checkbox wx:if="{{currentTab==1}}" value="{{member.id}}" checked="{{member.checked1}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
-          </view>
+        <block wx:for="{{departMemberMap}}" wx:for-item="memberList">
+          <block wx:for="{{memberList}}" wx:for-item="member">
+            <view class="checkbox" wx:if="{{member.inbox && !member.hide}}">
+              <checkbox wx:if="{{currentTab==0}}" value="{{member.id}}" checked="{{member.checked}}">{{member.realname}}</checkbox>
+              <checkbox wx:if="{{currentTab==1}}" value="{{member.id}}" checked="{{member.checked1}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
+            </view>
+          </block>
         </block>
       </checkbox-group>
     </scroll-view>
   </view>
+</view>
+
+
+<view>
+  <block wx:for="{{regionList}}" wx:for-item="{{itemList}}">
+    <view wx:for="itemList" wx:for-item="{{robj}}">
+      <text>{{robj.name}}</text>
+    </view>
+  </block>
+</view>
+
+<view class="picker-mask" catchtouchmove="move" wx:if="{{showPicker}}">
+<template is="cascaded-picker-view" data="{{ data: areaPickerData }}" />
 </view>
