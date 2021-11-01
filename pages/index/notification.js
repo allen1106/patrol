@@ -1,4 +1,6 @@
-// pages/opinion/opinion.js
+// pages/index/notification.js
+var api = require("../../utils/api.js")
+
 Page({
 
   /**
@@ -16,17 +18,32 @@ Page({
   },
 
   /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
-  },
-
-  /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+    let that = this
+    let userId = wx.getStorageSync('userId')
+    let userBind = wx.getStorageSync('userBind')
+    if (userId && userBind) {
+      // 发送请求获取用户信息
+      api.phpRequest({
+        url: 'info.php',
+        data: {
+          userid: userId
+        },
+        success: function (res) {
+          console.log(res)
+          that.setData({
+            userInfo: res.data
+          }, that.fetchProjectList)
+          getApp().globalData.userInfo = res.data
+        }
+      })
+    } else {
+      wx.navigateTo({
+        url: '/pages/login/login'
+      })
+    }
   },
 
   /**

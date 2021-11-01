@@ -1,64 +1,66 @@
 <!--pages/tasklist/tasklist.wxml-->
+<import src="../../components/cascaded-picker-view/cascaded-picker-view.wxml" />
+
+<view class="page" bindtap="hidePicker">
+
 <view class="swiper bg" wx:if="{{menu == 3}}">
-  <view class="{{tab == 0 ? 'active' : 'inactive'}}">
+  <view class="{{tab == 0 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="0">
     <text>待处理</text>
-    <text class="co-red">{{}}</text>
+    <text class="co-red">{{userInfo.data_4}}</text>
   </view>
-  <view class="{{tab == 1 ? 'active' : 'inactive'}}">
+  <view class="{{tab == 1 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="1">
     <text>已回复</text>
-    <text>{{}}</text>
+    <text class="co-red">{{userInfo.data_5}}</text>
   </view>
-  <view class="{{tab == 2 ? 'active' : 'inactive'}}">
+  <view class="{{tab == 2 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="2">
     <text>抄送我的</text>
-    <text>{{}}</text>
+    <text class="co-red">{{userInfo.data_6}}</text>
   </view>
-  <view class="{{tab == 3 ? 'active' : 'inactive'}}">
+  <view class="{{tab == 3 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="3">
     <text>已处理</text>
-    <text>{{}}</text>
+    <text class="co-red">{{userInfo.data_7}}</text>
   </view>
 </view>
 
 
 <view class="swiper bg" wx:if="{{menu == 4}}">
-  <view class="{{tab == 0 ? 'active' : 'inactive'}}">
+  <view class="{{tab == 0 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="0">
     <text>已发布</text>
-    <text class="co-red">{{}}</text>
+    <text class="co-red">{{userInfo.data_1}}</text>
   </view>
-  <view class="{{tab == 1 ? 'active' : 'inactive'}}">
+  <view class="{{tab == 1 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="1">
     <text>收到回复</text>
-    <text>{{}}</text>
+    <text class="co-red">{{userInfo.data_2}}</text>
   </view>
-  <view class="{{tab == 2 ? 'active' : 'inactive'}}">
+  <view class="{{tab == 2 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="2">
     <text>已解决</text>
-    <text>{{}}</text>
+    <text class="co-red">{{userInfo.data_3}}</text>
   </view>
 </view>
 
 <view class="swiper bg" wx:if="{{menu == 6}}">
-  <view class="{{tab == 0 ? 'active' : 'inactive'}}">
+  <view class="{{tab == 0 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="0">
     <text>待处理</text>
-    <text class="co-red">{{}}</text>
+    <text class="co-red">{{userInfo.data_8}}</text>
   </view>
-  <view class="{{tab == 1 ? 'active' : 'inactive'}}">
+  <view class="{{tab == 1 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="1">
     <text>已回复</text>
-    <text>{{}}</text>
+    <text class="co-red">{{userInfo.data_9}}</text>
   </view>
-  <view class="{{tab == 2 ? 'active' : 'inactive'}}">
+  <view class="{{tab == 2 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="2">
     <text>已解决</text>
-    <text>{{}}</text>
+    <text class="co-red">{{userInfo.data_10}}</text>
   </view>
 </view>
 
 <view class="page-wrapper">
   <view class="nav-wrapper">
     <view class="nav">
-      <view class="region">
-        <picker bindchange="bindRegionChange" value="{{regionIdx}}" range="{{regionList}}" range-key="name">
-          <view class="picker">
-            <text>{{regionList[regionIdx].name}}</text>
-            <image src="/imgs/down.png"></image>
-          </view>
-        </picker>
+      <view class="region" catchtap="showPicker" hover-stop-propagation="true">
+        <view class="picker">
+          <text>{{nextListMap[departId].text || '请选择公司'}}</text>
+          <image src="/imgs/down.png"></image>
+        </view>
       </view>
     </view>
     <view class="nav">
@@ -149,3 +151,7 @@
     </view>
   </view>
 </view>
+
+</view>
+
+<template wx:if="{{showPicker}}" is="cascaded-picker-view" data="{{ data: areaPickerData }}" />

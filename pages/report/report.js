@@ -1,4 +1,5 @@
 // pages/report/report.js
+const { CascadedPickerView } = require('../../components/cascaded-picker-view/cascaded-picker-view.js');
 var util = require("../../utils/util.js")
 var api = require("../../utils/api.js")
 var plugin = requirePlugin("WechatSI")
@@ -20,18 +21,12 @@ Page({
     id: 0,
     reportInfo: null,
     isFb: 0,
-    regionList: [{"name": "请选择公司", "department_id": 0}],
-    regionIdx: 0,
-    regionId: 0,
     projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
     projectId: 0,
     systemList: [{"name": "请选择专业", "industry_id": 0}],
     sysIdx: 0,
     systemId: 0,
-    quesList: [{"name": "请选择问题类型", "ques_id": 0}],
-    quesIdx: 0,
-    quesId: 0,
     title: "",
     solve: "",
     term: "",
@@ -51,6 +46,169 @@ Page({
     currentTab: 0,
     lng: 0,
     lat: 0,
+    // depart picker for choose depart
+    rawRegionList: [],
+    nextListMap: {},
+    departId: 0,
+    showPicker: false,
+    // ---
+    // depart stack for choose member
+    regionStack: null,
+    stackPeek: null,
+    stackLen: 0,
+    // ---
+    // member related
+    departMemberMap: {},
+    memberDepartId: 0,
+  },
+
+  flatList: function (l, m) {
+    l.forEach((item) => {
+      if (item.subList) {
+        m[item.value] = {
+          text: item.text,
+          subList: item.subList
+        }
+        this.flatList(item.subList, m)
+      } else {
+        m[item.value] = {
+          text: item.text
+        }
+      }
+    })
+    this.setData({
+      nextListMap: m
+    }, this.initAreaPicker)
+  },
+
+  convertList: function (l) {
+    l.forEach((item) => {
+      item.text = item.name
+      item.value = item.id
+      item.subList = item.sub_depart_list
+      item.name = undefined
+      item.id = undefined
+      item.sub_depart_list = undefined
+      if (item.subList) {
+        this.convertList(item.subList)
+      } else {
+        this.fetchMember(item.value)
+      }
+    })
+  },
+
+  fetchRegionList: function () {
+    let that = this
+
+    // 获取部门信息
+    api.phpRequest({
+      url: 'department.php',
+      success: function (res) {
+        that.convertList(res.data)
+        that.setData({
+          rawRegionList: res.data
+        }, () => {
+          that.flatList(that.data.rawRegionList, {})
+          const stack = new util.Stack()
+          stack.push(that.data.rawRegionList)
+          that.setData({
+            regionStack: stack,
+            stackPeek: stack.peek(),
+            stackLen: stack.length()
+          })
+        })
+      }
+    })
+  },
+
+  showPicker: function () {
+    this.setData({
+      showPicker: true
+    })
+  },
+
+  hidePicker: function () {
+    this.setData({
+      showPicker: false
+    })
+  },
+
+  initAreaPicker: function() {
+    this.areaPicker = new CascadedPickerView(
+        this,     // 页面对象
+        'areaPickerData',   // 关联的页面数据键值（即页面对象 data 属性中代表 cascaded-picker 对象数据的字段名）
+        {
+            promptText: '-请选择-',    // 默认选择器的提示文本
+
+            pickerCount: 1,     // 初始的选择器数量
+            // initValues: ['450000'],   // 初始的选择器值
+            loadOptionsMethod: (obj, parentValue, pickerIndex, callback) => {    // 加载指定选择器选项集合的方法
+                // 方法参数说明：
+                // obj - 代表当前级联选择器对象。
+                // parentValue - 上一级选择器选定的项目的值，根据该值读取关联的数据。
+                // pickerIndex - 代表当前要加载选项数据的选择器的索引。
+                // callback - 数据加载完成后的回调方法，该方法接受一个代表选项集合的参数，选项集合中的选项需转换为 cascaded-picker 所识别的标准格式，即：
+                //     {
+                //         text: '文本',
+                //         value: '值'
+                //     }
+                // 根据需要实现相应的加载选择器选项数据的逻辑。
+                this.setData({
+                  departId: parentValue
+                }, () => {
+                  if (parentValue) {
+                    this.initProjectList(this.fetchProjectList)
+                  }
+                })
+                if (pickerIndex === 0) {    // 读取第一级选择器选项
+                    callback(this.data.rawRegionList);
+                    return;
+                }
+                
+                if (!parentValue) {
+                    callback(null);
+                    return;
+                }
+
+                let curObj = this.data.nextListMap[parentValue]
+                console.log(parentValue)
+                console.log(curObj)
+                if (curObj) {
+                  callback(curObj.subList)
+                  return
+                }
+
+                callback(null);
+            },
+        }
+    );
+  },
+
+  fetchMember: function (departId) {
+    let that = this
+    api.phpRequest({
+      url: 'user.php',
+      data: {
+        departmentid_id: departId
+      },
+      success: function (res) {
+        if (that.data.id != 0) {
+          // let {pjr_id, csr_id} = that.data.reportInfo
+          // for (let i in res.data) {
+          //   if (pjr_id && pjr_id.indexOf(res.data[i].id) != -1) {
+          //     res.data[i].checked = true
+          //   }
+          //   if (csr_id && csr_id.indexOf(res.data[i].id) != -1) {
+          //     res.data[i].checked1 = true
+          //   }
+          // }
+        }
+        that.data.departMemberMap[departId] = res.data
+        that.setData({
+          departMemberMap: that.data.departMemberMap,
+        })
+      }
+    })
   },
 
   /**
@@ -67,7 +225,6 @@ Page({
         title: "发布巡检报告",
         id: id,
         reportInfo: {
-          department: info.department,
           username: info.realname,
           time: util.formatTime(new Date())
         },
@@ -75,7 +232,6 @@ Page({
       console.log(app.globalData)
       that.fetchRegionList()
       that.fetchSystemList()
-      that.fetchQuesList()
       that.setData({
         title: app.globalData.title,
         solve: app.globalData.solve,
@@ -205,17 +361,18 @@ Page({
   },
 
   validateInfo: function (data) {
-    if (!data['title']) return '问题简述'
+    if (!data['title']) return '标题'
+    if (!data['reason']) return '原因'
+    if (!data['solve']) return '解决办法'
+    if (!data['position']) return '部位'
     if (!data['term']) return '处理期限'
-    if (data['report_id'] == 0 && data['project_id'] == 0) return '公司和项目'
+    if (data['report_id'] == 0 && data['project_id'] == 0) return '部门和项目'
     if (data['report_id'] == 0 && data['industry_id'] == 0) return '专业'
     return 'success'
   },
 
   bindSubmitForm: function (e) {
-    var value = e.detail.value
-    console.log(e.detail.value)
-    var btnId = e.detail.target.dataset.id
+    var btnId = e.currentTarget.dataset.id
     var that = this
     if (btnId == "2") {
       that.handleSuccess()
@@ -239,14 +396,14 @@ Page({
     var data = {
       userid: wx.getStorageSync('userId'),
       task_time: util.formatTime(new Date()),
-      title: value.title,
-      solve: value.solve,
-      term: value.term,
-      department_id: that.data.regionId,
+      title: that.data.title,
+      reason: that.data.reason,
+      solve: that.data.solve,
+      position: that.data.pos,
+      term: that.data.term,
+      department_id: that.data.departId,
       project_id: that.data.projectId,
       industry_id: that.data.systemId,
-      problem_id: that.data.quesId,
-      report_id: that.data.id,
       pjr_id: pjr_id,
       csr_id: csr_id
     }
@@ -532,122 +689,13 @@ Page({
   })
   },
 
-  fetchRegionList: function () {
-    var that = this
-    // 获取部门信息
-    // api.phpRequest({
-    //   url: 'department.php',
-    //   success: function (res) {
-    //     let regions = res.data
-    //     let list = that.data.regionList.concat(regions)
-    //     that.setData({
-    //       regionList: list,
-    //       memberRegionList: regions
-    //     }, () => {
-    //       // 初始化人员选择的pannel,并默认选中第一个region
-    //       that.chooseMemberRegion(0)
-    //     })
-    //     if (app.globalData.regionIdx) {
-    //       let regionObj = list[app.globalData.regionIdx]
-    //       that.setData({
-    //         regionIdx: app.globalData.regionIdx,
-    //         regionId: regionObj.department_id
-    //       }, that.fetchProjectList)
-    //     }
-    //   }
-    // })
-    that.setData({
-      rawRegionList: [
-        {
-          id: 1,
-          name: "region1",
-          subList: [
-            {
-              id: 4,
-              name: "region11",
-              subList: [
-                {
-                  id: 6,
-                  name: "region111"
-                },
-                {
-                  id: 7,
-                  name: "region112"
-                },
-              ]
-            },
-            {
-              id: 5,
-              name: "region12"
-            },
-          ]
-        },
-        {
-          id: 2,
-          name: "region2",
-          subList: [
-            {
-              id: 8,
-              name: "region21",
-            },
-            {
-              id: 9,
-              name: "region22"
-            },
-          ]
-        },
-        {
-          id: 3,
-          name: "region3"
-        },
-      ],
-      regionList: [
-        [
-          {
-            id: 1,
-            name: "region1",
-          },
-          {
-            id: 2,
-            name: "region1",
-          },
-          {
-            id: 3,
-            name: "region3"
-          }
-        ],
-        [
-          {
-            id: 4,
-            name: "region11",
-          },
-          {
-            id: 5,
-            name: "region12"
-          },
-        ],
-        [
-          {
-            id: 6,
-            name: "region111"
-          },
-          {
-            id: 7,
-            name: "region112"
-          },
-        ]
-      ],
-      regionIdx: [0]
-    })
-  },
-
   fetchProjectList: function () {
     var that = this
     // 获取项目列表
     api.phpRequest({
       url: 'project.php',
       data: {
-        'department_id': that.data.regionId
+        'department_id': that.data.departId
       },
       success: function (res) {
         var list = res.data
@@ -673,10 +721,7 @@ Page({
       var that = this
       var userInfo = app.globalData.userInfo
       api.phpRequest({
-        url: 'system.php',
-        data: {
-          userid: wx.getStorageSync('userId')
-        },
+        url: 'industry.php',
         success: function (res) {
           var list = res.data
           list = that.data.systemList.concat(list)
@@ -703,75 +748,6 @@ Page({
           }
         }
       })
-    })
-  },
-
-  fetchQuesList: function () {
-    var that = this
-    // 获取问题类型列表
-    api.phpRequest({
-      url: 'problem.php',
-      success: function (res) {
-        var list = res.data
-        list = that.data.quesList.concat(list)
-        that.setData({
-          quesList: list
-        }, () => {
-          if (app.globalData.quesIdx != 0) {
-            that.setData({
-              quesIdx: app.globalData.quesIdx,
-              quesId: list[app.globalData.quesIdx].problem_id
-            })
-          }
-        })
-      }
-    })
-  },
-
-  bindRegionChange: function (e) {
-    this.setData({
-      regionIdx: e.detail.value
-    })
-  },
-
-  bindRegionColumnChange: function (e) {
-    // var idx = e.detail.value
-    // var that = this
-    // var lastRegionId = that.data.regionId
-    // that.setData({
-    //   regionIdx: idx,
-    //   regionId: that.data.regionList[idx].department_id
-    // }, () => {
-    //   app.globalData.regionIdx = idx
-    //   that.forceSelectManager(lastRegionId)
-    //   if (that.data.regionIdx != 0) {
-    //     that.initProjectList(that.fetchProjectList)
-    //   } else {
-    //     that.initProjectList()
-    //   }
-    // })
-    console.log("======>>>>>>")
-    let idxs = this.data.regionIdx,
-        lists = [this.data.rawRegionList]
-    idxs[e.detail.column] = e.detail.value
-    idxs = idxs.splice(0, e.detail.column + 1)
-    let data = this.data.rawRegionList[idxs[0]]
-    console.log(e.detail.column, idxs)
-    
-    let i = 1
-    while (data.subList) {
-      if ((idxs.length) < i + 1) {
-        idxs.push(0)
-      }
-      data = data.subList[idxs[i]]
-      lists.push(data)
-      console.log(idxs)
-      console.log(lists)
-      console.log(data)
-    }
-    this.setData({
-      regionIdx: idxs,
-      regionList: lists
     })
   },
 
@@ -804,15 +780,6 @@ Page({
       systemId: this.data.systemList[idx].industry_id
     })
     app.globalData.sysIdx = idx
-  },
-
-  bindQuesChange: function (e) {
-    var idx = e.detail.value
-    this.setData({
-      quesIdx: e.detail.value,
-      quesId: this.data.quesList[idx].problem_id
-    })
-    app.globalData.quesIdx = idx
   },
 
   bindSetTitle: function (res) {
@@ -865,10 +832,22 @@ Page({
       title: e.detail.value
     })
   },
+
+  bindInputReason: function (e) {
+    this.setData({
+      reason: e.detail.value
+    })
+  },
   
   bindInputSolve: function (e) {
     this.setData({
       solve: e.detail.value
+    })
+  },
+  
+  bindInputPos: function (e) {
+    this.setData({
+      pos: e.detail.value
     })
   },
   
@@ -892,9 +871,29 @@ Page({
 
   bindClickRegion: function (e) {
     let that = this
-    let idx = e.currentTarget.dataset.idx
+    let region = e.currentTarget.dataset.region
+    if (region.subList) {
+      that.data.regionStack.push(region.subList)
+      that.setData({
+        regionStack: that.data.regionStack,
+        stackPeek: that.data.regionStack.peek(),
+        stackLen: that.data.regionStack.length()
+      })
+    } else {
+      that.setData({
+        showMember: true,
+        memberDepartId: region.value
+      })
+    }
+  },
+
+  bindReturnRegion: function () {
+    let that = this
+    that.data.regionStack.pop()
     that.setData({
-      curRegionIdx: idx
+      regionStack: that.data.regionStack,
+      stackPeek: that.data.regionStack.peek(),
+      stackLen: that.data.regionStack.length()
     })
   },
 
@@ -954,7 +953,7 @@ Page({
   bindHideMask: function (e) {
     this.searchHandler('')
     this.setData({
-      showMember: 0
+      showMember: false
     })
   },
 
@@ -965,55 +964,58 @@ Page({
 
   searchHandler: function (reg) {
     let that = this
-    let {curRegionIdx, curDepartIdx, memberRegionList} = that.data
-    let memberBox = memberRegionList[curRegionIdx].departList[curDepartIdx].memberList
-    for (let i in memberBox) {
-      memberBox[i].hide = 0
-      if (memberBox[i].realname.indexOf(reg) == -1) {
-        memberBox[i].hide = 1
+    for (let i in that.data.departMemberMap) {
+      for (let j in that.data.departMemberMap[i]) {
+        let memberObj = that.data.departMemberMap[i][j]
+        memberObj.hide = 0
+        if (memberObj.realname.indexOf(reg) == -1) {
+          memberObj.hide = 1
+        }
       }
     }
-    that.setData({memberRegionList: memberRegionList})
+    that.setData({departMemberMap: that.data.departMemberMap})
   },
 
   bindPickMember: function (e) {
     var that = this
     var values = e.detail.value
-    let {curRegionIdx, curDepartIdx, memberRegionList, currentTab} = that.data
-    let memberBox = memberRegionList[curRegionIdx].departList[curDepartIdx].memberList
-    for (let i in memberBox) {
-      if (currentTab == 1) {
-        memberBox[i].checked1 = false
-      } else {
-        memberBox[i].checked = false
-      }
-      
-      for (let j in values) {
-        if (memberBox[i].id === values[j]) {
-          if (currentTab == 1) {
-            memberBox[i].checked1 = true
+    var currentTab = that.data.currentTab
+    
+    for (let i in that.data.departMemberMap) {
+      for (let j in that.data.departMemberMap[i]) {
+        let memberObj = that.data.departMemberMap[i][j]
+        if (currentTab == 0) {
+          if (values.indexOf(memberObj.id) == -1) {
+            memberObj.checked = false
           } else {
-            memberBox[i].checked = true
+            memberObj.checked = true
           }
-          break
+        } else {
+          if (values.indexOf(memberObj.id) == -1) {
+            memberObj.checked1 = false
+          } else {
+            memberObj.checked1 = true
+          }
         }
       }
     }
     that.setData({
-      memberRegionList: memberRegionList,
+      departMemberMap: that.data.departMemberMap,
     })
   },
 
   delMember: function (e) {
     let that = this
-    let {ridx, didx, midx} = e.currentTarget.dataset
-    let {memberRegionList, currentTab} = that.data
-    if (currentTab == 1) {
-      memberRegionList[ridx].departList[didx].memberList[midx].checked1 = false
+    let {did, midx} = e.currentTarget.dataset
+    let {departMemberMap, currentTab} = that.data
+    let memberObj = departMemberMap[did][midx]
+
+    if (currentTab == 0) {
+      memberObj.checked = false
     } else {
-      memberRegionList[ridx].departList[didx].memberList[midx].checked = false
+      memberObj.checked1 = false
     }
-    that.setData({memberRegionList: memberRegionList})
+    that.setData({departMemberMap: departMemberMap})
   },
 
   forceSelectManager: function (lastRegionId) {
@@ -1046,29 +1048,32 @@ Page({
   getCheckedMember: function () {
     let that = this
     let ret = {'pjr_id': [], 'csr_id': []}
-    let {memberRegionList, regionId} = that.data
-    for (let i in memberRegionList) {
-      for (let j in memberRegionList[i].departList) {
-        for (let k in memberRegionList[i].departList[j].memberList) {
-          let memberObj = memberRegionList[i].departList[j].memberList[k]
+    
+    for (let i in that.data.departMemberMap) {
+      for (let j in that.data.departMemberMap[i]) {
+        let memberObj = that.data.departMemberMap[i][j]
 
-          if (memberRegionList[i].department_id == regionId && memberObj.flag == 1 && (!memberObj.checked || !memberObj.checked1)) {
-            wx.showToast({
-              title: '必须勾选当前公司的负责人',
-              icon: 'none',
-              })
-              return null
-          }
-
-          if (memberObj.checked) {
-            ret.pjr_id.push(memberObj.id)
-          }
-          if (memberObj.checked1) {
-            ret.csr_id.push(memberObj.id)
-          }
+        // if (memberRegionList[i].department_id == regionId && memberObj.flag == 1 && (!memberObj.checked || !memberObj.checked1)) {
+        //   wx.showToast({
+        //     title: '必须勾选当前公司的负责人',
+        //     icon: 'none',
+        //     })
+        //     return null
+        // }
+        if (memberObj.checked) {
+          ret.pjr_id.push(memberObj.id)
+        }
+        if (memberObj.checked1) {
+          ret.csr_id.push(memberObj.id)
         }
       }
     }
     return ret
+  },
+
+  bindNavToAddGroup: function () {
+    wx.navigateTo({
+      url: '/pages/group/add',
+    })
   }
 })

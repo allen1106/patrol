@@ -2,7 +2,7 @@
 <view class="page-wrapper">
   <view class="input-wrapper">
     <input placeholder="请输入新分组名称"></input>
-    <view class="btn-wrapper">
+    <view class="btn-wrapper" bindtap="navToAdd">
       <image src="/imgs/plus.png"></image>
       <text>添加分组</text>
     </view>

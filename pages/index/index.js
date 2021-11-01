@@ -4,6 +4,12 @@ var api = require("../../utils/api.js")
 //index.js
 //获取应用实例
 const app = getApp()
+const titleMap = {
+  2: "草稿箱",
+  3: "我的处理",
+  4: "我的发布",
+  6: "问题查看",
+}
 
 Page({
   data: {
@@ -73,8 +79,10 @@ Page({
         icon: 'error',
       })
     } else {
+      let {isfb, menu} = e.currentTarget.dataset
+      let title = titleMap[menu]
       wx.navigateTo({
-        url: '/pages/tasklist/tasklist?isEvaluate=0&isfb=' + e.currentTarget.dataset.isfb + '&menu=' + e.currentTarget.dataset.menu,
+        url: '/pages/tasklist/tasklist?&isfb=' + isfb + '&menu=' + menu + '&title=' + title,
       })
     }
   },

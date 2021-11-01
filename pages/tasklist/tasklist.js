@@ -1,6 +1,14 @@
 // pages/tasklist/tasklist.js
+const { CascadedPickerView } = require('../../components/cascaded-picker-view/cascaded-picker-view.js')
+const app = getApp()
 var api = require("../../utils/api.js")
 var util = require("../../utils/util.js")
+
+const menuTabStatusMap = {
+  3: [4, 5, 6, 7],
+  4: [1, 2, 3],
+  6: [8, 9, 10],
+}
 
 Page({
 
@@ -10,29 +18,153 @@ Page({
   data: {
     title: "",
     userId: null,
-    isEvaluate: 0,
     isFb: 1,
     submitList: null,
     page: 1,
-    regionList: [{"name": "请选择公司", "department_id": 0}],
-    regionIdx: 0,
-    regionId: 0,
+
     projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
     projectId: 0,
     systemList: [{"name": "请选择专业", "industry_id": 0}],
     sysIdx: 0,
     systemId: 0,
-    quesList: [{"name": "请选择问题类型", "ques_id": 0}],
-    quesIdx: 0,
-    quesId: 0,
+
     statusList: [{"name": "请选择状态", "isFb": 3}, {"name": "已解决", "isFb": 2}, {"name": "待解决", "isFb": 1}],
     statusIdx: 0,
     startDate: "请选择开始时间",
     endDate: "请选择结束时间",
     showCheckbox: false,
     touchStart: 0,
-    touchEnd: 0
+    touchEnd: 0,
+
+    tab: 0,
+    
+    // depart picker for choose depart
+    rawRegionList: [],
+    nextListMap: {},
+    departId: 0,
+    showPicker: false,
+    // ---
+  },
+
+  flatList: function (l, m) {
+    l.forEach((item) => {
+      if (item.subList) {
+        m[item.value] = {
+          text: item.text,
+          subList: item.subList
+        }
+        this.flatList(item.subList, m)
+      } else {
+        m[item.value] = {
+          text: item.text
+        }
+      }
+    })
+    this.setData({
+      nextListMap: m
+    }, this.initAreaPicker)
+  },
+
+  convertList: function (l) {
+    l.forEach((item) => {
+      item.text = item.name
+      item.value = item.id
+      item.subList = item.sub_depart_list
+      item.name = undefined
+      item.id = undefined
+      item.sub_depart_list = undefined
+      if (item.subList) {
+        this.convertList(item.subList)
+      }
+    })
+  },
+
+  fetchRegionList: function () {
+    let that = this
+
+    // 获取部门信息
+    api.phpRequest({
+      url: 'department.php',
+      success: function (res) {
+        that.convertList(res.data)
+        that.setData({
+          rawRegionList: res.data
+        }, () => {
+          that.flatList(that.data.rawRegionList, {})
+          const stack = new util.Stack()
+          stack.push(that.data.rawRegionList)
+          that.setData({
+            regionStack: stack,
+            stackPeek: stack.peek(),
+            stackLen: stack.length()
+          })
+        })
+      }
+    })
+  },
+
+  showPicker: function () {
+    this.setData({
+      showPicker: true
+    })
+  },
+
+  hidePicker: function () {
+    this.setData({
+      showPicker: false
+    })
+  },
+
+  initAreaPicker: function() {
+    this.areaPicker = new CascadedPickerView(
+        this,     // 页面对象
+        'areaPickerData',   // 关联的页面数据键值（即页面对象 data 属性中代表 cascaded-picker 对象数据的字段名）
+        {
+            promptText: '-请选择-',    // 默认选择器的提示文本
+
+            pickerCount: 1,     // 初始的选择器数量
+            // initValues: ['450000'],   // 初始的选择器值
+            loadOptionsMethod: (obj, parentValue, pickerIndex, callback) => {    // 加载指定选择器选项集合的方法
+                // 方法参数说明：
+                // obj - 代表当前级联选择器对象。
+                // parentValue - 上一级选择器选定的项目的值，根据该值读取关联的数据。
+                // pickerIndex - 代表当前要加载选项数据的选择器的索引。
+                // callback - 数据加载完成后的回调方法，该方法接受一个代表选项集合的参数，选项集合中的选项需转换为 cascaded-picker 所识别的标准格式，即：
+                //     {
+                //         text: '文本',
+                //         value: '值'
+                //     }
+                // 根据需要实现相应的加载选择器选项数据的逻辑。
+                this.setData({
+                  departId: parentValue
+                }, () => {
+                  if (parentValue) {
+                    this.initProjectList(this.fetchProjectList)
+                  }
+                })
+                if (pickerIndex === 0) {    // 读取第一级选择器选项
+                    callback(this.data.rawRegionList);
+                    return;
+                }
+                
+                if (!parentValue) {
+                    callback(null);
+                    return;
+                }
+
+                let curObj = this.data.nextListMap[parentValue]
+                console.log(parentValue)
+                console.log(curObj)
+                if (curObj) {
+                  callback(curObj.subList)
+                  return
+                }
+
+                callback(null);
+            },
+        }
+    );
   },
 
   /**
@@ -40,56 +172,27 @@ Page({
    */
   onLoad: function (options) {
     var that = this
-    var menu = Number(options.menu)
-    var isFb = Number(options.isfb)
-    var isEvaluate = Number(options.isEvaluate)
-    console.log(isFb, isEvaluate)
+    var userInfo = app.globalData.userInfo
+    let title = options.title,
+        menu = Number(options.menu),
+        isFb = Number(options.isfb)
     that.setData({
+      title: title,
       menu: menu,
       isFb: isFb,
-      isEvaluate: isEvaluate,
-      userId: wx.getStorageSync('userId')
-    })
-    var title = ""
-    if (isFb) {
-      title += "已"
-    } else {
-      title += "待"
-    }
-    if (isEvaluate) {
-      title += "处理列表"
-    } else {
-      title += "巡检任务列表"
-    }
-    that.setData({
-      title: title
+      userId: wx.getStorageSync('userId'),
+      userInfo: userInfo
     })
     wx.setNavigationBarTitle({
-      title: that.data.title
+      title: title
     })
     that.fetchRegionList()
     that.fetchSystemList()
-    that.fetchQuesList()
   },
 
   onShow: function () {
     var that = this;
     that.fetchTaskList()
-  },
-
-  fetchRegionList: function () {
-    var that = this
-    // 获取部门信息
-    api.phpRequest({
-      url: 'department.php',
-      success: function (res) {
-        var list = res.data
-        list = that.data.regionList.concat(list)
-        that.setData({
-          regionList: list
-        })
-      }
-    })
   },
 
   fetchProjectList: function () {
@@ -98,7 +201,7 @@ Page({
     api.phpRequest({
       url: 'project.php',
       data: {
-        'department_id': that.data.regionId
+        'department_id': that.data.departId
       },
       success: function (res) {
         var list = res.data
@@ -114,7 +217,7 @@ Page({
     return new Promise(resolve => {
       var that = this;
       api.phpRequest({
-        url: 'system.php',
+        url: 'industry.php',
         data: {
           userid: wx.getStorageSync('userId')
         },
@@ -129,21 +232,6 @@ Page({
           }
         }
       })
-    })
-  },
-
-  fetchQuesList: function () {
-    var that = this
-    // 获取问题类型列表
-    api.phpRequest({
-      url: 'problem.php',
-      success: function (res) {
-        var list = res.data
-        list = that.data.quesList.concat(list)
-        that.setData({
-          quesList: list
-        })
-      }
     })
   },
 
@@ -170,14 +258,6 @@ Page({
       proIdx: idx,
       projectId: this.data.projectList[idx].project_id
     }, that.fetchTaskList)
-  },
-
-  bindQuesChange: function (e) {
-    var idx = e.detail.value
-    this.setData({
-      quesIdx: idx,
-      quesId: this.data.quesList[idx].problem_id
-    }, this.fetchTaskList)
   },
 
   initProjectList: function (fn) {
@@ -220,25 +300,30 @@ Page({
     }, this.fetchTaskList)
   },
 
+  switchTab: function (e) {
+    let that = this
+    let tabid = Number(e.currentTarget.dataset.tab)
+    that.setData({tab: tabid}, that.fetchTaskList)
+  },
+
   fetchTaskList: function (concatFlag) {
     var that = this
     var data = {
       userid: that.data.userId,
       page: that.data.page,
-      is_fb: that.data.isFb
+      is_fb: menuTabStatusMap[that.data.menu][that.data.tab]
     }
     console.log(that.data)
-    if (that.data.regionIdx != 0) {data["department_id"] = that.data.regionId}
+    if (that.data.departId) {data["department_id"] = that.data.departId}
     if (that.data.projectId != 0) {data["project_id"] = that.data.projectId}
     if (that.data.systemId != 0) {data["industry_id"] = that.data.systemId}
-    if (that.data.quesId != 0) {data["problem_id"] = that.data.quesId}
     if (that.data.startDate != "请选择开始时间") {data["startDate"] = that.data.startDate}
     if (that.data.endDate != "请选择结束时间") {data["endDate"] = that.data.endDate}
     if (!concatFlag) {
       data["page"] = 1
     }
     api.phpRequest({
-      url: that.data.isEvaluate ? 'evaluate.php' : 'report.php',
+      url: 'report.php',
       data: data,
       success: function (res) {
         console.log(res)
@@ -269,20 +354,10 @@ Page({
     if (this.data.showCheckbox) return
     console.log(e.currentTarget.dataset.rid)
     var rid = e.currentTarget.dataset.rid
-    var isFb = e.currentTarget.dataset.isfb
-    if (this.data.isEvaluate) {
-      isFb = this.data.isFb
-    }
-    console.log(rid, isFb)
-    if (this.data.isEvaluate) {
-      wx.navigateTo({
-        url: '/pages/evaluate/evaluate?id=' + rid + '&isFb=' + isFb,
-      })
-    } else {
-      wx.navigateTo({
-        url: '/pages/report/report?id=' + rid + '&isFb=' + isFb,
-      })
-    }
+
+    wx.navigateTo({
+      url: '/pages/report/report?id=' + rid,
+    })
   },
 
   showCheckbox: function () {

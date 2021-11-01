@@ -13,6 +13,7 @@ page {
   width: 100%;
   height: calc(100vh - 400rpx);
   background-color: #fff;
+  padding-bottom: 100rpx;
 }
 
 .notification {
@@ -111,4 +112,16 @@ page {
   top: 0;
   width: 30rpx;
   height: 30rpx;
+}
+
+.btn-group {
+  width: 80%;
+  height: 80rpx;
+  background-color: #4876FF;
+  border-radius: 80rpx;
+  font-size: 36rpx;
+  color: #fff;
+  text-align: center;
+  line-height: 80rpx;
+  margin-top: 20rpx;
 }

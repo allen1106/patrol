@@ -58,10 +58,57 @@ const formatDepartment = data => {
   return departmentList
 }
 
+/**
+* Stack 类
+*/
+class Stack {
+  constructor() {
+  this.data = []; // 对数据初始化
+  this.top = 0; // 初始化栈顶位置
+  }
+ 
+  // 入栈方法
+  push() {
+  const args = [...arguments];
+  args.forEach(arg => this.data[this.top++] = arg);
+  return this.top;
+  }
+ 
+  // 出栈方法
+  pop() {
+  if (this.top === 0) throw new Error('The stack is already empty!');
+  const peek = this.data[--this.top];
+  this.data = this.data.slice(0, -1);
+  return peek;
+  }
+ 
+  // 返回栈顶元素
+  peek() {
+  return this.data[this.top - 1];
+  }
+ 
+  // 返回栈内元素个数
+  length() {
+  return this.top;
+  }
+ 
+  // 清除栈内所有元素
+  clear() {
+  this.top = 0;
+  return this.data = [];
+  }
+ 
+  // 判断栈是否为空
+  isEmpty() {
+  return this.top === 0;
+  }
+ }
+
 module.exports = {
   formatTime: formatTime,
   formatCNDate: formatCNDate,
   formatWorkDay: formatWorkDay,
   formatDepartment: formatDepartment,
-  formatDate: formatDate
+  formatDate: formatDate,
+  Stack: Stack
 }

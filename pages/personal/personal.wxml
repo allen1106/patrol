@@ -8,9 +8,6 @@
       <text>我的部门</text>
       <text>{{userInfo.department}}</text>
     </view>
-    <view class="info-item" bindtap="navigateToGroup">
-      <text>我的分组</text>
-    </view>
     <view class="info-item" bindtap="navigateToTaskList" data-isevaluate="0">
       <text>发布报告</text>
       <text>{{userInfo.report}}</text>
@@ -27,6 +24,11 @@
         </view>
       </view>
     </view>
+  </view>
+
+
+  <view class="btn-group" bindtap="navigateToGroup">
+    <text>我的分组</text>
   </view>
 </view>
 

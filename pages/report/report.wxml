@@ -1,5 +1,7 @@
+<import src="../../components/cascaded-picker-view/cascaded-picker-view.wxml" />
+
 <form bindsubmit="bindSubmitForm" bindreset="bindBackToIndex">
-<view class="page-wrapper">
+<view class="page-wrapper" bindtap="hidePicker">
   <view class="header" wx:if="{{id != 0}}">
     <view class="title">{{reportInfo.head_title}}</view>
     <view class="opt-wrapper">
@@ -8,18 +10,11 @@
   </view>
   <view class="nav-wrapper">
     <view class="nav" wx:if="{{id == 0}}">
-      <view class="region">
-        <picker class="picker"
-          mode="multiSelector" 
-          bindchange="bindRegionChange"
-          bindcolumnchange="bindRegionColumnChange"
-          bindchange="bindRegionChange"
-          value="{{regionIdx}}"
-          range="{{regionList}}"
-          range-key="name">
-          <text></text>
+      <view class="region" catchtap="showPicker" hover-stop-propagation="true">
+        <view class="picker">
+          <text>{{nextListMap[departId].text || '请选择公司'}}</text>
           <image src="/imgs/down.png"></image>
-        </picker>
+        </view>
       </view>
     </view>
     <view class="nav" wx:if="{{id == 0}}">
@@ -167,45 +162,58 @@
     </view>
   </view>
 
-  <view class="assign" wx:if="{{id==0 || isFb==0}}">
+  <view class="assign" wx:if="{{id==0}}">
     <view class="title">
-      <text class="{{currentTab==0 ? 'active' : ''}}" bindtap="switchAssignTab" data-tab="0">推送给：</text>
-      <text class="{{currentTab==1 ? 'active' : ''}}" bindtap="switchAssignTab" data-tab="1">抄送给：</text>
+      <view class="{{currentTab==0 ? 'active' : ''}}" bindtap="switchAssignTab" data-tab="0">
+        <image src="/imgs/report/save_draft.png"></image>
+        <text>推送给Ta</text>
+      </view>
+      <view class="{{currentTab==1 ? 'active' : ''}}" bindtap="switchAssignTab" data-tab="1">
+        <image src="/imgs/report/save_draft.png"></image>
+        <text>抄送给Ta</text>
+      </view>
     </view>
     <scroll-view wx:if="{{currentTab==0}}" class="scroll-view-common name-pannel" scroll-y>
-      <block wx:for="{{memberRegionList}}" wx:for-item="regionObj" wx:for-index="ridx">
-        <block wx:for="{{regionObj.departList}}" wx:for-item="departObj" wx:for-index="didx">
-          <block wx:for="{{departObj.memberList}}" wx:for-item="memberObj" wx:for-index="midx">
-            <view class="member-item" wx:if="{{memberObj.checked}}">
-              <image src="/imgs/report/delete.png" bindtap="delMember" data-ridx="{{ridx}}" data-didx="{{didx}}" data-midx="{{midx}}"></image>
-              <text>{{memberObj.realname}}</text>
-            </view>
-          </block>
+      <block wx:for="{{departMemberMap}}" wx:for-item="memberList" wx:for-index="did">
+        <block wx:for="{{memberList}}" wx:for-item="memberObj" wx:for-index="midx">
+          <view class="member-item" wx:if="{{memberObj.checked}}">
+            <text>{{memberObj.realname}}</text>
+            <image src="/imgs/close.png" bindtap="delMember" data-did="{{did}}" data-midx="{{midx}}"></image>
+          </view>
         </block>
       </block>
     </scroll-view>
     <scroll-view wx:if="{{currentTab==1}}" class="scroll-view-common name-pannel" scroll-y>
-      <block wx:for="{{memberRegionList}}" wx:for-item="regionObj" wx:for-index="ridx">
-        <block wx:for="{{regionObj.departList}}" wx:for-item="departObj" wx:for-index="didx">
-          <block wx:for="{{departObj.memberList}}" wx:for-item="memberObj" wx:for-index="midx">
-            <view class="member-item" wx:if="{{memberObj.checked1}}">
-              <image src="/imgs/report/delete.png" bindtap="delMember" data-ridx="{{ridx}}" data-didx="{{didx}}" data-midx="{{midx}}"></image>
-              <text>{{memberObj.realname}}</text>
-            </view>
-          </block>
+      <block wx:for="{{departMemberMap}}" wx:for-item="memberList" wx:for-index="did">
+        <block wx:for="{{memberList}}" wx:for-item="memberObj" wx:for-index="midx">
+          <view class="member-item" wx:if="{{memberObj.checked1}}">
+            <text>{{memberObj.realname}}</text>
+            <image src="/imgs/close.png" bindtap="delMember" data-did="{{did}}" data-midx="{{midx}}"></image>
+          </view>
         </block>
       </block>
     </scroll-view>
+
+    <view class="input-wrapper">
+      <input name="searchkey" value="" placeholder="请输入检索姓名"></input>
+      <image src="/imgs/report/icon_search.png"></image>
+    </view>
+
     <view class="depart-wrapper">
-      <scroll-view class="scroll-view-common depart-pannel" scroll-y>
-        <view class="region-item {{curRegionIdx == ridx ? 'active': ''}}" wx:for="{{memberRegionList}}" wx:for-index="ridx" wx:for-item="regionObj" bindtap="bindClickRegion" data-idx="{{ridx}}">
-          {{regionObj.name}}
+      <view class="header">
+        <view wx:if="{{stackLen > 1}}" bindtap="bindReturnRegion">
+          <image src="/imgs/report/icon_return.png"></image>
+          <text>上一级</text>
         </view>
-      </scroll-view>
+        <view bindtap="bindNavToAddGroup">
+          <image src="/imgs/report/icon_plus.png"></image>
+          <text>添加分组</text>
+        </view>
+      </view>
       <scroll-view class="scroll-view-common depart-pannel" scroll-y>
-        <view class="depart-item {{curDepartIdx == didx ? 'active': ''}}" wx:for="{{memberRegionList[curRegionIdx].departList}}" wx:for-index="didx" wx:for-item="departObj" bindtap="bindClickDepart" data-didx="{{didx}}">
-          <text>{{departObj.name}}</text>
-          <text style="font-size: 28rpx;">></text>
+        <view class="region-item" wx:for="{{stackPeek}}" wx:for-item="regionObj" bindtap="bindClickRegion" data-region="{{regionObj}}">
+          <text>{{regionObj.text}}</text>
+          <image src="/imgs/register/left.png"></image>
         </view>
       </scroll-view>
     </view>
@@ -246,57 +254,66 @@
     </view>
   </view>
 
-  <view class="foot">
-    <view class="comment-wrapper">
-      <text wx:for="{{commonList}}"></text>
-    </view>
+
+  <view class="comment-wrapper">
+    <text wx:for="{{commonList}}"></text>
+  </view>
     
-    <block wx:if="{{isFb==0}}">
-      <view class="btn-wrapper">
-        <button form-type="submit" data-id="1">提交</button>
-        <button form-type="reset">取消</button>
-        <button form-type="submit" data-id="0" wx:if="{{id==0}}">保存草稿</button>
-        <button form-type="submit" data-id="0" wx:if="{{id!=0}}">删除</button>
-      </view>
-    </block>
-    <block wx:if="{{isFb==1}}">
-      <view class="item-wrapper">
-        <view class="label">驳回原因</view>
-        <view class="input">
-          <textarea bindinput="bindInputRejectRes" name="rejectRes" value="{{rejectRes}}"></textarea>
-          <view bindtouchstart="bindSetRejectRes"
-            bindtouchend="bindTouchUp"
-            class="btn-speak">
-            <image src="/imgs/report/icon-speak.png"></image>
-          </view>
+  <view class="btn-wrapper" wx:if="{{id==0}}">
+    <view data-id="1" bindtap="bindSubmitForm">
+      <image src="/imgs/report/select.png"></image>
+      <text>提交</text>
+    </view>
+    <view bindtap="bindBackToIndex">
+      <image src="/imgs/report/select.png"></image>
+      <text>取消</text>
+    </view>
+    <view data-id="0" bindtap="bindBatchSubmit">
+      <image src="/imgs/report/download.png"></image>
+      <text>保存草稿</text>
+    </view>
+  </view>
+
+  <block wx:if="{{isFb==1}}">
+    <view class="item-wrapper">
+      <view class="label">驳回原因</view>
+      <view class="input">
+        <textarea bindinput="bindInputRejectRes" name="rejectRes" value="{{rejectRes}}"></textarea>
+        <view bindtouchstart="bindSetRejectRes"
+          bindtouchend="bindTouchUp"
+          class="btn-speak">
+          <image src="/imgs/report/icon-speak.png"></image>
         </view>
       </view>
-      <view class="btn-wrapper">
-        <button form-type="submit" data-id="2">解决成功</button>
-        <button form-type="submit" data-id="3">驳回处理</button>
-        <button form-type="submit" data-id="4">删除</button>
-      </view>
-    </block>
-  </view>
+    </view>
+    <view class="btn-wrapper">
+      <button form-type="submit" data-id="2">解决成功</button>
+      <button form-type="submit" data-id="3">驳回处理</button>
+      <button form-type="submit" data-id="4">删除</button>
+    </view>
+  </block>
+
 </view>
 </form>
 
 <view class="mask" wx:if="{{showMember}}">
   <view class="member-pannel">
-    <view class="title">{{memberRegionList[curRegionIdx].name}}--{{memberRegionList[curRegionIdx].departList[curDepartIdx].name}}</view>
+    <view class="title">
+      <text>全部成员</text>
+      <image src="/imgs/close.png" bindtap="bindHideMask"></image>
+    </view>
     <view class="search-pannel">
       <view class="input-pannel">
-        <image src="/imgs/report/ci-yqi-search.svg"></image>
         <input placeholder="搜索" bindinput="searchName"></input>
+        <image src="/imgs/report/icon_search.png"></image>
       </view>
-      <view class="btn-cancel" bindtap="bindHideMask">关闭</view>
     </view>
     <scroll-view class="choose-pannel" scroll-y>
       <checkbox-group bindchange="bindPickMember">
-        <block wx:for="{{memberRegionList[curRegionIdx].departList[curDepartIdx].memberList}}" wx:key="index" wx:for-index="midx" wx:for-item="member">
+        <block wx:for="{{departMemberMap[memberDepartId]}}" wx:for-item="member">
           <view class="checkbox" wx:if="{{!member.hide}}">
-          <checkbox wx:if="{{currentTab==0}}" value="{{member.id}}" checked="{{member.checked}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
-          <checkbox wx:if="{{currentTab==1}}" value="{{member.id}}" checked="{{member.checked1}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
+            <checkbox wx:if="{{currentTab==0}}" value="{{member.id}}" checked="{{member.checked}}">{{member.realname}}</checkbox>
+            <checkbox wx:if="{{currentTab==1}}" value="{{member.id}}" checked="{{member.checked1}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
           </view>
         </block>
       </checkbox-group>
@@ -312,3 +329,5 @@
     </view>
   </block>
 </view>
+
+<template wx:if="{{showPicker}}" is="cascaded-picker-view" data="{{ data: areaPickerData }}" />

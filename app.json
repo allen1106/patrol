@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/index/nav",
     "pages/index/index",
     "pages/login/login",
     "pages/statistics/statistics",
@@ -8,10 +9,11 @@
     "pages/opinion/opinion",
     "pages/register/register",
     "pages/logs/logs",
-    "pages/evaluate/evaluate",
     "pages/report/report",
     "pages/group/group",
-    "pages/group/edit"
+    "pages/group/edit",
+    "pages/group/add",
+    "pages/index/notification"
   ],
   "window": {
     "backgroundTextStyle": "light",
