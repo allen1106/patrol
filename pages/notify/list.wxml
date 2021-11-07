@@ -1,0 +1,64 @@
+<!--pages/index/notification.wxml-->
+<view class="swiper bg">
+  <view class="{{tab == 0 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="0">
+    <text>未查看</text>
+  </view>
+  <view class="{{tab == 1 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="1">
+    <text>已查看</text>
+  </view>
+</view>
+
+<view class="page-wrapper">
+  <view class="nav-wrapper">
+    <view class="nav">
+      <picker mode="date" bindchange="bindStartChange" value="{{startDate}}" start="1990-01-01" end="{{currentDate}}">
+        <view class="picker">
+          <text>{{startDate}}</text>
+          <image src="/imgs/down.png"></image>
+        </view>
+      </picker>
+    </view>
+    <view class="nav">
+      <picker mode="date" bindchange="bindEndChange" value="{{endDate}}" start="1990-01-01" end="{{currentDate}}">
+        <view class="picker">
+          <text>{{endDate}}</text>
+          <image src="/imgs/down.png"></image>
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="input-wrapper">
+    <input name="searchkey" value="{{searchKey}}" placeholder="请输入关键字查找通知" bindinput="bindSearch"></input>
+    <image src="/imgs/report/icon_search.png"></image>
+  </view>
+
+  <view class="task-list">
+    <block wx:for="{{submitList}}" wx:key="item">
+      <view class="item-wrapper">
+        <view class="task-item">
+          <view class="content-wrapper" data-nid="{{item.id}}" bindtap="viewReport">
+            <view class="title">
+              <text>通知内容：</text>
+            </view>
+            <view class="title">
+              <text>{{item.name}}</text>
+              <text wx:if="{{item.label}}" class="co-red">{{item.label}}</text>
+              <text wx:if="{{item.label1}}" class="co-green">{{item.label1}}</text>
+            </view>
+            <view class="note">
+              <text>发布人：{{item.author}}</text>
+            </view>
+            <view class="note">
+              <text>任务生成时间：{{item.task_time}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view class="btn-add" bindtap="navigateToAdd">
+    <text>发布通知</text>
+  </view>
+</view>

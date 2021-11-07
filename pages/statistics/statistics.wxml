@@ -1,75 +1,73 @@
+<import src="../../components/cascaded-picker-view/cascaded-picker-view.wxml" />
 
-<view class="swiper-tab">
-    <view class="swiper-tab-list">表格统计</view>
-</view>
-
-<view class="filter-menu">
-  <view class="common-filter">
-    <view class="region">
-      <picker bindchange="bindRegionChange" value="{{regionIdx}}" range="{{regionList}}" range-key="name">
+<view class="page-wrapper">
+  <view class="nav-wrapper">
+    <view class="nav">
+      <view class="region" catchtap="showPicker" hover-stop-propagation="true">
         <view class="picker">
-          <text>{{regionList[regionIdx].name}}</text>
+          <text>{{nextListMap[departId].text || '请选择公司'}}</text>
           <image src="/imgs/down.png"></image>
         </view>
-      </picker>
+      </view>
     </view>
-    <view class="project">
-      <picker bindchange="bindProjectChange" value="{{proIdx}}" range="{{projectList}}" range-key="name">
-        <view class="picker">
-          <text>{{projectList[proIdx].name}}</text>
-          <image src="/imgs/down.png"></image>
-        </view>
-      </picker>
+    <view class="nav">
+      <view class="project">
+        <picker bindchange="bindProjectChange" value="{{proIdx}}" range="{{projectList}}" range-key="name">
+          <view class="picker">
+            <text>{{projectList[proIdx].name}}</text>
+            <image src="/imgs/down.png"></image>
+          </view>
+        </picker>
+      </view>
+    </view>
+    <view class="nav">
+      <view class="system">
+        <picker bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
+          <view class="picker">
+            <text>{{systemList[sysIdx].name}}</text>
+            <image src="/imgs/down.png"></image>
+          </view>
+        </picker>
+      </view>
     </view>
   </view>
-  <view class="common-filter">
-    <view class="system">
-      <picker bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
+  <view class="nav-wrapper">
+    <view class="nav">
+      <picker mode="date" bindchange="bindStartChange" value="{{startDate}}" start="1990-01-01" end="{{currentDate}}">
         <view class="picker">
-          <text>{{systemList[sysIdx].name}}</text>
+          <text>{{startDate}}</text>
           <image src="/imgs/down.png"></image>
         </view>
       </picker>
     </view>
-    <view class="question">
-      <picker bindchange="bindQuesChange" value="{{quesIdx}}" range="{{quesList}}" range-key="name">
+    <view class="nav">
+      <picker mode="date" bindchange="bindEndChange" value="{{endDate}}" start="1990-01-01" end="{{currentDate}}">
         <view class="picker">
-          <text>{{quesList[quesIdx].name}}</text>
+          <text>{{endDate}}</text>
           <image src="/imgs/down.png"></image>
         </view>
       </picker>
     </view>
-  </view>
-  <view class="date-filter">
-    <picker mode="date" bindchange="bindStartChange" value="{{startDate}}" start="1990-01-01" end="{{currentDate}}">
-      <view class="picker">
-        <text>{{startDate}}</text>
-        <image src="/imgs/down.png"></image>
+    <view class="nav bg-down">
+      <view class="picker" bindtap="download">
+        <text>下载数据</text>
+        <image bindtap="download" src="/imgs/statistic/download.png"></image>
       </view>
-    </picker>
-    <picker mode="date" bindchange="bindEndChange" value="{{endDate}}" start="1990-01-01" end="{{currentDate}}">
-      <view class="picker">
-        <text>{{endDate}}</text>
-        <image src="/imgs/down.png"></image>
-      </view>
-    </picker>
-    <view class="opt-wrapper" bindtap="download">
-      <image bindtap="download" src="/imgs/statistic/download.png"></image>
-      <!-- <image src="/imgs/regist_name.png"></image> -->
     </view>
   </view>
 </view>
+
 <view class="item-detail">
     <view class="img-wrapper"></view>
     <view class="info-wrapper">
       <view class="flex-big">项目名称</view>
-      <view class="flex-more text-center" data-sid="0" bindtap="bindSortBy">报告总数
+      <view class="flex-more text-center" data-sid="0" bindtap="bindSortBy">问题总数
         <block wx:if="{{sortBy == 0}}">
         <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
         <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
         </block>
       </view>
-      <view class="text-center" data-sid="1" bindtap="bindSortBy">未解决
+      <view class="flex-more text-center" data-sid="1" bindtap="bindSortBy">已回复
         <block wx:if="{{sortBy == 1}}">
         <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
         <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
@@ -81,8 +79,14 @@
         <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
         </block>
       </view>
-      <view class="text-center" data-sid="3" bindtap="bindSortBy">完成率
+      <view class="text-center" data-sid="3" bindtap="bindSortBy">回复率
         <block wx:if="{{sortBy == 3}}">
+        <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
+        <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
+        </block>
+      </view>
+      <view class="text-center" data-sid="4" bindtap="bindSortBy">解决率
+        <block wx:if="{{sortBy == 4}}">
         <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
         <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
         </block>
@@ -98,6 +102,7 @@
     <view class="text-center">{{itemList[index].number1}}</view>
     <view class="text-center">{{itemList[index].number2}}</view>
     <view class="text-center">{{itemList[index].ratio}}%</view>
+    <view class="text-center">{{itemList[index].ratio1}}%</view>
   </view>
 </view>
 
@@ -107,3 +112,5 @@
   <view>已解决：{{reportSummary.number1}}</view>
   <view>完成率：{{reportSummary.ratio}}%</view>
 </view>
+
+<template wx:if="{{showPicker}}" is="cascaded-picker-view" data="{{ data: areaPickerData }}" />

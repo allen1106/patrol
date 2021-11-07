@@ -1,0 +1,117 @@
+<!--pages/notify/add.wxml-->
+<view class="page-wrapper">
+  <view class="description">
+    <view class="item-wrapper">
+      <view class="label">标题<text class="co-red">*</text></view>
+      <view class="input">
+        <textarea bindinput="bindInputTitle" value="{{title}}" name="title"></textarea>
+        <view bindtouchstart="bindSetTitle"
+          bindtouchend="bindTouchUp"
+          class="btn-speak">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
+    </view>
+    <view class="item-wrapper">
+      <view class="label">通知内容<text class="co-red">*</text></view>
+      <view class="input">
+        <textarea bindinput="bindInputContent" value="{{content}}" name="content"></textarea>
+        <view bindtouchstart="bindSetContent"
+          bindtouchend="bindTouchUp"
+          class="btn-speak">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
+    </view>
+    <view class="item-wrapper">
+      <view class="label">图片</view>
+      <view class="image-wrapper">
+        <view class="img-upload-container">
+          <view class="img-preview-container" wx:for="{{imageList}}" wx:key="index">
+            <image class="img-preview" src="{{imageList[index]}}" data-src="{{imageList[index]}}" data-index="0" bindtap="previewImage"></image>
+            <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{imageList[index]}}" data-index="0"></image>
+          </view>
+          <view class="img-preview-container" bindtap="chooseImage" data-index="0">
+            <image class="img-preview" src="/imgs/report/1.png" wx:if="{{imageList.length < 3}}"></image>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="assign">
+    <view class="label">
+      <text>通知对象</text><text class="co-red">*</text>
+    </view>
+    <scroll-view class="scroll-view-common name-pannel" scroll-y>
+      <block wx:for="{{departMemberMap}}" wx:for-item="memberList" wx:for-index="did">
+        <block wx:for="{{memberList}}" wx:for-item="memberObj" wx:for-index="midx">
+          <view class="member-item" wx:if="{{memberObj.checked}}">
+            <text>{{memberObj.realname}}</text>
+            <image src="/imgs/close.png" bindtap="delMember" data-did="{{did}}" data-midx="{{midx}}"></image>
+          </view>
+        </block>
+      </block>
+    </scroll-view>
+
+    <view class="input-wrapper">
+      <input name="searchkey" value="" placeholder="请输入检索姓名"></input>
+      <image src="/imgs/report/icon_search.png"></image>
+    </view>
+
+    <view class="depart-wrapper">
+      <view class="header">
+        <view wx:if="{{stackLen > 1}}" bindtap="bindReturnRegion">
+          <image src="/imgs/report/icon_return.png"></image>
+          <text>上一级</text>
+        </view>
+        <view bindtap="bindNavToAddGroup">
+          <image src="/imgs/report/icon_plus.png"></image>
+          <text>添加分组</text>
+        </view>
+      </view>
+      <scroll-view class="scroll-view-common depart-pannel" scroll-y>
+        <view class="region-item" wx:for="{{stackPeek}}" wx:for-item="regionObj" bindtap="bindClickRegion" data-region="{{regionObj}}">
+          <text>{{regionObj.text}}</text>
+          <image src="/imgs/register/left.png"></image>
+        </view>
+      </scroll-view>
+    </view>
+    
+  </view>
+  
+  <view class="btn-wrapper">
+    <view data-id="1" bindtap="bindSubmitForm">
+      <image src="/imgs/report/select.png"></image>
+      <text>提交</text>
+    </view>
+    <view bindtap="bindBackToIndex">
+      <image src="/imgs/report/select.png"></image>
+      <text>取消</text>
+    </view>
+  </view>
+</view>
+
+<view class="mask" wx:if="{{showMember}}">
+  <view class="member-pannel">
+    <view class="title">
+      <text>全部成员</text>
+      <image src="/imgs/close.png" bindtap="bindHideMask"></image>
+    </view>
+    <view class="search-pannel">
+      <view class="input-pannel">
+        <input placeholder="搜索" bindinput="searchName"></input>
+        <image src="/imgs/report/icon_search.png"></image>
+      </view>
+    </view>
+    <scroll-view class="choose-pannel" scroll-y>
+      <checkbox-group bindchange="bindPickMember">
+        <block wx:for="{{departMemberMap[memberDepartId]}}" wx:for-item="member">
+          <view class="checkbox" wx:if="{{!member.hide}}">
+            <checkbox value="{{member.id}}" checked="{{member.checked}}">{{member.realname}}</checkbox>
+          </view>
+        </block>
+      </checkbox-group>
+    </scroll-view>
+  </view>
+</view>

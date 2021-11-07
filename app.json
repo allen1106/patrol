@@ -12,7 +12,10 @@
     "pages/group/group",
     "pages/group/edit",
     "pages/group/add",
-    "pages/index/notification"
+    "pages/report/detail",
+    "pages/notify/list",
+    "pages/notify/add",
+    "pages/notify/detail"
   ],
   "window": {
     "backgroundTextStyle": "light",

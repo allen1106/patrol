@@ -22,37 +22,39 @@ Page({
 
   login: function (e) {
     var that = this
+    let code = ''
     wx.login({
       success (res) {
-        if (res.code) {
-          console.log(res.code)
-          console.log(e.detail.userInfo)
-          api.phpRequest({
-            url: 'login.php',
-            data: {
-              code: res.code,
-              avatar_url: e.detail.userInfo.avatarUrl,
-              gender: e.detail.userInfo.gender,
-              nickname: e.detail.userInfo.nickName
-            },
-            success: function (res) {
-              console.log(res)
-              wx.setStorageSync('userId', res.data.userid)
-              wx.setStorageSync('userBind', res.data.bind)
-              if (res.data.bind === 1) {
-                wx.navigateBack({
-                  delta: 1
-                })
-              } else {
-                that.setData({
-                  bindInfo: true
-                })
+        code = res.code
+        console.log(code)
+        wx.getUserProfile({
+          desc: '用于完善会员资料',
+          success: (info) => {
+            api.phpRequest({
+              url: 'login.php',
+              data: {
+                code: code,
+                avatar_url: info.userInfo.avatarUrl,
+                gender: info.userInfo.gender,
+                nickname: info.userInfo.nickName
+              },
+              success: function (res) {
+                console.log(res)
+                wx.setStorageSync('userId', res.data.userid)
+                wx.setStorageSync('userBind', res.data.bind)
+                if (res.data.bind === 1) {
+                  wx.navigateBack({
+                    delta: 1
+                  })
+                } else {
+                  that.setData({
+                    bindInfo: true
+                  })
+                }
               }
-            }
-          })
-        } else {
-          console.log('登录失败！' + res.errMsg)
-        }
+            })
+          }
+        })
       }
     })
   },

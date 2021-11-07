@@ -28,7 +28,7 @@
 		"userConfirmedUseCompilerModuleSwitch": false
 	},
 	"compileType": "miniprogram",
-	"libVersion": "2.11.1",
+	"libVersion": "2.10.4",
 	"appid": "wx5e12a998476986a7",
 	"projectname": "patrol",
 	"debugOptions": {

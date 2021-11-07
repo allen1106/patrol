@@ -1,0 +1,49 @@
+<!--pages/notify/detail.wxml-->
+<view class="page-wrapper">
+  <view class="content-panel">
+    <view class="item-wrapper">
+      <text class="label">通知内容：</text>
+      <view class="content">{{info.content}}</view>
+    </view>
+    <view class="item-wrapper">
+      <text class="label">图片：</text>
+      <view class="image-panel" wx:if="{{info.imageList.length > 0}}">
+        <view class="img-upload-container">
+          <view class="img-preview-container" wx:for="{{info.imageList}}" wx:for-item="img">
+            <image class="img-preview" src="{{img}}" data-src="{{img}}" data-idx="0" bindtap="previewImage"></image>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="item-wrapper inline">
+      <text class="label">发布人：</text>
+      <text class="content">{{info.content}}</text>
+    </view>
+    <view class="item-wrapper inline">
+      <text class="label">发布时间：</text>
+      <text class="content">{{info.content}}</text>
+    </view>
+  </view>
+  <view class="member-panel">
+    <view class="header">
+      <view class="switchTab">
+        <view class="{{tab == 0 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="0">
+          <text>已读{{info.read_num}}人</text>
+        </view>
+        <view class="{{tab == 1 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="1">
+          <text>未读{{info.no_read_num}}人</text>
+        </view>
+      </view>
+      <view class="btn-view">
+        <text>查看全部</text>
+        <text>></text>
+      </view>
+    </view>
+
+    <scroll-view class="member-wrapper" scroll-y>
+      <view class="text" wx:for="{{tab == 0 ? info.read : info.no_read}}" wx:for-item="name">
+        <text>{{name}}</text>
+      </view>
+    </scroll-view>
+  </view>
+</view>

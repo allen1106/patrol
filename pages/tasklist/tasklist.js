@@ -33,9 +33,6 @@ Page({
     statusIdx: 0,
     startDate: "请选择开始时间",
     endDate: "请选择结束时间",
-    showCheckbox: false,
-    touchStart: 0,
-    touchEnd: 0,
 
     tab: 0,
     
@@ -45,6 +42,7 @@ Page({
     departId: 0,
     showPicker: false,
     // ---
+    selectAll: false
   },
 
   flatList: function (l, m) {
@@ -141,6 +139,7 @@ Page({
                 }, () => {
                   if (parentValue) {
                     this.initProjectList(this.fetchProjectList)
+                    this.fetchTaskList()
                   }
                 })
                 if (pickerIndex === 0) {    // 读取第一级选择器选项
@@ -232,22 +231,6 @@ Page({
           }
         }
       })
-    })
-  },
-
-  bindRegionChange: function (e) {
-    var idx = e.detail.value
-    var that = this
-    that.setData({
-      regionIdx: idx,
-      regionId: that.data.regionList[idx].department_id
-    }, () => {
-      if (that.data.regionIdx != 0) {
-        that.initProjectList(that.fetchProjectList)
-      } else {
-        that.initProjectList()
-      }
-      that.fetchTaskList()
     })
   },
 
@@ -351,43 +334,101 @@ Page({
   },
 
   viewReport: function (e) {
-    if (this.data.showCheckbox) return
     console.log(e.currentTarget.dataset.rid)
     var rid = e.currentTarget.dataset.rid
 
     wx.navigateTo({
-      url: '/pages/report/report?id=' + rid,
+      url: '/pages/report/detail?menu=' + this.data.menu + '&id=' + rid,
     })
   },
 
-  showCheckbox: function () {
-    this.setData({
-      showCheckbox: true
-    })
-  },
-  hideCheckbox: function () {
-    this.setData({
-      showCheckbox: false
-    })
-  },
   checkboxChange: function (e) {
+    let that = this
     var rids = e.detail.value
-    this.setData({
-      reportIds: rids
+    let is_all = true
+    for (let i in that.data.submitList) {
+      let obj = that.data.submitList[i]
+      if (rids.indexOf(obj.id) != -1) {
+        obj.checked = true
+      } else {
+        obj.checked = false
+        is_all = false
+      }
+    }
+    that.setData({
+      submitList: that.data.submitList,
+      selectAll: is_all
     })
+  },
+  bindSelectAll: function () {
+    let that = this
+    for (let i in that.data.submitList) {
+      let obj = that.data.submitList[i]
+      if (that.data.selectAll) {
+        obj.checked = false
+      } else {
+        obj.checked = true
+      }
+    }
+    that.setData({
+      submitList: that.data.submitList,
+      selectAll: !that.data.selectAll
+    })
+  },
+  batchAction: function (fn) {
+    let that = this,
+        reportIds = []
+    for (let i in that.data.submitList) {
+      let obj = that.data.submitList[i]
+      if (obj.checked) {
+        reportIds.push(obj.id)
+      }
+    }
+    let idstr = reportIds.join(',')
+    if (idstr) {
+      fn(idstr)
+    } else {
+      wx.showToast({
+        title: "请选择报告",
+        icon: "none"
+      })
+    }
   },
   bindBatchDownload: function () {
-    var that = this
-    var reportIds = that.data.reportIds.join(',')
-    api.phpRequest({
-      url: 'batch_download.php',
-      data: {'report_id_s': reportIds},
-      success: function (res) {
-        that.hideCheckbox()
-        that.setData({
-          fileUrl: res.data.file
-        }, that.openFile)
-      }
+    let that = this
+    that.batchAction((idstr) => {
+      api.phpRequest({
+        url: 'batch_download.php',
+        data: {'report_id_s': idstr},
+        success: function (res) {
+          that.setData({
+            fileUrl: res.data.file
+          }, that.openFile)
+        }
+      })
+    })
+  },
+  bindBatchDelete: function () {
+    let that = this
+    that.batchAction((idstr) => {
+      api.phpRequest({
+        url: 'report_delete.php',
+        data: {'report_id_s': idstr},
+        success: function (res) {
+          if (res.status == 1) {
+            wx.showToast({
+              title: "删除成功",
+              icon: "success"
+            })
+            that.fetchTaskList()
+          } else {
+            wx.showToast({
+              title: "删除失败，请重试！",
+              icon: "none"
+            })
+          }
+        }
+      })
     })
   },
   openFile: function (e) {

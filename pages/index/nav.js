@@ -17,7 +17,7 @@ Page({
 
   navToNotification: function () {
     wx.navigateTo({
-      url: '/pages/index/notification',
+      url: '/pages/notify/list',
     })
   },
 
