@@ -18,15 +18,15 @@
       <view class="text"  wx:if="{{!showLogin}}">
         <view class="text-wrapper">
           <image src="/imgs/index/icon-task.png"></image>
-          <text bindtap="navigateToEvaluate" data-isfb="0">您有 <text class="co-red">{{mailInfo.number}}</text> 条任务待解决</text>
+          <text bindtap="navigateToTaskList" data-menu="3">您有 <text class="co-red">{{mailInfo.number}}</text> 条任务待解决</text>
         </view>
         <view class="text-wrapper">
           <image src="/imgs/index/icon-msg.png"></image>
-          <text bindtap="navigateToTaskList" data-isfb="3">您收到 <text class="co-red">{{mailInfo.number1}}</text> 条任务回复</text>
+          <text bindtap="navigateToTaskList" data-menu="3">您收到 <text class="co-red">{{mailInfo.number1}}</text> 条任务回复</text>
         </view>
         <view class="text-wrapper">
           <image src="/imgs/index/icon-success.png"></image>
-          <text bindtap="navigateToEvaluate" data-isfb="1">您有 <text class="co-red">{{mailInfo.number2}}</text> 任务解决通过</text>
+          <text bindtap="navigateToTaskList" data-menu="3">您有 <text class="co-red">{{mailInfo.number2}}</text> 任务解决通过</text>
         </view>
       </view>
     </view>

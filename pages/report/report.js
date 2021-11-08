@@ -62,6 +62,8 @@ Page({
     memberDepartId: 0,
   },
 
+  move:function(){},
+
   flatList: function (l, m) {
     l.forEach((item) => {
       if (item.subList) {
@@ -360,14 +362,17 @@ Page({
     }
   },
 
-  validateInfo: function (data) {
-    if (!data['title']) return '标题'
-    if (!data['reason']) return '原因'
-    if (!data['solve']) return '解决办法'
-    if (!data['position']) return '部位'
-    if (!data['term']) return '处理期限'
+  validateInfo: function (data, strict) {
     if (data['report_id'] == 0 && data['project_id'] == 0) return '部门和项目'
     if (data['report_id'] == 0 && data['industry_id'] == 0) return '专业'
+    if (!data['title']) return '标题'
+
+    if (strict) {
+      if (!data['reason']) return '原因'
+      if (!data['solve']) return '解决办法'
+      if (!data['position']) return '部位'
+      if (!data['term']) return '处理期限'
+    }
     return 'success'
   },
 
@@ -408,7 +413,7 @@ Page({
       csr_id: csr_id
     }
     console.log(data)
-    var valid = that.validateInfo(data)
+    var valid = that.validateInfo(data, btnId == "1")
     if (valid != "success") {
       wx.showToast({
         title: valid + '不能为空',
@@ -452,83 +457,7 @@ Page({
     })
   },
   
-  handleSuccess: function () {
-    var that = this
-    api.phpRequest({
-      url: "report_result.php",
-      data: {'report_id': that.data.id, 'userid': wx.getStorageSync('userId')},
-      method: 'post',
-      header: {'content-type': 'application/x-www-form-urlencoded'},
-      success: function (res) {
-        if (res.data.status == 1) {
-          wx.showToast({
-            title: '处理成功',
-            icon: 'success',
-            success: function () {
-              setTimeout(that.bindBackToIndex, 1500);
-            }
-          })
-        } else {
-          wx.showToast({
-            title: '处理失败',
-            icon: 'none'
-          })
-        }
-      }
-    })
-  },
 
-  handleReject: function () {
-    var that = this
-    api.phpRequest({
-      url: "report_reject.php",
-      data: {'report_id': that.data.id, 'userid': wx.getStorageSync('userId'), 'content': that.data.rejectRes || ''},
-      method: 'post',
-      header: {'content-type': 'application/x-www-form-urlencoded'},
-      success: function (res) {
-        if (res.data.status == 1) {
-          wx.showToast({
-            title: '处理成功',
-            icon: 'success',
-            success: function () {
-              setTimeout(that.bindBackToIndex, 1500);
-            }
-          })
-        } else {
-          wx.showToast({
-            title: '处理失败',
-            icon: 'none'
-          })
-        }
-      }
-    })
-  },
-
-  handleDelete: function () {
-    var that = this
-    api.phpRequest({
-      url: "report_delete.php",
-      data: {'report_id': that.data.id},
-      method: 'post',
-      header: {'content-type': 'application/x-www-form-urlencoded'},
-      success: function (res) {
-        if (res.data.status == 1) {
-          wx.showToast({
-            title: '删除成功',
-            icon: 'success',
-            success: function () {
-              setTimeout(that.bindBackToIndex, 1500);
-            }
-          })
-        } else {
-          wx.showToast({
-            title: '删除失败',
-            icon: 'none'
-          })
-        }
-      }
-    })
-  },
 
   uploadImg: function (url, data) {
     var that = this
@@ -880,9 +809,21 @@ Page({
         stackLen: that.data.regionStack.length()
       })
     } else {
+      let {departMemberMap} = that.data
+      for (let i in departMemberMap) {
+        for (let j in departMemberMap[i]) {
+          let memberObj = departMemberMap[i][j]
+          if (i == region.value) {
+            memberObj.inbox = true
+          } else {
+            memberObj.inbox = false
+          }
+        }
+      }
       that.setData({
         showMember: true,
-        memberDepartId: region.value
+        memberDepartId: region.value,
+        departMemberMap: departMemberMap
       })
     }
   },
@@ -941,32 +882,53 @@ Page({
     })
   },
 
-  bindClickDepart: function (e) {
-    let that = this
-    let didx = e.currentTarget.dataset.didx
-    that.setData({
-      curDepartIdx: didx,
-      showMember: 1,
-    })
-  },
-
   bindHideMask: function (e) {
-    this.searchHandler('')
+    // this.setData({
+    //   reg: '',
+    //   showMember: false
+    // }, this.bindSearchHandler)
     this.setData({
       showMember: false
     })
   },
 
-  searchName: function (e) {
-    let reg = e.detail.value
-    this.searchHandler(reg)
+  bindInputReg: function (e) {
+    this.setData({
+      reg: e.detail.value
+    })
   },
 
-  searchHandler: function (reg) {
+  searchName1: function () {
     let that = this
-    for (let i in that.data.departMemberMap) {
-      for (let j in that.data.departMemberMap[i]) {
-        let memberObj = that.data.departMemberMap[i][j]
+    let {reg, departMemberMap} = that.data
+    if (!reg) {
+      wx.showToast({
+        title: '请输入关键字',
+        icon: "none"
+      })
+      return
+    }
+    for (let i in departMemberMap) {
+      for (let j in departMemberMap[i]) {
+        let memberObj = departMemberMap[i][j]
+        memberObj.inbox = false
+        if (memberObj.realname.indexOf(reg) != -1) {
+          memberObj.inbox = true
+        }
+      }
+    }
+    that.setData({
+      showMember: true,
+      departMemberMap: departMemberMap
+    }, that.bindSearchHandler)
+  },
+
+  bindSearchHandler: function () {
+    let that = this
+    let {reg, departMemberMap} = that.data
+    for (let i in departMemberMap) {
+      for (let j in departMemberMap[i]) {
+        let memberObj = departMemberMap[i][j]
         memberObj.hide = 0
         if (memberObj.realname.indexOf(reg) == -1) {
           memberObj.hide = 1
@@ -985,15 +947,11 @@ Page({
       for (let j in that.data.departMemberMap[i]) {
         let memberObj = that.data.departMemberMap[i][j]
         if (currentTab == 0) {
-          if (values.indexOf(memberObj.id) == -1) {
-            memberObj.checked = false
-          } else {
+          if (values.indexOf(memberObj.id) != -1) {
             memberObj.checked = true
           }
         } else {
-          if (values.indexOf(memberObj.id) == -1) {
-            memberObj.checked1 = false
-          } else {
+          if (values.indexOf(memberObj.id) != -1) {
             memberObj.checked1 = true
           }
         }

@@ -50,30 +50,6 @@ Page({
         for (var i in res.data) {
           res.data[i].evaluate_imgs = res.data[i].evaluate_imgs && res.data[i].evaluate_imgs.split(',')
         }
-        res.data = [{
-          "evaluate_name": "小李",
-          "evaluate_time": "2020-06-01 15:32:11",
-          "evaluate_content": "评价的内容",
-          "evaluate_imgs": ["https://jinda.17letao.cn/upload/images/20211101102602-1820.jpg", "https://jinda.17letao.cn/upload/images/20211101102602-6612.jpg"]
-        },
-        {
-            "evaluate_name": "小李1",
-            "evaluate_time": "2020-06-01 15:32:11",
-            "evaluate_content": "评价的内容11111",
-            "evaluate_imgs": ["https://jinda.17letao.cn/upload/images/20211101102602-1820.jpg", "https://jinda.17letao.cn/upload/images/20211101102602-6612.jpg"]
-        },
-        {
-            "evaluate_name": "小李2",
-            "evaluate_time": "2020-06-02 15:32:11",
-            "evaluate_content": "评价的内容222222",
-            "evaluate_imgs": []
-        },
-        {
-            "evaluate_name": "小李3",
-            "evaluate_time": "2020-06-03 15:32:11",
-            "evaluate_content": "评价的内容3333",
-            "evaluate_imgs": ["https://jinda.17letao.cn/upload/images/20211101102602-1820.jpg", "https://jinda.17letao.cn/upload/images/20211101102602-6612.jpg"]
-        }]
         that.setData({
           comments: res.data,
         })
@@ -278,6 +254,91 @@ Page({
         } else {
           wx.showToast({
             title: '提交失败',
+            icon: 'none'
+          })
+        }
+      }
+    })
+  },
+
+  handleSuccess: function () {
+    var that = this
+    api.phpRequest({
+      url: "report_result.php",
+      data: {
+        'project_id': that.data.id,
+        'userid': wx.getStorageSync('userId')
+      },
+      method: 'post',
+      header: {'content-type': 'application/x-www-form-urlencoded'},
+      success: function (res) {
+        if (res.data.status == 1) {
+          wx.showToast({
+            title: '处理成功',
+            icon: 'success',
+            success: function () {
+              setTimeout(that.bindBackToIndex, 1500);
+            }
+          })
+        } else {
+          wx.showToast({
+            title: '处理失败',
+            icon: 'none'
+          })
+        }
+      }
+    })
+  },
+
+  handleReject: function () {
+    var that = this
+    api.phpRequest({
+      url: "report_reject.php",
+      data: {
+        'report_id': that.data.id,
+        'userid': wx.getStorageSync('userId'),
+        'content': that.data.comment || ''
+      },
+      method: 'post',
+      header: {'content-type': 'application/x-www-form-urlencoded'},
+      success: function (res) {
+        if (res.data.status == 1) {
+          wx.showToast({
+            title: '驳回成功',
+            icon: 'success',
+            success: function () {
+              setTimeout(that.bindBackToIndex, 1500);
+            }
+          })
+        } else {
+          wx.showToast({
+            title: '驳回失败',
+            icon: 'none'
+          })
+        }
+      }
+    })
+  },
+
+  handleDelete: function () {
+    var that = this
+    api.phpRequest({
+      url: "report_delete.php",
+      data: {'report_id_s': that.data.id},
+      method: 'post',
+      header: {'content-type': 'application/x-www-form-urlencoded'},
+      success: function (res) {
+        if (res.data.status == 1) {
+          wx.showToast({
+            title: '删除成功',
+            icon: 'success',
+            success: function () {
+              setTimeout(that.bindBackToIndex, 1500);
+            }
+          })
+        } else {
+          wx.showToast({
+            title: '删除失败',
             icon: 'none'
           })
         }

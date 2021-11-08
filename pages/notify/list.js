@@ -3,7 +3,7 @@ const app = getApp()
 var api = require("../../utils/api.js")
 var util = require("../../utils/util.js")
 
-const menuTabStatusMap = [1, 2]
+const menuTabStatusMap = [1, 2, 3]
 
 Page({
 

@@ -55,8 +55,10 @@
     </scroll-view>
 
     <view class="input-wrapper">
-      <input name="searchkey" value="" placeholder="请输入检索姓名"></input>
-      <image src="/imgs/report/icon_search.png"></image>
+      <input name="searchkey" value="{{reg}}" placeholder="请输入检索姓名" bindinput="bindInputReg"></input>
+      <view class="image" bindtap="searchName1">
+        <image src="/imgs/report/icon_search.png"></image>
+      </view>
     </view>
 
     <view class="depart-wrapper">
@@ -100,16 +102,18 @@
     </view>
     <view class="search-pannel">
       <view class="input-pannel">
-        <input placeholder="搜索" bindinput="searchName"></input>
-        <image src="/imgs/report/icon_search.png"></image>
+        <input placeholder="搜索" value="{{reg}}" bindinput="bindInputReg"></input>
+        <image src="/imgs/report/icon_search.png" bindtap="bindSearchHandler"></image>
       </view>
     </view>
     <scroll-view class="choose-pannel" scroll-y>
       <checkbox-group bindchange="bindPickMember">
-        <block wx:for="{{departMemberMap[memberDepartId]}}" wx:for-item="member">
-          <view class="checkbox" wx:if="{{!member.hide}}">
-            <checkbox value="{{member.id}}" checked="{{member.checked}}">{{member.realname}}</checkbox>
-          </view>
+        <block wx:for="{{departMemberMap}}" wx:for-item="memberList">
+          <block wx:for="{{memberList}}" wx:for-item="member">
+            <view class="checkbox" wx:if="{{member.inbox && !member.hide}}">
+              <checkbox value="{{member.id}}" checked="{{member.checked}}">{{member.realname}}</checkbox>
+            </view>
+          </block>
         </block>
       </checkbox-group>
     </scroll-view>

@@ -182,17 +182,22 @@ checkbox .wx-checkbox-input.wx-checkbox-input-checked::before{
   height: 30rpx;
 }
 
-.co-red {
-  color: red;
+.co1 {
+  color: #fff;
+  background-color: #ce9804;
+  padding: 0 10rpx;
 }
 
-/* .co-green {
-  color: blue;
-} */
+.co2 {
+  color: #fff;
+  background-color: #fe0000;
+  padding: 0 10rpx;
+}
 
-.co-green {
-  background-color: yellowgreen;
-  color: white;
+.co3 {
+  color: #fff;
+  background-color: #ce9804;
+  padding: 0 10rpx;
 }
 
 .btn-wrapper {

@@ -112,8 +112,9 @@
           <view class="content-wrapper" data-rid="{{item.id}}" data-isfb="{{item.is_fb}}" bindtap="viewReport">
             <view class="title">
               <text>{{item.name}}</text>
-              <text wx:if="{{item.label}}" class="co-red">{{item.label}}</text>
-              <text wx:if="{{item.label1}}" class="co-green">{{item.label1}}</text>
+              <text wx:if="{{item.label}}" class="co1">{{item.label}}</text>
+              <text wx:if="{{item.label1}}" class="co1">{{item.label1}}</text>
+              <text wx:if="{{item.label2}}" class="co2">{{item.label2}}</text>
             </view>
             <view class="note">
               <text>任务生成时间：{{item.task_time}}</text>
@@ -172,4 +173,6 @@
 
 </view>
 
-<template wx:if="{{showPicker}}" is="cascaded-picker-view" data="{{ data: areaPickerData }}" />
+<view class="picker-mask" catchtouchmove="move" wx:if="{{showPicker}}">
+<template is="cascaded-picker-view" data="{{ data: areaPickerData }}" />
+</view>

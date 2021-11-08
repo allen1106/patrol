@@ -5,21 +5,21 @@
       <text>本组人员</text>
     </view>
     <scroll-view class="scroll-view-common name-pannel" scroll-y>
-      <block wx:for="{{memberRegionList}}" wx:for-item="regionObj" wx:for-index="ridx">
-        <block wx:for="{{regionObj.departList}}" wx:for-item="departObj" wx:for-index="didx">
-          <block wx:for="{{departObj.memberList}}" wx:for-item="memberObj" wx:for-index="midx">
-            <view class="member-item" wx:if="{{memberObj.checked}}">
-              <image src="/imgs/report/delete.png" bindtap="delMember" data-ridx="{{ridx}}" data-didx="{{didx}}" data-midx="{{midx}}"></image>
-              <text>{{memberObj.realname}}</text>
-            </view>
-          </block>
+      <block wx:for="{{departMemberMap}}" wx:for-item="memberList" wx:for-index="did">
+        <block wx:for="{{memberList}}" wx:for-item="memberObj" wx:for-index="midx">
+          <view class="member-item" wx:if="{{memberObj.checked}}">
+            <text>{{memberObj.realname}}</text>
+            <image src="/imgs/close.png" bindtap="delMember" data-did="{{did}}" data-midx="{{midx}}"></image>
+          </view>
         </block>
       </block>
     </scroll-view>
 
     <view class="input-wrapper">
-      <input name="searchkey" value="" placeholder="请输入检索姓名"></input>
-      <image src="/imgs/report/icon_search.png"></image>
+      <input name="searchkey" value="{{reg}}" placeholder="请输入检索姓名" bindinput="bindInputReg"></input>
+      <view class="image" bindtap="searchName1">
+        <image src="/imgs/report/icon_search.png"></image>
+      </view>
     </view>
 
     <view class="depart-wrapper">
@@ -45,5 +45,31 @@
   <view data-id="0" bindtap="bindBatchSubmit">
     <image src="/imgs/report/download.png"></image>
     <text>保存</text>
+  </view>
+</view>
+
+<view class="mask" wx:if="{{showMember}}">
+  <view class="member-pannel">
+    <view class="title">
+      <text>全部成员</text>
+      <image src="/imgs/close.png" bindtap="bindHideMask"></image>
+    </view>
+    <view class="search-pannel">
+      <view class="input-pannel">
+        <input placeholder="搜索" value="{{reg}}" bindinput="bindInputReg"></input>
+        <image src="/imgs/report/icon_search.png" bindtap="bindSearchHandler"></image>
+      </view>
+    </view>
+    <scroll-view class="choose-pannel" scroll-y>
+      <checkbox-group bindchange="bindPickMember">
+        <block wx:for="{{departMemberMap}}" wx:for-item="memberList">
+          <block wx:for="{{memberList}}" wx:for-item="member">
+            <view class="checkbox" wx:if="{{member.inbox && !member.hide}}">
+              <checkbox value="{{member.id}}" checked="{{member.checked}}">{{member.realname}}</checkbox>
+            </view>
+          </block>
+        </block>
+      </checkbox-group>
+    </scroll-view>
   </view>
 </view>

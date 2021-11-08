@@ -39,30 +39,6 @@
     <view>巡检人：{{reportInfo.username}}</view>
     <view>巡检时间：{{reportInfo.time}}</view>
   </view>
-  <view class="summary" wx:if="{{id!=0}}">
-    <view>
-      <text>任务编号：{{reportInfo.bgbh}}</text>
-    </view>
-    <view>
-      <text>公司：{{reportInfo.gsmc}}</text>
-    </view>
-    <view>
-      <text>项目名称：{{reportInfo.xmmc}}</text>
-    </view>
-    <view>
-      <text>专业名称：{{reportInfo.zymc}}</text>
-      <text>问题类型：{{reportInfo.wtlx}}</text>
-    </view>
-    <view>
-      <text>推送给：{{reportInfo.pjrlb}}</text>
-    </view>
-    <view>
-      <text>抄送给：{{reportInfo.csrlb}}</text>
-    </view>
-    <view>
-      <text>发起时间：{{reportInfo.task_time}}</text>
-    </view>
-  </view>
 
   <view class="description">
     <view class="item-wrapper">
@@ -195,8 +171,10 @@
     </scroll-view>
 
     <view class="input-wrapper">
-      <input name="searchkey" value="" placeholder="请输入检索姓名"></input>
-      <image src="/imgs/report/icon_search.png"></image>
+      <input name="searchkey" value="{{reg}}" placeholder="请输入检索姓名" bindinput="bindInputReg"></input>
+      <view class="image" bindtap="searchName1">
+        <image src="/imgs/report/icon_search.png"></image>
+      </view>
     </view>
 
     <view class="depart-wrapper">
@@ -268,30 +246,11 @@
       <image src="/imgs/report/select.png"></image>
       <text>取消</text>
     </view>
-    <view data-id="0" bindtap="bindBatchSubmit">
+    <view data-id="0" bindtap="bindSubmitForm">
       <image src="/imgs/report/download.png"></image>
       <text>保存草稿</text>
     </view>
   </view>
-
-  <block wx:if="{{isFb==1}}">
-    <view class="item-wrapper">
-      <view class="label">驳回原因</view>
-      <view class="input">
-        <textarea bindinput="bindInputRejectRes" name="rejectRes" value="{{rejectRes}}"></textarea>
-        <view bindtouchstart="bindSetRejectRes"
-          bindtouchend="bindTouchUp"
-          class="btn-speak">
-          <image src="/imgs/report/icon-speak.png"></image>
-        </view>
-      </view>
-    </view>
-    <view class="btn-wrapper">
-      <button form-type="submit" data-id="2">解决成功</button>
-      <button form-type="submit" data-id="3">驳回处理</button>
-      <button form-type="submit" data-id="4">删除</button>
-    </view>
-  </block>
 
 </view>
 </form>
@@ -304,17 +263,19 @@
     </view>
     <view class="search-pannel">
       <view class="input-pannel">
-        <input placeholder="搜索" bindinput="searchName"></input>
-        <image src="/imgs/report/icon_search.png"></image>
+        <input placeholder="搜索" value="{{reg}}" bindinput="bindInputReg"></input>
+        <image src="/imgs/report/icon_search.png" bindtap="bindSearchHandler"></image>
       </view>
     </view>
     <scroll-view class="choose-pannel" scroll-y>
       <checkbox-group bindchange="bindPickMember">
-        <block wx:for="{{departMemberMap[memberDepartId]}}" wx:for-item="member">
-          <view class="checkbox" wx:if="{{!member.hide}}">
-            <checkbox wx:if="{{currentTab==0}}" value="{{member.id}}" checked="{{member.checked}}">{{member.realname}}</checkbox>
-            <checkbox wx:if="{{currentTab==1}}" value="{{member.id}}" checked="{{member.checked1}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
-          </view>
+        <block wx:for="{{departMemberMap}}" wx:for-item="memberList">
+          <block wx:for="{{memberList}}" wx:for-item="member">
+            <view class="checkbox" wx:if="{{member.inbox && !member.hide}}">
+              <checkbox wx:if="{{currentTab==0}}" value="{{member.id}}" checked="{{member.checked}}">{{member.realname}}</checkbox>
+              <checkbox wx:if="{{currentTab==1}}" value="{{member.id}}" checked="{{member.checked1}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
+            </view>
+          </block>
         </block>
       </checkbox-group>
     </scroll-view>
@@ -330,4 +291,6 @@
   </block>
 </view>
 
-<template wx:if="{{showPicker}}" is="cascaded-picker-view" data="{{ data: areaPickerData }}" />
+<view class="picker-mask" catchtouchmove="move" wx:if="{{showPicker}}">
+<template is="cascaded-picker-view" data="{{ data: areaPickerData }}" />
+</view>

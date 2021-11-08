@@ -6,6 +6,9 @@
   <view class="{{tab == 1 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="1">
     <text>已查看</text>
   </view>
+  <view class="{{tab == 2 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="2">
+    <text>我的发布</text>
+  </view>
 </view>
 
 <view class="page-wrapper">

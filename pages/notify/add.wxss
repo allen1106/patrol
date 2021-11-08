@@ -163,6 +163,14 @@ page {
   width: 100%;
 }
 
+.input-wrapper .image {
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .input-wrapper image {
   width: 40rpx;
   height: 40rpx;

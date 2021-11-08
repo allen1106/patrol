@@ -97,6 +97,7 @@ Page({
       }
     })
   },
+
   bindClickRegion: function (e) {
     let that = this
     let region = e.currentTarget.dataset.region
@@ -108,9 +109,21 @@ Page({
         stackLen: that.data.regionStack.length()
       })
     } else {
+      let {departMemberMap} = that.data
+      for (let i in departMemberMap) {
+        for (let j in departMemberMap[i]) {
+          let memberObj = departMemberMap[i][j]
+          if (i == region.value) {
+            memberObj.inbox = true
+          } else {
+            memberObj.inbox = false
+          }
+        }
+      }
       that.setData({
         showMember: true,
-        memberDepartId: region.value
+        memberDepartId: region.value,
+        departMemberMap: departMemberMap
       })
     }
   },
@@ -125,76 +138,49 @@ Page({
     })
   },
 
-  chooseMemberRegion: function (idx) {
-    let that = this
-    let regionList = that.data.memberRegionList
-    for (let i in regionList) {
-      api.phpRequest({
-        url: 'department_sub.php',
-        data: {
-          department_id: regionList[i].department_id
-        },
-        success: function (res) {
-          regionList[i].departList = res.data
-          for (let j in regionList[i].departList) {
-            api.phpRequest({
-              url: 'user.php',
-              data: {
-                departmentid: regionList[i].departList[j].department_sub_id
-              },
-              success: function (res) {
-                // if (that.data.id != 0) {
-                //   let {pjr_id, csr_id} = that.data.reportInfo
-                //   for (let i in res.data) {
-                //     if (pjr_id && pjr_id.indexOf(res.data[i].id) != -1) {
-                //       res.data[i].checked = true
-                //     }
-                //     if (csr_id && csr_id.indexOf(res.data[i].id) != -1) {
-                //       res.data[i].checked1 = true
-                //     }
-                //   }
-                // }
-                regionList[i].departList[j].memberList = res.data
-                that.setData({
-                  memberRegionList: regionList,
-                })
-              }
-            })
-          }
-        }
-      })
-    }
-    that.setData({
-      curRegionIdx: idx
-    })
-  },
-
-  bindClickDepart: function (e) {
-    let that = this
-    let didx = e.currentTarget.dataset.didx
-    that.setData({
-      curDepartIdx: didx,
-      showMember: 1,
-    })
-  },
-
   bindHideMask: function (e) {
-    this.searchHandler('')
     this.setData({
       showMember: false
     })
   },
 
-  searchName: function (e) {
-    let reg = e.detail.value
-    this.searchHandler(reg)
+  bindInputReg: function (e) {
+    this.setData({
+      reg: e.detail.value
+    })
   },
 
-  searchHandler: function (reg) {
+  searchName1: function () {
     let that = this
-    for (let i in that.data.departMemberMap) {
-      for (let j in that.data.departMemberMap[i]) {
-        let memberObj = that.data.departMemberMap[i][j]
+    let {reg, departMemberMap} = that.data
+    if (!reg) {
+      wx.showToast({
+        title: '请输入关键字',
+        icon: "none"
+      })
+      return
+    }
+    for (let i in departMemberMap) {
+      for (let j in departMemberMap[i]) {
+        let memberObj = departMemberMap[i][j]
+        memberObj.inbox = false
+        if (memberObj.realname.indexOf(reg) != -1) {
+          memberObj.inbox = true
+        }
+      }
+    }
+    that.setData({
+      showMember: true,
+      departMemberMap: departMemberMap
+    }, that.bindSearchHandler)
+  },
+
+  bindSearchHandler: function () {
+    let that = this
+    let {reg, departMemberMap} = that.data
+    for (let i in departMemberMap) {
+      for (let j in departMemberMap[i]) {
+        let memberObj = departMemberMap[i][j]
         memberObj.hide = 0
         if (memberObj.realname.indexOf(reg) == -1) {
           memberObj.hide = 1
@@ -211,9 +197,7 @@ Page({
     for (let i in that.data.departMemberMap) {
       for (let j in that.data.departMemberMap[i]) {
         let memberObj = that.data.departMemberMap[i][j]
-        if (values.indexOf(memberObj.id) == -1) {
-          memberObj.checked = false
-        } else {
+        if (values.indexOf(memberObj.id) != -1) {
           memberObj.checked = true
         }
       }
@@ -222,7 +206,6 @@ Page({
       departMemberMap: that.data.departMemberMap,
     })
   },
-
   delMember: function (e) {
     let that = this
     let {did, midx} = e.currentTarget.dataset
@@ -232,7 +215,7 @@ Page({
     memberObj.checked = false
     that.setData({departMemberMap: departMemberMap})
   },
-
+  
   getCheckedMember: function () {
     let that = this
     let ret = {'pjr_id': []}
@@ -240,14 +223,6 @@ Page({
     for (let i in that.data.departMemberMap) {
       for (let j in that.data.departMemberMap[i]) {
         let memberObj = that.data.departMemberMap[i][j]
-
-        // if (memberRegionList[i].department_id == regionId && memberObj.flag == 1 && (!memberObj.checked || !memberObj.checked1)) {
-        //   wx.showToast({
-        //     title: '必须勾选当前公司的负责人',
-        //     icon: 'none',
-        //     })
-        //     return null
-        // }
         if (memberObj.checked) {
           ret.pjr_id.push(memberObj.id)
         }

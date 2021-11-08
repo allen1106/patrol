@@ -1,6 +1,6 @@
 <import src="../../components/cascaded-picker-view/cascaded-picker-view.wxml" />
 
-<view class="page-wrapper">
+<view class="page-wrapper" bindtap="hidePicker">
   <view class="nav-wrapper">
     <view class="nav">
       <view class="region" catchtap="showPicker" hover-stop-propagation="true">
@@ -55,62 +55,64 @@
       </view>
     </view>
   </view>
-</view>
 
-<view class="item-detail">
-    <view class="img-wrapper"></view>
+  <view class="item-detail">
+      <view class="img-wrapper"></view>
+      <view class="info-wrapper">
+        <view class="flex-big">项目名称</view>
+        <view class="flex-more text-center" data-sid="0" bindtap="bindSortBy">问题总数
+          <block wx:if="{{sortBy == 0}}">
+          <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
+          <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
+          </block>
+        </view>
+        <view class="flex-more text-center" data-sid="1" bindtap="bindSortBy">已回复
+          <block wx:if="{{sortBy == 1}}">
+          <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
+          <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
+          </block>
+        </view>
+        <view class="text-center" data-sid="2" bindtap="bindSortBy">已解决
+          <block wx:if="{{sortBy == 2}}">
+          <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
+          <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
+          </block>
+        </view>
+        <view class="text-center" data-sid="3" bindtap="bindSortBy">回复率
+          <block wx:if="{{sortBy == 3}}">
+          <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
+          <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
+          </block>
+        </view>
+        <view class="text-center" data-sid="4" bindtap="bindSortBy">解决率
+          <block wx:if="{{sortBy == 4}}">
+          <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
+          <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
+          </block>
+        </view>
+      </view>
+  </view>
+
+  <view class="item-detail" wx:for="{{itemList}}" wx:key="index">
+    <view class="img-wrapper"><image src="/imgs/statistic/top{{index+1}}.png" wx:if="{{index < 3}}"></image></view>
     <view class="info-wrapper">
-      <view class="flex-big">项目名称</view>
-      <view class="flex-more text-center" data-sid="0" bindtap="bindSortBy">问题总数
-        <block wx:if="{{sortBy == 0}}">
-        <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
-        <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
-        </block>
-      </view>
-      <view class="flex-more text-center" data-sid="1" bindtap="bindSortBy">已回复
-        <block wx:if="{{sortBy == 1}}">
-        <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
-        <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
-        </block>
-      </view>
-      <view class="text-center" data-sid="2" bindtap="bindSortBy">已解决
-        <block wx:if="{{sortBy == 2}}">
-        <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
-        <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
-        </block>
-      </view>
-      <view class="text-center" data-sid="3" bindtap="bindSortBy">回复率
-        <block wx:if="{{sortBy == 3}}">
-        <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
-        <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
-        </block>
-      </view>
-      <view class="text-center" data-sid="4" bindtap="bindSortBy">解决率
-        <block wx:if="{{sortBy == 4}}">
-        <image wx:if="{{!sortAsc}}" src="/imgs/statistic/down.svg"></image>
-        <image wx:if="{{sortAsc}}" src="/imgs/statistic/up.svg"></image>
-        </block>
-      </view>
+      <view class="flex-big">{{itemList[index].realname}}</view>
+      <view class="flex-more text-center">{{itemList[index].number}}</view>
+      <view class="text-center">{{itemList[index].number1}}</view>
+      <view class="text-center">{{itemList[index].number2}}</view>
+      <view class="text-center">{{itemList[index].ratio}}%</view>
+      <view class="text-center">{{itemList[index].ratio1}}%</view>
     </view>
-</view>
+  </view>
 
-<view class="item-detail" wx:for="{{itemList}}" wx:key="index">
-  <view class="img-wrapper"><image src="/imgs/statistic/top{{index+1}}.png" wx:if="{{index < 3}}"></image></view>
-  <view class="info-wrapper">
-    <view class="flex-big">{{itemList[index].realname}}</view>
-    <view class="flex-more text-center">{{itemList[index].number}}</view>
-    <view class="text-center">{{itemList[index].number1}}</view>
-    <view class="text-center">{{itemList[index].number2}}</view>
-    <view class="text-center">{{itemList[index].ratio}}%</view>
-    <view class="text-center">{{itemList[index].ratio1}}%</view>
+  <view class="report-summary">
+    <view>报告总数：{{reportSummary.number}}</view>
+    <view>未解决：{{reportSummary.number2}}</view>
+    <view>已解决：{{reportSummary.number1}}</view>
+    <view>完成率：{{reportSummary.ratio}}%</view>
   </view>
 </view>
 
-<view class="report-summary">
-  <view>报告总数：{{reportSummary.number}}</view>
-  <view>未解决：{{reportSummary.number2}}</view>
-  <view>已解决：{{reportSummary.number1}}</view>
-  <view>完成率：{{reportSummary.ratio}}%</view>
+<view class="picker-mask" catchtouchmove="move" wx:if="{{showPicker}}">
+<template is="cascaded-picker-view" data="{{ data: areaPickerData }}" />
 </view>
-
-<template wx:if="{{showPicker}}" is="cascaded-picker-view" data="{{ data: areaPickerData }}" />

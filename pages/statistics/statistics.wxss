@@ -2,7 +2,7 @@
 
 .cascaded-picker-view {
   position: fixed;
-  bottom: 100rpx;
+  bottom: 0;
   left: 0;
   padding: 0;
   width: 100%;
@@ -10,13 +10,13 @@
 }
 
 .page-wrapper {
-  width: 95%;
+  width: 100%;
   margin: 20rpx auto;
   font-size: 20rpx;
 }
 
 .nav-wrapper {
-  width: 100%;
+  width: 95%;
   height: 80rpx;
   margin: 20rpx auto;
   display: flex;

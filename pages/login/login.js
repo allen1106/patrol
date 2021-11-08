@@ -27,32 +27,32 @@ Page({
       success (res) {
         code = res.code
         console.log(code)
-        wx.getUserProfile({
-          desc: '用于完善会员资料',
-          success: (info) => {
-            api.phpRequest({
-              url: 'login.php',
-              data: {
-                code: code,
-                avatar_url: info.userInfo.avatarUrl,
-                gender: info.userInfo.gender,
-                nickname: info.userInfo.nickName
-              },
-              success: function (res) {
-                console.log(res)
-                wx.setStorageSync('userId', res.data.userid)
-                wx.setStorageSync('userBind', res.data.bind)
-                if (res.data.bind === 1) {
-                  wx.navigateBack({
-                    delta: 1
-                  })
-                } else {
-                  that.setData({
-                    bindInfo: true
-                  })
-                }
-              }
-            })
+      }
+    })
+    wx.getUserProfile({
+      desc: '用于完善会员资料',
+      success: (info) => {
+        api.phpRequest({
+          url: 'login.php',
+          data: {
+            code: code,
+            avatar_url: info.userInfo.avatarUrl,
+            gender: info.userInfo.gender,
+            nickname: info.userInfo.nickName
+          },
+          success: function (res) {
+            console.log(res)
+            wx.setStorageSync('userId', res.data.userid)
+            wx.setStorageSync('userBind', res.data.bind)
+            if (res.data.bind === 1) {
+              wx.navigateBack({
+                delta: 1
+              })
+            } else {
+              that.setData({
+                bindInfo: true
+              })
+            }
           }
         })
       }
