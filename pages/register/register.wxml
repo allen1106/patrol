@@ -20,10 +20,14 @@
     <image src="/imgs/register/5.png"></image>
     <input placeholder="姓名" name="realname"></input>
   </view>
-  <view class="input-wrapper" catchtap="showPicker" hover-stop-propagation="true">
-    <image src="/imgs/register/6.png"></image>
-    <input placeholder="所在部门" name="department" value="{{nextListMap[departId].text}}" disabled="true"></input>
-  </view>
+  <block wx:for="{{extraDepart}}" wx:for-index="didx" wx:for-item="did">
+    <view class="input-wrapper">
+      <image src="/imgs/register/6.png"></image>
+      <input placeholder="所在部门" name="department" value="{{nextListMap[did].text}}" disabled="true" data-didx="{{didx}}" catchtap="showPicker" hover-stop-propagation="true"></input>
+      <image class="small-img" src="/imgs/plus.png" bindtap="bindAddDepart" wx:if="{{didx == 0}}"></image>
+      <image src="/imgs/close.png" data-idx="{{didx}}" bindtap="bindDelDepart" wx:if="{{didx != 0}}"></image>
+    </view>
+  </block>
 </view>
 <view class="menu-wrapper">
   <view bindtap="navigateToLogin">

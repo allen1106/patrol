@@ -93,8 +93,22 @@ Page({
       item.sub_depart_list = undefined
       if (item.subList) {
         this.convertList(item.subList)
+      }
+    })
+  },
+
+  convertList1: function (l) {
+    l.forEach((item) => {
+      item.text = item.name
+      item.value = item.id
+      item.subList = item.sub_depart_list
+      item.name = undefined
+      item.id = undefined
+      item.sub_depart_list = undefined
+      if (item.subList) {
+        this.convertList1(item.subList)
       } else {
-        this.fetchMember(item.value)
+        this.fetchMember(item.value, item.flag)
       }
     })
   },
@@ -109,15 +123,27 @@ Page({
         that.convertList(res.data)
         that.setData({
           rawRegionList: res.data
-        }, () => {
-          that.flatList(that.data.rawRegionList, {})
-          const stack = new util.Stack()
-          stack.push(that.data.rawRegionList)
-          that.setData({
-            regionStack: stack,
-            stackPeek: stack.peek(),
-            stackLen: stack.length()
-          })
+        })
+      }
+    })
+  },
+
+  initMemberList: function () {
+    let that = this
+
+    // 获取部门信息
+    api.phpRequest({
+      url: 'department1.php',
+      data: {userid: wx.getStorageSync('userId')},
+      success: function (res) {
+        that.convertList1(res.data)
+        that.flatList(res.data, {})
+        const stack = new util.Stack()
+        stack.push(res.data)
+        that.setData({
+          regionStack: stack,
+          stackPeek: stack.peek(),
+          stackLen: stack.length()
         })
       }
     })
@@ -186,12 +212,13 @@ Page({
     );
   },
 
-  fetchMember: function (departId) {
+  fetchMember: function (departId, flag) {
     let that = this
     api.phpRequest({
       url: 'user.php',
       data: {
-        departmentid_id: departId
+        departmentid_id: departId,
+        flag: flag
       },
       success: function (res) {
         if (that.data.id != 0) {
@@ -233,6 +260,7 @@ Page({
       }),
       console.log(app.globalData)
       that.fetchRegionList()
+      that.initMemberList()
       that.fetchSystemList()
       that.setData({
         title: app.globalData.title,

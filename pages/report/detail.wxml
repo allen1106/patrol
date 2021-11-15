@@ -136,7 +136,7 @@
     </view>
   </view>
 
-  <view class="form-panel" wx:if="{{menu == 4}}">
+  <view class="form-panel" wx:if="{{menu == 4 && info.display}}">
     <view class="item-wrapper">
       <view class="label">
         <text>驳回原因</text>

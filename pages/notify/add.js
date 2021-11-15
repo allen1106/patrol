@@ -48,7 +48,7 @@ Page({
       if (item.subList) {
         this.convertList(item.subList)
       } else {
-        this.fetchMember(item.value)
+        this.fetchMember(item.value, item.flag)
       }
     })
   },
@@ -58,7 +58,8 @@ Page({
 
     // 获取部门信息
     api.phpRequest({
-      url: 'department.php',
+      url: 'department1.php',
+      data: {userid: wx.getStorageSync('userId')},
       success: function (res) {
         that.convertList(res.data)
         const stack = new util.Stack()
@@ -71,12 +72,14 @@ Page({
       }
     })
   },
-  fetchMember: function (departId) {
+
+  fetchMember: function (departId, flag) {
     let that = this
     api.phpRequest({
       url: 'user.php',
       data: {
-        departmentid_id: departId
+        departmentid_id: departId,
+        flag: flag
       },
       success: function (res) {
         if (that.data.id != 0) {
