@@ -16,6 +16,12 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    let reback = options.reback
+    if (reback) {
+      this.setData({
+        reback: reback
+      })
+    }
   },
 
   /**
@@ -39,9 +45,15 @@ Page({
       })
       return
     }
-    wx.navigateTo({
-      url: '/pages/group/add?title=' + this.data.title,
-    })
+    if (this.data.reback) {
+      wx.navigateTo({
+        url: '/pages/group/add?reback=' + this.data.reback + '&title=' + this.data.title,
+      })
+    } else {
+      wx.navigateTo({
+        url: '/pages/group/add?title=' + this.data.title,
+      })
+    }
   },
   fetchGroupList: function () {
     let that = this
@@ -132,4 +144,10 @@ Page({
       })
     })
   },
+  bindEditGroup: function (e) {
+    let gid = e.currentTarget.dataset.rid
+    wx.navigateTo({
+      url: '/pages/group/add?gid=' + gid,
+    })
+  }
 })

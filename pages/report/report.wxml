@@ -41,101 +41,176 @@
   </view>
 
   <view class="description">
-    <view class="item-wrapper">
-      <view class="label">标题<text class="co-red">*</text></view>
+    <block wx:for="{{formData[1]}}" wx:for-item="item">
+    <view class="item-wrapper" wx:if="{{item.name == 'title'}}">
+      <view class="label">{{item.title}}<text class="co-red" wx:if="{{item.leixing}}">*</text></view>
       <view class="input">
-        <textarea bindinput="bindInputTitle" value="{{reportInfo.title || title}}" name="title" wx:if="{{id==0 || isFb==0}}"></textarea>
+        <textarea bindinput="bindInputTitle" value="{{reportInfo.title || title}}" name="title" wx:if="{{id==0}}"></textarea>
         <text wx:else>{{reportInfo.title}}</text>
         <view bindtouchstart="bindSetTitle"
           bindtouchend="bindTouchUp"
-          class="btn-speak" wx:if="{{id==0 || isFb==0}}">
+          class="btn-speak" wx:if="{{id==0}}">
           <image src="/imgs/report/icon-speak.png"></image>
         </view>
       </view>
     </view>
-    <view class="item-wrapper">
-      <view class="label">原因<text class="co-red">*</text></view>
+    <view class="item-wrapper" wx:if="{{item.name == 'reason'}}">
+      <view class="label">{{item.title}}<text class="co-red" wx:if="{{item.leixing}}">*</text></view>
       <view class="input">
-        <textarea bindinput="bindInputReason" value="{{reportInfo.reason || reason}}" name="reason" wx:if="{{id==0 || isFb==0}}"></textarea>
+        <textarea bindinput="bindInputReason" value="{{reportInfo.reason || reason}}" name="reason" wx:if="{{id==0}}"></textarea>
         <text wx:else>{{reportInfo.reason}}</text>
         <view bindtouchstart="bindSetReason"
           bindtouchend="bindTouchUp"
-          class="btn-speak" wx:if="{{id==0 || isFb==0}}">
+          class="btn-speak" wx:if="{{id==0}}">
           <image src="/imgs/report/icon-speak.png"></image>
         </view>
       </view>
     </view>
-    <view class="item-wrapper">
-      <view class="label">解决办法<text class="co-red">*</text></view>
+    <view class="item-wrapper" wx:if="{{item.name == 'solve'}}">
+      <view class="label">{{item.title}}<text class="co-red" wx:if="{{item.leixing}}">*</text></view>
       <view class="input">
-        <textarea bindinput="bindInputSolve" value="{{reportInfo.solve || solve}}" name="solve" wx:if="{{id==0 || isFb==0}}"></textarea>
+        <textarea bindinput="bindInputSolve" value="{{reportInfo.solve || solve}}" name="solve" wx:if="{{id==0}}"></textarea>
         <text wx:else>{{reportInfo.solve}}</text>
         <view bindtouchstart="bindSetSolve"
           bindtouchend="bindTouchUp"
-          class="btn-speak" wx:if="{{id==0 || isFb==0}}">
+          class="btn-speak" wx:if="{{id==0}}">
           <image src="/imgs/report/icon-speak.png"></image>
         </view>
       </view>
     </view>
-    <view class="item-wrapper">
-      <view class="label">部位<text class="co-red">*</text></view>
+    <view class="item-wrapper" wx:if="{{item.name == 'position'}}">
+      <view class="label">{{item.title}}<text class="co-red" wx:if="{{item.leixing}}">*</text></view>
       <view class="input">
-        <textarea bindinput="bindInputPos" value="{{reportInfo.pos || pos}}" name="pos" wx:if="{{id==0 || isFb==0}}"></textarea>
+        <textarea bindinput="bindInputPos" value="{{reportInfo.pos || pos}}" name="pos" wx:if="{{id==0}}"></textarea>
         <text wx:else>{{reportInfo.pos}}</text>
         <view bindtouchstart="bindSetPos"
           bindtouchend="bindTouchUp"
-          class="btn-speak" wx:if="{{id==0 || isFb==0}}">
+          class="btn-speak" wx:if="{{id==0}}">
           <image src="/imgs/report/icon-speak.png"></image>
         </view>
       </view>
     </view>
-    <view class="item-wrapper">
-      <view class="label small-label">现场图片</view>
+    <view class="item-wrapper" wx:if="{{item.name == 'endtime'}}">
+      <view class="label">{{item.title}}<text class="co-red" wx:if="{{item.leixing}}">*</text></view>
+      <view class="input">
+        <input bindinput="bindInputTerm" value="{{reportInfo.term || term}}" name="term" type="number" wx:if="{{id==0}}"></input>
+        <text wx:else>{{reportInfo.term}}</text>
+      </view>
+    </view>
+    <view class="item-wrapper" wx:if="{{item.name == 'content'}}">
+      <view class="label">{{item.title}}<text class="co-red" wx:if="{{item.leixing}}">*</text></view>
+      <view class="input">
+        <textarea bindinput="bindInputRemark" value="{{reportInfo.remark || remark}}" name="remark" wx:if="{{id==0}}"></textarea>
+        <text wx:else>{{reportInfo.remark || ''}}</text>
+        <view bindtouchstart="bindSetRemark"
+          bindtouchend="bindTouchUp"
+          class="btn-speak" wx:if="{{id==0}}">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
+    </view>
+    </block>
+
+    <block wx:for="{{formData[3]}}" wx:for-item="item">
+    <view class="item-wrapper" wx:if="{{item.name == 'imgs'}}">
+      <view class="label small-label">{{item.title}}</view>
       <view class="image-wrapper">
         <view class="img-upload-container">
           <view class="img-preview-container" wx:for="{{imageList}}" wx:key="index">
             <image class="img-preview" src="{{imageList[index]}}" data-src="{{imageList[index]}}" data-index="0" bindtap="previewImage"></image>
-            <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{imageList[index]}}" data-index="0" wx:if="{{id==0 || isFb==0}}"></image>
+            <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{imageList[index]}}" data-index="0" wx:if="{{id==0}}"></image>
           </view>
-          <view class="img-preview-container" bindtap="chooseImage" data-index="0" wx:if="{{id==0 || isFb==0}}">
+          <view class="img-preview-container" bindtap="chooseImage" data-index="0" wx:if="{{id==0}}">
             <image class="img-preview" src="/imgs/report/1.png" wx:if="{{imageList.length < 3}}"></image>
           </view>
         </view>
       </view>
     </view>
-    <view class="item-wrapper">
-      <view class="label small-label">参照做法和要求</view>
+    <view class="item-wrapper" wx:if="{{item.name == 'imgs1'}}">
+      <view class="label small-label">{{item.title}}</view>
       <view class="image-wrapper">
         <view class="img-upload-container" data-index="1">
           <view class="img-preview-container" wx:for="{{image1List}}" wx:key="index">
             <image class="img-preview" src="{{image1List[index]}}" data-src="{{image1List[index]}}" data-index="1" bindtap="previewImage"></image>
-            <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{image1List[index]}}" data-index="1" wx:if="{{id==0 || isFb==0}}"></image>
+            <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{image1List[index]}}" data-index="1" wx:if="{{id==0}}"></image>
           </view>
-          <view class="img-preview-container" data-index="1" bindtap="chooseImage" wx:if="{{id==0 || isFb==0}}">
+          <view class="img-preview-container" data-index="1" bindtap="chooseImage" wx:if="{{id==0}}">
             <image class="img-preview" src="/imgs/report/1.png" wx:if="{{image1List.length < 3}}"></image>
           </view>
         </view>
       </view>
     </view>
-    <view class="item-wrapper">
-      <view class="label">处理期限(天)<text class="co-red">*</text></view>
+    </block>
+
+    <block wx:for="{{formData[2]}}" wx:for-item="item">
+    <view class="item-wrapper" wx:if="{{item.name == 'title'}}">
+      <view class="label">{{item.title}}<text class="co-red" wx:if="{{item.leixing}}">*</text></view>
       <view class="input">
-        <input bindinput="bindInputTerm" value="{{reportInfo.term || term}}" name="term" type="number" wx:if="{{id==0 || isFb==0}}"></input>
-        <text wx:else>{{reportInfo.term}}</text>
-      </view>
-    </view>
-    <view class="item-wrapper">
-      <view class="label">备注</view>
-      <view class="input">
-        <textarea bindinput="bindInputRemark" value="{{reportInfo.remark || remark}}" name="remark" wx:if="{{id==0 || isFb==0}}"></textarea>
-        <text wx:else>{{reportInfo.remark || ''}}</text>
-        <view bindtouchstart="bindSetRemark"
+        <textarea bindinput="bindInputTitle" value="{{reportInfo.title || title}}" name="title" wx:if="{{id==0}}"></textarea>
+        <text wx:else>{{reportInfo.title}}</text>
+        <view bindtouchstart="bindSetTitle"
           bindtouchend="bindTouchUp"
-          class="btn-speak" wx:if="{{id==0 || isFb==0}}">
+          class="btn-speak" wx:if="{{id==0}}">
           <image src="/imgs/report/icon-speak.png"></image>
         </view>
       </view>
     </view>
+    <view class="item-wrapper" wx:if="{{item.name == 'reason'}}">
+      <view class="label">{{item.title}}<text class="co-red" wx:if="{{item.leixing}}">*</text></view>
+      <view class="input">
+        <textarea bindinput="bindInputReason" value="{{reportInfo.reason || reason}}" name="reason" wx:if="{{id==0}}"></textarea>
+        <text wx:else>{{reportInfo.reason}}</text>
+        <view bindtouchstart="bindSetReason"
+          bindtouchend="bindTouchUp"
+          class="btn-speak" wx:if="{{id==0}}">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
+    </view>
+    <view class="item-wrapper" wx:if="{{item.name == 'solve'}}">
+      <view class="label">{{item.title}}<text class="co-red" wx:if="{{item.leixing}}">*</text></view>
+      <view class="input">
+        <textarea bindinput="bindInputSolve" value="{{reportInfo.solve || solve}}" name="solve" wx:if="{{id==0}}"></textarea>
+        <text wx:else>{{reportInfo.solve}}</text>
+        <view bindtouchstart="bindSetSolve"
+          bindtouchend="bindTouchUp"
+          class="btn-speak" wx:if="{{id==0}}">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
+    </view>
+    <view class="item-wrapper" wx:if="{{item.name == 'position'}}">
+      <view class="label">{{item.title}}<text class="co-red" wx:if="{{item.leixing}}">*</text></view>
+      <view class="input">
+        <textarea bindinput="bindInputPos" value="{{reportInfo.pos || pos}}" name="pos" wx:if="{{id==0}}"></textarea>
+        <text wx:else>{{reportInfo.pos}}</text>
+        <view bindtouchstart="bindSetPos"
+          bindtouchend="bindTouchUp"
+          class="btn-speak" wx:if="{{id==0}}">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
+    </view>
+    <view class="item-wrapper" wx:if="{{item.name == 'endtime'}}">
+      <view class="label">{{item.title}}<text class="co-red" wx:if="{{item.leixing}}">*</text></view>
+      <view class="input">
+        <input bindinput="bindInputTerm" value="{{reportInfo.term || term}}" name="term" type="number" wx:if="{{id==0}}"></input>
+        <text wx:else>{{reportInfo.term}}</text>
+      </view>
+    </view>
+    <view class="item-wrapper" wx:if="{{item.name == 'content'}}">
+      <view class="label">{{item.title}}<text class="co-red" wx:if="{{item.leixing}}">*</text></view>
+      <view class="input">
+        <textarea bindinput="bindInputRemark" value="{{reportInfo.remark || remark}}" name="remark" wx:if="{{id==0}}"></textarea>
+        <text wx:else>{{reportInfo.remark || ''}}</text>
+        <view bindtouchstart="bindSetRemark"
+          bindtouchend="bindTouchUp"
+          class="btn-speak" wx:if="{{id==0}}">
+          <image src="/imgs/report/icon-speak.png"></image>
+        </view>
+      </view>
+    </view>
+    </block>
   </view>
 
   <view class="assign" wx:if="{{id==0}}">
@@ -189,10 +264,14 @@
         </view>
       </view>
       <scroll-view class="scroll-view-common depart-pannel" scroll-y>
-        <view class="region-item" wx:for="{{stackPeek}}" wx:for-item="regionObj" bindtap="bindClickRegion" data-region="{{regionObj}}">
-          <text>{{regionObj.text}}</text>
+        <checkbox-group bindchange="bindCheckRegion">
+        <view class="region-item" wx:for="{{stackPeek}}" wx:for-item="regionObj">
+          <checkbox value="{{regionObj.value}}" checked="{{regionObj.checked}}" wx:if="{{currentTab==0}}"></checkbox>
+          <checkbox value="{{regionObj.value}}" checked="{{regionObj.checked1}}" wx:if="{{currentTab==1}}"></checkbox>
+          <text bindtap="bindClickRegion" data-region="{{regionObj}}">{{regionObj.text}}</text>
           <image src="/imgs/register/left.png"></image>
         </view>
+        </checkbox-group>
       </scroll-view>
     </view>
   </view>

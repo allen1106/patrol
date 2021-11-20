@@ -1,7 +1,8 @@
 // pages/report/report.js
 const { CascadedPickerView } = require('../../components/cascaded-picker-view/cascaded-picker-view.js');
 var util = require("../../utils/util.js")
-var api = require("../../utils/api.js")
+var api = require("../../utils/api.js");
+const { phpRequest } = require('../../utils/api.js');
 var plugin = requirePlugin("WechatSI")
 
 let manager = plugin.getRecordRecognitionManager()
@@ -20,7 +21,6 @@ Page({
     title: "",
     id: 0,
     reportInfo: null,
-    isFb: 0,
     projectList: [{"name": "请选择项目", "project_id": 0}],
     proIdx: 0,
     projectId: 0,
@@ -60,6 +60,10 @@ Page({
     // member related
     departMemberMap: {},
     memberDepartId: 0,
+    // ---
+    // form.php related
+    formData: null
+    // ---
   },
 
   move:function(){},
@@ -247,7 +251,6 @@ Page({
     console.log(app.globalData)
     var that = this
     var id = Number(options.id)
-    var isFb = Number(options.isFb)
     if (id == 0) {
       var info = app.globalData.userInfo
       that.setData({
@@ -267,51 +270,15 @@ Page({
         solve: app.globalData.solve,
         term: app.globalData.term,
       })
-    } else {
-      that.setData({
-        title: "查看巡检报告",
-      })
-      api.phpRequest({
-        url: 'report_list.php',
-        data: {
-          id: id
-        },
-        success: function (res) {
-          console.log(res.data)
-          that.setData({
-            id: id,
-            isFb: isFb,
-            reportInfo: res.data,
-            imageList: res.data.imgs ? res.data.imgs.split(',') : [],
-            image1List: res.data.imgs1 ? res.data.imgs1.split(',') : []
-          })
-        }
-      })
-      if (id != 0) {
-        api.phpRequest({
-          url: 'evaluate_list.php',
-          data: {
-            report_id: id,
-            // userid: wx.getStorageSync('userId')
-          },
-          success: function (res) {
-            console.log(res.data)
-            for (var i in res.data) {
-              res.data[i].evaluate_imgs = res.data[i].evaluate_imgs && res.data[i].evaluate_imgs.split(',')
-              if (res.data[i].evaluate_list) {
-                for (let j in res.data[i].evaluate_list) {
-                  res.data[i].evaluate_list[j].evaluate_imgs = res.data[i].evaluate_list[j].evaluate_imgs && res.data[i].evaluate_list[j].evaluate_imgs.split(',')
-                }
-              }
-            }
-            that.setData({
-              comments: res.data,
-            })
-          }
+    }
+    api.phpRequest({
+      url: 'form.php',
+      success: function (res) {
+        that.setData({
+          formData: res.data,
         })
       }
-      that.fetchRegionList()
-    }
+    })
   },
 
   onShow: function () {
@@ -331,6 +298,9 @@ Page({
       wx.showToast({
         title: '说话时间太短，请重试',
       })
+    }
+    if (that.data.needRefresh) {
+      that.initMemberList()
     }
   },
 
@@ -484,8 +454,6 @@ Page({
       }
     })
   },
-  
-
 
   uploadImg: function (url, data) {
     var that = this
@@ -866,50 +834,6 @@ Page({
     })
   },
 
-  chooseMemberRegion: function (idx) {
-    let that = this
-    let regionList = that.data.memberRegionList
-    for (let i in regionList) {
-      api.phpRequest({
-        url: 'department_sub.php',
-        data: {
-          department_id: regionList[i].department_id
-        },
-        success: function (res) {
-          regionList[i].departList = res.data
-          for (let j in regionList[i].departList) {
-            api.phpRequest({
-              url: 'user.php',
-              data: {
-                departmentid: regionList[i].departList[j].department_sub_id
-              },
-              success: function (res) {
-                if (that.data.id != 0) {
-                  let {pjr_id, csr_id} = that.data.reportInfo
-                  for (let i in res.data) {
-                    if (pjr_id && pjr_id.indexOf(res.data[i].id) != -1) {
-                      res.data[i].checked = true
-                    }
-                    if (csr_id && csr_id.indexOf(res.data[i].id) != -1) {
-                      res.data[i].checked1 = true
-                    }
-                  }
-                }
-                regionList[i].departList[j].memberList = res.data
-                that.setData({
-                  memberRegionList: regionList,
-                })
-              }
-            })
-          }
-        }
-      })
-    }
-    that.setData({
-      curRegionIdx: idx
-    })
-  },
-
   bindHideMask: function (e) {
     // this.setData({
     //   reg: '',
@@ -1004,33 +928,6 @@ Page({
     that.setData({departMemberMap: departMemberMap})
   },
 
-  forceSelectManager: function (lastRegionId) {
-    var that = this
-    var did = Number(that.data.regionId)
-
-    for (let i in that.data.memberRegionList) {
-      let depart = that.data.memberRegionList[i]
-      for (let j in that.data.memberRegionList[i].departList) {
-        for (let k in that.data.memberRegionList[i].departList[j].memberList) {
-          let memberObj = that.data.memberRegionList[i].departList[j].memberList[k]
-          
-          if (depart.department_id == lastRegionId) {
-            memberObj.checked = false
-            memberObj.checked1 = false
-          }
-
-          if ((memberObj.flag == 1 && depart.department_id == did) || (memberObj.extra_depart.indexOf(did) != -1)) {
-            memberObj.checked = true
-            memberObj.checked1 = true
-          }
-        }
-      }
-    }
-    that.setData({
-      memberRegionList: that.data.memberRegionList
-    })
-  },
-
   getCheckedMember: function () {
     let that = this
     let ret = {'pjr_id': [], 'csr_id': []}
@@ -1038,14 +935,6 @@ Page({
     for (let i in that.data.departMemberMap) {
       for (let j in that.data.departMemberMap[i]) {
         let memberObj = that.data.departMemberMap[i][j]
-
-        // if (memberRegionList[i].department_id == regionId && memberObj.flag == 1 && (!memberObj.checked || !memberObj.checked1)) {
-        //   wx.showToast({
-        //     title: '必须勾选当前公司的负责人',
-        //     icon: 'none',
-        //     })
-        //     return null
-        // }
         if (memberObj.checked) {
           ret.pjr_id.push(memberObj.id)
         }
@@ -1059,7 +948,102 @@ Page({
 
   bindNavToAddGroup: function () {
     wx.navigateTo({
-      url: '/pages/group/add',
+      url: '/pages/group/group?reback=1',
+    })
+  },
+
+  checkedSub: function (l, flag) {
+    let that = this
+    l.forEach((item) => {
+      if (that.data.currentTab == 0) {
+        item.checked = flag
+      } else {
+        item.checked1 = flag
+      }
+      that.checkedSubMember(item.value, flag)
+      if (item.subList) checkedSub(item.subList, flag)
+    })
+  },
+
+  checkedSubMember: function (rid, flag) {
+    let memList = this.data.departMemberMap[rid]
+    for (let key in memList) {
+      if (this.data.currentTab == 0) {
+        memList[key].checked = flag
+      } else {
+        memList[key].checked1 = flag
+      }
+    }
+  },
+
+  checkedStackSubMember: function (l, flag) {
+    let that = this
+    if (l) {
+      l.forEach((item) => {
+        if (that.data.currentTab == 0) {
+          item.checked = flag
+        } else {
+          item.checked1 = flag
+        }
+        if (item.subList) that.checkedStackSubMember(item.subList, flag)
+      })
+    }
+  },
+
+  findReginInStack: function (l, rid, flag) {
+    let that = this
+    if (l) {
+      l.forEach(
+        (item) => {
+          if (item.value == rid) {
+            if (that.data.currentTab == 0) {
+              item.checked = flag
+            } else {
+              item.checked1 = flag
+            }
+            that.checkedStackSubMember(item.subList, flag)
+          } else {
+            that.findReginInStack(item.subList, rid, flag)
+          }
+        }
+      )
+    }
+  },
+
+  bindCheckRegion: function (e) {
+    let that = this
+    let {stackPeek} = that.data
+    var values = e.detail.value
+    for (let i in stackPeek) {
+      let regionObj = stackPeek[i]
+      if (values.indexOf(regionObj.value) != -1) {
+        if (that.data.currentTab == 0) {
+          regionObj.checked = true
+        } else {
+          regionObj.checked1 = true
+        }
+        that.checkedSubMember(regionObj.value, true)
+        that.findReginInStack(that.data.regionStack.data[0], regionObj.value, true)
+        if (regionObj.subList) {
+          that.checkedSub(regionObj.subList, true)
+        }
+      } else {
+        if (that.data.currentTab == 0) {
+          regionObj.checked = false
+        } else {
+          regionObj.checked1 = false
+        }
+        that.checkedSubMember(regionObj.value, false)
+        that.findReginInStack(that.data.regionStack.data[0], regionObj.value, false)
+        if (regionObj.subList) {
+          that.checkedSub(regionObj.subList, false)
+        }
+      }
+    }
+    that.setData({
+      stackPeek: stackPeek,
+      regionStack: that.data.regionStack,
+      departMemberMap: that.data.departMemberMap
     })
   }
 })

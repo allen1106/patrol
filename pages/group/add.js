@@ -12,7 +12,8 @@ Page({
     regionStack: null,
     stackPeek: null,
     stackLen: 0,
-    departMemberMap: {}
+    departMemberMap: {},
+    info: null,
   },
 
   /**
@@ -24,7 +25,28 @@ Page({
     that.setData({
       title: title
     })
-    that.fetchRegionList()
+    if (options.gid) {
+      api.phpRequest({
+        url: 'group_list.php',
+        data: {
+          userid: wx.getStorageSync('userId'),
+          group_id: options.gid
+        },
+        success: function (res) {
+          that.setData({
+            info: res.data,
+          }, that.fetchRegionList)
+        }
+      })
+    } else {
+      that.fetchRegionList()
+    }
+    let reback = options.reback
+    if (reback) {
+      this.setData({
+        reback: reback
+      })
+    }
   },
 
   /**
@@ -81,6 +103,18 @@ Page({
         departmentid_id: departId
       },
       success: function (res) {
+        if (that.data.info) {
+          let ids = []
+          for (let i in that.data.info) {
+            ids.push(that.data.info[i].id)
+          }
+          for (let i in res.data) {
+            let memberObj = res.data[i]
+            if (ids.indexOf(memberObj.id) != -1) {
+              memberObj.checked = true
+            }
+          }
+        }
         that.data.departMemberMap[departId] = res.data
         that.setData({
           departMemberMap: that.data.departMemberMap,
@@ -135,6 +169,18 @@ Page({
     })
   },
 
+  bindBackToReport: function () {
+    var pages = getCurrentPages();
+    var reportPage = pages[pages.length - 3]
+    reportPage.setData({
+      needRefresh: 1
+    })
+    wx.navigateBack({
+      delta: 2,
+
+    })
+  },
+
   bindBatchSubmit: function () {
     let that = this
     let checkedMem= that.getCheckedMember()
@@ -156,7 +202,11 @@ Page({
             title: '提交成功',
             icon: 'success',
             success: function () {
-              setTimeout(that.bindBackToIndex, 1500);
+              if (that.data.reback) {
+                setTimeout(that.bindBackToReport, 1500)
+              } else {
+                setTimeout(that.bindBackToIndex, 1500)
+              }
             }
           })
         } else {
