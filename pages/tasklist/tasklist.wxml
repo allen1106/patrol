@@ -17,7 +17,7 @@
     <text class="co-red">{{userInfo.data_6}}</text>
   </view>
   <view class="{{tab == 3 ? 'active' : 'inactive'}}" bindtap="switchTab" data-tab="3">
-    <text>已处理</text>
+    <text>已解决</text>
     <text class="co-red">{{userInfo.data_7}}</text>
   </view>
 </view>

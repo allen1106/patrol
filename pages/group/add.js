@@ -14,6 +14,7 @@ Page({
     stackLen: 0,
     departMemberMap: {},
     info: null,
+    gid: null
   },
 
   /**
@@ -35,6 +36,7 @@ Page({
         success: function (res) {
           that.setData({
             info: res.data,
+            gid: options.gid
           }, that.fetchRegionList)
         }
       })
@@ -186,14 +188,19 @@ Page({
     let checkedMem= that.getCheckedMember()
     if (!checkedMem) return
     let {pjr_id} = checkedMem
+    let data = {
+      userid: wx.getStorageSync('userId'),
+      title: that.data.title,
+      pjr_id: pjr_id
+    }
+    if (that.data.gid) {
+      data['group_id'] = that.data.gid
+      delete data['title']
+    }
 
     api.phpRequest({
       url: 'group_submit.php',
-      data: {
-        userid: wx.getStorageSync('userId'),
-        title: that.data.title,
-        pjr_id: pjr_id
-      },
+      data: data,
       method: 'post',
       header: {'content-type': 'application/x-www-form-urlencoded'},
       success: function (res) {

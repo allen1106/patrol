@@ -7,7 +7,7 @@
     <view class="content-wrapper meta">
       <view class="text-wrapper">
         <text class="label">任务编号：</text>
-        <text class="value">{{info.id}}</text>
+        <text class="value">{{info.bgbh}}</text>
       </view>
       <view class="text-wrapper">
         <text class="label">发起时间：</text>

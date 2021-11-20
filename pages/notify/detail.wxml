@@ -2,6 +2,10 @@
 <view class="page-wrapper">
   <view class="content-panel">
     <view class="item-wrapper">
+      <text class="label">通知标题：</text>
+      <view class="content">{{info.title}}</view>
+    </view>
+    <view class="item-wrapper">
       <text class="label">通知内容：</text>
       <view class="content">{{info.content}}</view>
     </view>

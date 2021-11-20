@@ -37,9 +37,11 @@
   </view>
 
   <view class="task-list">
+    <checkbox-group bindchange="checkboxChange">
     <block wx:for="{{submitList}}" wx:key="item">
       <view class="item-wrapper">
         <view class="task-item">
+          <checkbox data-rid="{{item.id}}" value="{{item.id}}" checked="{{item.checked}}" wx:if="{{tab == 2}}"></checkbox>
           <view class="content-wrapper" data-nid="{{item.id}}" bindtap="viewReport">
             <view class="title">
               <text>通知内容：</text>
@@ -59,9 +61,23 @@
         </view>
       </view>
     </block>
+    </checkbox-group>
   </view>
 
   <view class="btn-add" bindtap="navigateToAdd">
     <text>发布通知</text>
   </view>
+
+  <view class="btn-wrapper" wx:if="{{tab == 2}}">
+    <view class="btn-download" bindtap="bindSelectAll">
+      <image src="/imgs/report/select.png"></image>
+      <text wx:if="{{selectAll}}">全不选</text>
+      <text wx:else>全选</text>
+    </view>
+    <view class="btn-cancel" bindtap="bindBatchDelete">
+      <image src="/imgs/report/delete.png"></image>
+      <text>删除</text>
+    </view>
+  </view>
+
 </view>

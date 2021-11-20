@@ -57,6 +57,26 @@ Page({
     })
   },
 
+  onShow: function () {
+    let that = this
+    manager.onStop = (res) => {
+      that.bindInput(res.result)
+    }
+
+    manager.onStart = (res) => {
+      wx.showToast({
+        title: "正在聆听，松开结束语音",
+        icon: 'none'
+      })
+    }
+    manager.onError = (res) => {
+      wx.showToast({
+        title: '说话时间太短，请重试',
+        icon: 'none'
+      })
+    }
+  },
+
   previewImage: function (e) {
     var index = Number(e.currentTarget.dataset.index)
     var current = e.target.dataset.src
@@ -93,6 +113,8 @@ Page({
   bindSetComment: function (res) {
     var that = this
     that.bindInput = (res) => {
+      console.log("====>>>>>>")
+      console.log(res)
       that.setData({
         comment: res
       })

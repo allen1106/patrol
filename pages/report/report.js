@@ -10,7 +10,6 @@ let manager = plugin.getRecordRecognitionManager()
 //index.js
 //获取应用实例
 const app = getApp()
-console.log(app.globalData)
 
 Page({
 
@@ -84,7 +83,7 @@ Page({
     })
     this.setData({
       nextListMap: m
-    }, this.initAreaPicker)
+    })
   },
 
   convertList: function (l) {
@@ -127,6 +126,13 @@ Page({
         that.convertList(res.data)
         that.setData({
           rawRegionList: res.data
+        }, () => {
+          if (app.globalData.departId) {
+            that.setData({
+              departId: app.globalData.departId
+            }, that.fetchProjectList)
+          }
+          that.initAreaPicker()
         })
       }
     })
@@ -185,13 +191,15 @@ Page({
                 //         value: '值'
                 //     }
                 // 根据需要实现相应的加载选择器选项数据的逻辑。
-                this.setData({
-                  departId: parentValue
-                }, () => {
-                  if (parentValue) {
-                    this.initProjectList(this.fetchProjectList)
-                  }
-                })
+                if (parentValue) {
+                  this.setData({
+                    departId: parentValue
+                  }, () => {
+                    if (parentValue) {
+                      this.initProjectList(this.fetchProjectList)
+                    }
+                  })
+                }
                 if (pickerIndex === 0) {    // 读取第一级选择器选项
                     callback(this.data.rawRegionList);
                     return;
@@ -203,8 +211,6 @@ Page({
                 }
 
                 let curObj = this.data.nextListMap[parentValue]
-                console.log(parentValue)
-                console.log(curObj)
                 if (curObj) {
                   callback(curObj.subList)
                   return
@@ -248,7 +254,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    console.log(app.globalData)
     var that = this
     var id = Number(options.id)
     if (id == 0) {
@@ -261,7 +266,6 @@ Page({
           time: util.formatTime(new Date())
         },
       }),
-      console.log(app.globalData)
       that.fetchRegionList()
       that.initMemberList()
       that.fetchSystemList()
@@ -288,15 +292,15 @@ Page({
     }
 
     manager.onStart = (res) => {
-      console.log("正在聆听", res)
       wx.showToast({
         title: "正在聆听，松开结束语音",
+        icon: 'none'
       })
     }
     manager.onError = (res) => {
-      console.log("error msg", res.msg)
       wx.showToast({
         title: '说话时间太短，请重试',
+        icon: 'none'
       })
     }
     if (that.data.needRefresh) {
@@ -307,6 +311,8 @@ Page({
   onUnload: function () {
     var that = this
     if (that.data.id == 0) {
+      app.globalData.departId = Number(that.data.departId)
+      app.globalData.proIdx = that.data.proIdx
       app.globalData.title = that.data.title
       app.globalData.solve = that.data.solve
       app.globalData.term = that.data.term
@@ -360,16 +366,27 @@ Page({
     }
   },
 
+  isRequired: function (name) {
+    for(let i in this.data.formData) {
+      for (let j in this.data.formData[i]) {
+        if (this.data.formData[i][j].name == name) {
+          return this.data.formData[i][j].leixing
+        }
+      }
+    }
+    return 0
+  },
+
   validateInfo: function (data, strict) {
     if (data['report_id'] == 0 && data['project_id'] == 0) return '部门和项目'
     if (data['report_id'] == 0 && data['industry_id'] == 0) return '专业'
-    if (!data['title']) return '标题'
+    if (this.isRequired('title') && !data['title']) return '标题'
 
     if (strict) {
-      if (!data['reason']) return '原因'
-      if (!data['solve']) return '解决办法'
-      if (!data['position']) return '部位'
-      if (!data['term']) return '处理期限'
+      if (this.isRequired('reason') && !data['reason']) return '原因'
+      if (this.isRequired('solve') && !data['solve']) return '解决办法'
+      if (this.isRequired('position') && !data['position']) return '部位'
+      if (this.isRequired('term') && !data['term']) return '处理期限'
     }
     return 'success'
   },
@@ -399,18 +416,17 @@ Page({
     var data = {
       userid: wx.getStorageSync('userId'),
       task_time: util.formatTime(new Date()),
-      title: that.data.title,
-      reason: that.data.reason,
-      solve: that.data.solve,
-      position: that.data.pos,
-      term: that.data.term,
+      title: that.data.title || '',
+      reason: that.data.reason || '',
+      solve: that.data.solve || '',
+      position: that.data.pos || '',
+      term: that.data.term || 0,
       department_id: that.data.departId,
       project_id: that.data.projectId,
       industry_id: that.data.systemId,
       pjr_id: pjr_id,
       csr_id: csr_id
     }
-    console.log(data)
     var valid = that.validateInfo(data, btnId == "1")
     if (valid != "success") {
       wx.showToast({
@@ -630,6 +646,9 @@ Page({
         }, () => {
           if (app.globalData.proIdx) {
             let proObj = list[app.globalData.proIdx]
+            console.log("=====>>>>>>")
+            console.log(app.globalData.proIdx)
+            console.log(proObj)
             that.setData({
               proIdx: app.globalData.proIdx,
               projectId: proObj.project_id
@@ -641,7 +660,6 @@ Page({
   },
 
   fetchSystemList: function (fn) {
-    console.log("fetchSystemList")
     return new Promise(resolve => {
       var that = this
       var userInfo = app.globalData.userInfo

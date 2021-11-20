@@ -97,11 +97,16 @@ Page({
                 //         value: '值'
                 //     }
                 // 根据需要实现相应的加载选择器选项数据的逻辑。
+                console.log("=====>>>>>>")
                 let extraDepart = this.data.extraDepart
+                console.log(extraDepart)
+                console.log(parentValue)
+                console.log(this.data.curDepartIdx)
                 extraDepart[this.data.curDepartIdx] = parentValue
                 this.setData({
                   extraDepart: extraDepart
                 })
+                console.log(extraDepart)
                 if (pickerIndex === 0) {    // 读取第一级选择器选项
                     callback(this.data.rawRegionList);
                     return;
@@ -143,50 +148,6 @@ Page({
     that.setData({
       extraDepart: extraDepart
     })
-  },
-
-  initAreaPicker: function() {
-    this.areaPicker = new CascadedPickerView(
-        this,     // 页面对象
-        'areaPickerData',   // 关联的页面数据键值（即页面对象 data 属性中代表 cascaded-picker 对象数据的字段名）
-        {
-            pickerCount: 1,     // 初始的选择器数量
-            loadOptionsMethod: (obj, parentValue, pickerIndex, callback) => {    // 加载指定选择器选项集合的方法
-                // 方法参数说明：
-                // obj - 代表当前级联选择器对象。
-                // parentValue - 上一级选择器选定的项目的值，根据该值读取关联的数据。
-                // pickerIndex - 代表当前要加载选项数据的选择器的索引。
-                // callback - 数据加载完成后的回调方法，该方法接受一个代表选项集合的参数，选项集合中的选项需转换为 cascaded-picker 所识别的标准格式，即：
-                //     {
-                //         text: '文本',
-                //         value: '值'
-                //     }
-                // 根据需要实现相应的加载选择器选项数据的逻辑。
-                this.setData({
-                  departId: parentValue
-                })
-                if (pickerIndex === 0) {    // 读取第一级选择器选项
-                    callback(this.data.rawRegionList);
-                    return;
-                }
-                
-                if (!parentValue) {
-                    callback(null);
-                    return;
-                }
-
-                let curObj = this.data.nextListMap[parentValue]
-                console.log(parentValue)
-                console.log(curObj)
-                if (curObj) {
-                  callback(curObj.subList)
-                  return
-                }
-
-                callback(null);
-            },
-        }
-    );
   },
 
   register: function (e) {
