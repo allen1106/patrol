@@ -14,6 +14,10 @@
         <text class="value">{{info.task_time}}</text>
       </view>
       <view class="text-wrapper">
+        <text class="label">处理期限：</text>
+        <text class="value">{{info.endtime}}</text>
+      </view>
+      <view class="text-wrapper">
         <text class="label">发布人：</text>
         <text class="value">{{info.realname}}</text>
       </view>
@@ -106,7 +110,7 @@
     </view>
   </view>
 
-  <view class="form-panel" wx:if="{{menu == 3}}">
+  <view class="form-panel" wx:if="{{(menu == 3 || menu == 4) && info.display}}">
     <view class="item-wrapper">
       <view class="label">
         <text>回复/评价</text>
@@ -136,30 +140,10 @@
     </view>
   </view>
 
-  <view class="form-panel" wx:if="{{menu == 4 && info.display}}">
-    <view class="item-wrapper">
-      <view class="label">
-        <text>驳回原因</text>
-      </view>
-      <view class="input">
-        <textarea bindinput="bindInputComment" value="{{comment || ''}}" name="comment"></textarea>
-        <view bindtouchstart="bindSetComment"
-          bindtouchend="bindTouchUp"
-          class="btn-speak">
-          <image src="/imgs/report/icon-speak.png"></image>
-        </view>
-      </view>
-    </view>
-  </view>
-
-  <view class="btn-wrapper" wx:if="{{menu == 3}}">
+  <view class="btn-wrapper" wx:if="{{menu == 3 && info.display}}">
     <view class="btn-download" bindtap="bindSubmitForm">
       <image src="/imgs/report/submit.png"></image>
       <text>提交</text>
-    </view>
-    <view class="btn-cancel" bindtap="bindBatchDelete">
-      <image src="/imgs/report/delete.png"></image>
-      <text>删除</text>
     </view>
   </view>
 
@@ -168,9 +152,9 @@
       <image src="/imgs/report/submit.png"></image>
       <text>解决成功</text>
     </view>
-    <view class="btn-cancel" bindtap="handleReject">
+    <view class="btn-cancel" bindtap="bindSubmitForm">
       <image src="/imgs/close.png"></image>
-      <text>驳回处理</text>
+      <text>提交</text>
     </view>
     <view class="btn-cancel" bindtap="handleDelete">
       <image src="/imgs/report/delete.png"></image>

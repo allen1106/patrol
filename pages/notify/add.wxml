@@ -15,7 +15,7 @@
     <view class="item-wrapper">
       <view class="label">通知内容<text class="co-red">*</text></view>
       <view class="input">
-        <textarea bindinput="bindInputContent" value="{{content}}" name="content"></textarea>
+        <textarea class="high-text" bindinput="bindInputContent" value="{{content}}" name="content"></textarea>
         <view bindtouchstart="bindSetContent"
           bindtouchend="bindTouchUp"
           class="btn-speak">

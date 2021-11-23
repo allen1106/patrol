@@ -38,10 +38,6 @@
           <text>未读{{info.no_read_num}}人</text>
         </view>
       </view>
-      <view class="btn-view">
-        <text>查看全部</text>
-        <text>></text>
-      </view>
     </view>
 
     <scroll-view class="member-wrapper" scroll-y>

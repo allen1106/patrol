@@ -27,6 +27,7 @@ Page({
     api.phpRequest({
       url: 'report_list.php',
       data: {
+        userid: wx.getStorageSync('userId'),
         id: rid
       },
       success: function (res) {
@@ -78,7 +79,7 @@ Page({
   },
 
   previewImage: function (e) {
-    var index = Number(e.currentTarget.dataset.index)
+    var index = Number(e.currentTarget.dataset.idx)
     var current = e.target.dataset.src
     var imgList = index == "0" ? this.data.info.imageList : this.data.info.image1List
     wx.previewImage({
@@ -145,33 +146,9 @@ Page({
     })
   },
 
-  bindBatchDelete: function () {
-    let that = this
-    api.phpRequest({
-      url: 'report_delete.php',
-      data: {'report_id_s': that.data.id},
-      success: function (res) {
-        if (res.status == 1) {
-          wx.showToast({
-            title: "删除成功",
-            icon: "success",
-            success: function () {
-              setTimeout(that.bindBackToIndex, 1500);
-            }
-          })
-        } else {
-          wx.showToast({
-            title: "删除失败，请重试！",
-            icon: "none"
-          })
-        }
-      }
-    })
-  },
-
   bindSubmitForm: function (e) {
     var that = this,
-        url = 'evaluate_save.php'
+        url = that.data.menu == 3 ? 'evaluate_save.php' : 'report_reject.php'
 
     var data = {
       userid: wx.getStorageSync('userId'),
@@ -305,36 +282,6 @@ Page({
         } else {
           wx.showToast({
             title: '处理失败',
-            icon: 'none'
-          })
-        }
-      }
-    })
-  },
-
-  handleReject: function () {
-    var that = this
-    api.phpRequest({
-      url: "report_reject.php",
-      data: {
-        'report_id': that.data.id,
-        'userid': wx.getStorageSync('userId'),
-        'content': that.data.comment || ''
-      },
-      method: 'post',
-      header: {'content-type': 'application/x-www-form-urlencoded'},
-      success: function (res) {
-        if (res.data.status == 1) {
-          wx.showToast({
-            title: '驳回成功',
-            icon: 'success',
-            success: function () {
-              setTimeout(that.bindBackToIndex, 1500);
-            }
-          })
-        } else {
-          wx.showToast({
-            title: '驳回失败',
             icon: 'none'
           })
         }

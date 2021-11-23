@@ -45,6 +45,7 @@
   width: 95%;
   margin: 20rpx auto;
   font-size: 20rpx;
+  padding-bottom: 100rpx;
 }
 
 .nav-wrapper {
@@ -139,9 +140,6 @@
   margin-right: 20rpx;
 }
 
-.task-item .content-wrapper {
-}
-
 checkbox .wx-checkbox-input{
   border-radius: 50%;/* 圆角 */
   width: 46rpx; /* 背景的宽 */
@@ -166,9 +164,39 @@ checkbox .wx-checkbox-input.wx-checkbox-input-checked::before{
   -webkit-transform:translate(-50%, -50%) scale(1);
 }
 
+.task-item .content-wrapper {
+  width: 100%;
+}
+
 .task-item view.title {
   font-size: 28rpx;
   color: #000;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.task-item view.title {
+  font-size: 28rpx;
+  color: #000;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.task-item view.title .text {
+  display: flex;
+  width: 80%;
+}
+.task-item view.title .label {
+  display: flex;
+  width: 80rpx;
+  background-color: orange;
+  color: #fff;
+  justify-content: center;
+  font-size: 24rpx;
 }
 
 .task-item view.note {
@@ -178,8 +206,11 @@ checkbox .wx-checkbox-input.wx-checkbox-input-checked::before{
 }
 
 .btn-add {
+  position: fixed;
+  left: 0;
+  bottom: 120rpx;
   width: 80%;
-  margin: 20rpx auto;
+  margin: 0 10%;
   height: 80rpx;
   line-height: 80rpx;
   background-color: #4876FF;

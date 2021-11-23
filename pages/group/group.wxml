@@ -13,9 +13,9 @@
       <view class="item-wrapper">
         <view class="group-item" data-rid="{{item.id}}">
           <checkbox data-rid="{{item.id}}" value="{{item.id}}" checked="{{item.checked}}"></checkbox>
-          <view class="content-wrapper">
+          <view class="content-wrapper" data-rid="{{item.id}}" bindtap="bindEditGroup">
             <view class="title">
-              <text data-rid="{{item.id}}" bindtap="bindEditGroup">{{item.name}}</text>
+              <text>{{item.name}}</text>
             </view>
             <view class="num">
               <text>{{item.num}}人</text>

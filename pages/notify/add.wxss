@@ -40,6 +40,11 @@ page {
   height: 80rpx;
   width: calc(100% - 100rpx);
 }
+
+.item-wrapper .input textarea.high-text {
+  height: 160rpx;
+}
+
 .item-wrapper .input input {
   width: 100%;
 }

@@ -35,6 +35,31 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
+    var userId = wx.getStorageSync('userId')
+    var userBind = wx.getStorageSync('userBind')
+    if (!userId || !userBind) {
+      wx.navigateTo({
+        url: '/pages/login/login'
+      })
+    }
+
+    var that = this
+    manager.onStop = (res) => {
+      that.bindInput(res.result)
+    }
+
+    manager.onStart = (res) => {
+      wx.showToast({
+        title: "正在聆听，松开结束语音",
+        icon: 'none'
+      })
+    }
+    manager.onError = (res) => {
+      wx.showToast({
+        title: '说话时间太短，请重试',
+        icon: 'none'
+      })
+    }
   },
 
   convertList: function (l) {

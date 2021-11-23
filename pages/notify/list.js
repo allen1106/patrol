@@ -11,7 +11,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    userId: wx.getStorageSync('userId'),
     tab: 0,
     startDate: "开始时间",
     endDate: "结束时间",
@@ -65,7 +64,7 @@ Page({
   fetchTaskList: function () {
     var that = this
     var data = {
-      userid: that.data.userId,
+      userid: wx.getStorageSync('userId'),
       is_fb: menuTabStatusMap[that.data.tab]
     }
     if (that.data.startDate != "开始时间") {data["startDate"] = that.data.startDate}
@@ -155,7 +154,7 @@ Page({
         url: 'news_delete.php',
         data: {'news_id_s': idstr},
         success: function (res) {
-          if (res.status == 1) {
+          if (res.data.status == 1) {
             wx.showToast({
               title: "删除成功",
               icon: "success"

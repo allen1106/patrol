@@ -26,21 +26,12 @@ Page({
     systemList: [{"name": "请选择专业", "industry_id": 0}],
     sysIdx: 0,
     systemId: 0,
-    title: "",
-    solve: "",
-    term: "",
     didx: 0,
     //最多可上传的图片数量
     count: 3,
     imageList: [],
     image1List: [],
     fileUrl: '',
-    comments: [],
-    checkboxDisable: false,
-    rejectRes: '',
-    memberRegionList: [],
-    curRegionIdx: 0,
-    curDepartIdx: 0,
     showMember: 0,
     currentTab: 0,
     lng: 0,
@@ -256,25 +247,23 @@ Page({
   onLoad: function (options) {
     var that = this
     var id = Number(options.id)
-    if (id == 0) {
-      var info = app.globalData.userInfo
-      that.setData({
-        title: "发布巡检报告",
-        id: id,
-        reportInfo: {
-          username: info.realname,
-          time: util.formatTime(new Date())
-        },
-      }),
-      that.fetchRegionList()
-      that.initMemberList()
-      that.fetchSystemList()
-      that.setData({
-        title: app.globalData.title,
-        solve: app.globalData.solve,
-        term: app.globalData.term,
-      })
-    }
+    var info = app.globalData.userInfo
+    that.setData({
+      title: "发布巡检报告",
+      id: id,
+      reportInfo: {
+        username: info.realname,
+        time: util.formatTime(new Date())
+      },
+    }),
+    that.fetchRegionList()
+    that.initMemberList()
+    that.fetchSystemList()
+    that.setData({
+      title: app.globalData.title,
+      solve: app.globalData.solve,
+      term: app.globalData.term,
+    })
     api.phpRequest({
       url: 'form.php',
       success: function (res) {
@@ -366,27 +355,27 @@ Page({
     }
   },
 
-  isRequired: function (name) {
-    for(let i in this.data.formData) {
-      for (let j in this.data.formData[i]) {
-        if (this.data.formData[i][j].name == name) {
-          return this.data.formData[i][j].leixing
-        }
-      }
-    }
-    return 0
-  },
-
   validateInfo: function (data, strict) {
     if (data['report_id'] == 0 && data['project_id'] == 0) return '部门和项目'
     if (data['report_id'] == 0 && data['industry_id'] == 0) return '专业'
-    if (this.isRequired('title') && !data['title']) return '标题'
 
-    if (strict) {
-      if (this.isRequired('reason') && !data['reason']) return '原因'
-      if (this.isRequired('solve') && !data['solve']) return '解决办法'
-      if (this.isRequired('position') && !data['position']) return '部位'
-      if (this.isRequired('term') && !data['term']) return '处理期限'
+    for (let j in this.data.formData[1]) {
+      let item = this.data.formData[1][j]
+      if (item.leixing && !item.value) {
+        return item.title
+      }
+      if (item.value) {
+        data[item.name] = item.value
+      }
+    }
+    for (let j in this.data.formData[2]) {
+      let item = this.data.formData[2][j]
+      if (item.leixing && !item.value) {
+        return item.title
+      }
+      if (item.value) {
+        data[item.name] = item.value
+      }
     }
     return 'success'
   },
@@ -416,11 +405,6 @@ Page({
     var data = {
       userid: wx.getStorageSync('userId'),
       task_time: util.formatTime(new Date()),
-      title: that.data.title || '',
-      reason: that.data.reason || '',
-      solve: that.data.solve || '',
-      position: that.data.pos || '',
-      term: that.data.term || 0,
       department_id: that.data.departId,
       project_id: that.data.projectId,
       industry_id: that.data.systemId,
@@ -428,6 +412,8 @@ Page({
       csr_id: csr_id
     }
     var valid = that.validateInfo(data, btnId == "1")
+    console.log("====>>>>")
+    console.log(data)
     if (valid != "success") {
       wx.showToast({
         title: valid + '不能为空',
@@ -646,9 +632,6 @@ Page({
         }, () => {
           if (app.globalData.proIdx) {
             let proObj = list[app.globalData.proIdx]
-            console.log("=====>>>>>>")
-            console.log(app.globalData.proIdx)
-            console.log(proObj)
             that.setData({
               proIdx: app.globalData.proIdx,
               projectId: proObj.project_id
@@ -718,43 +701,38 @@ Page({
 
   bindSystemChange: function (e) {
     var idx = e.detail.value
-    this.setData({
-      sysIdx: e.detail.value,
+    var that = this
+    that.setData({
+      sysIdx: idx,
       systemId: this.data.systemList[idx].industry_id
-    })
-    app.globalData.sysIdx = idx
-  },
-
-  bindSetTitle: function (res) {
-    var that = this
-    that.bindInput = (res) => {
-      that.setData({
-        title: res
-      })
-    }
-    manager.start({
-      lang: "zh_CN"
-    })
-  },
-  
-  bindSetSolve: function (res) {
-    var that = this
-    that.bindInput = (res) => {
-      that.setData({
-        solve: res
-      }) 
-    }
-    manager.start({
-      lang: "zh_CN"
+    }, () => {
+      app.globalData.sysIdx = idx
     })
   },
 
-  bindSetRejectRes: function (res) {
+  setFormValue: function (name, value) {
+    for(let i in this.data.formData) {
+      for (let j in this.data.formData[i]) {
+        if (this.data.formData[i][j].name == name) {
+          this.data.formData[i][j].value = value
+          this.setData({
+            formData: this.data.formData
+          })
+        }
+      }
+    }
+  },
+
+  bindInputText: function (e) {
+    let key = e.currentTarget.dataset.name
+    this.setFormValue(key, e.detail.value)
+  },
+
+  bindSpeakText: function (e) {
     var that = this
+    let key = e.currentTarget.dataset.name
     that.bindInput = (res) => {
-      that.setData({
-        rejectRes: res
-      })
+      that.setFormValue(key, res)
     }
     manager.start({
       lang: "zh_CN"
@@ -767,42 +745,6 @@ Page({
       title: '正在解析……',
       icon: 'loading',
       duration: 2000
-    })
-  },
-
-  bindInputTitle: function (e) {
-    this.setData({
-      title: e.detail.value
-    })
-  },
-
-  bindInputReason: function (e) {
-    this.setData({
-      reason: e.detail.value
-    })
-  },
-  
-  bindInputSolve: function (e) {
-    this.setData({
-      solve: e.detail.value
-    })
-  },
-  
-  bindInputPos: function (e) {
-    this.setData({
-      pos: e.detail.value
-    })
-  },
-  
-  bindInputTerm: function (e) {
-    this.setData({
-      term: e.detail.value
-    })
-  },
-
-  bindInputRejectRes: function (e) {
-    this.setData({
-      rejectRes: e.detail.value
     })
   },
 

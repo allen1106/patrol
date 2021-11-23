@@ -5,6 +5,7 @@ var api = require("../../utils/api.js")
 var util = require("../../utils/util.js")
 
 const menuTabStatusMap = {
+  2: [11],
   3: [4, 5, 6, 7],
   4: [1, 2, 3],
   6: [8, 9, 10],
@@ -171,7 +172,6 @@ Page({
    */
   onLoad: function (options) {
     var that = this
-    var userInfo = app.globalData.userInfo
     let title = options.title,
         menu = Number(options.menu),
         isFb = Number(options.isfb)
@@ -180,7 +180,6 @@ Page({
       menu: menu,
       isFb: isFb,
       userId: wx.getStorageSync('userId'),
-      userInfo: userInfo
     })
     wx.setNavigationBarTitle({
       title: title
@@ -192,6 +191,17 @@ Page({
   onShow: function () {
     var that = this;
     that.fetchTaskList()
+    api.phpRequest({
+      url: 'report_data.php',
+      data: {
+        userid: wx.getStorageSync('userId')
+      },
+      success: function (res) {
+        that.setData({
+          reportInfo: res.data
+        })
+      }
+    })
   },
 
   fetchProjectList: function () {
@@ -309,7 +319,6 @@ Page({
       url: 'report.php',
       data: data,
       success: function (res) {
-        console.log(res)
         var list = res.data
         if (concatFlag) {
           list = that.data.submitList.concat(list)
@@ -394,12 +403,16 @@ Page({
       })
     }
   },
-  bindBatchDownload: function () {
+  bindBatchDownload: function (e) {
     let that = this
+    let flag = e.currentTarget.dataset.flag
     that.batchAction((idstr) => {
       api.phpRequest({
         url: 'batch_download.php',
-        data: {'report_id_s': idstr},
+        data: {
+          'report_id_s': idstr,
+          'flag': flag
+        },
         success: function (res) {
           that.setData({
             fileUrl: res.data.file
@@ -415,7 +428,7 @@ Page({
         url: 'report_delete.php',
         data: {'report_id_s': idstr},
         success: function (res) {
-          if (res.status == 1) {
+          if (res.data.status == 1) {
             wx.showToast({
               title: "删除成功",
               icon: "success"
