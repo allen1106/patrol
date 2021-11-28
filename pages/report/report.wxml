@@ -4,15 +4,15 @@
 <view class="page-wrapper" bindtap="hidePicker">
 
   <view class="nav-wrapper">
-    <view class="nav" wx:if="{{id == 0}}">
+    <view class="nav">
       <view class="region" catchtap="showPicker" hover-stop-propagation="true">
         <view class="picker">
-          <text>{{nextListMap[departId].text || '请选择公司'}}</text>
+          <text>{{nextListMap[departId].text || '请选择部门'}}</text>
           <image src="/imgs/down.png"></image>
         </view>
       </view>
     </view>
-    <view class="nav" wx:if="{{id == 0}}">
+    <view class="nav">
       <view class="project">
         <picker class="picker" bindchange="bindProjectChange" value="{{proIdx}}" range="{{projectList}}" range-key="name">
           <text>{{projectList[proIdx].name}}</text>
@@ -20,7 +20,7 @@
         </picker>
       </view>
     </view>
-    <view class="nav" wx:if="{{id == 0}}">
+    <view class="nav" wx:if="{{formData[0].length == 0}}">
       <view class="system">
         <picker class="picker" bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
           <text>{{systemList[sysIdx].name}}</text>
@@ -29,10 +29,30 @@
       </view>
     </view>
   </view>
+  <view class="nav-wrapper" wx:if="{{formData[0].length > 0}}">
+    <view class="nav">
+      <view class="system">
+        <picker class="picker" bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
+          <text>{{systemList[sysIdx].name}}</text>
+          <image src="/imgs/down.png"></image>
+        </picker>
+      </view>
+    </view>
+    <block wx:for="{{formData[0]}}" wx:for-item="item" wx:for-index="idx">
+    <view class="nav">
+      <view class="system">
+        <picker class="picker" data-idx="{{idx}}" bindchange="bindPickerChange" value="{{item.idx}}" range="{{item.list}}" range-key="name">
+          <text>{{item.list[item.idx].name}}</text>
+          <image src="/imgs/down.png"></image>
+        </picker>
+      </view>
+    </view>
+    </block>
+  </view>
 
   <view class="summary">
-    <view>巡检人：{{reportInfo.username}}</view>
-    <view>巡检时间：{{reportInfo.time}}</view>
+    <view>巡检人：{{reportInfo.realname}}</view>
+    <view>巡检时间：{{reportInfo.task_time}}</view>
   </view>
 
   <view class="description">
@@ -50,31 +70,17 @@
       </view>
     </block>
 
-    <block wx:for="{{formData[3]}}" wx:for-item="item">
-    <view class="item-wrapper" wx:if="{{item.name == 'imgs'}}">
+    <block wx:for="{{formData[3]}}" wx:for-item="item" wx:for-index="idx">
+    <view class="item-wrapper">
       <view class="label small-label">{{item.title}}</view>
       <view class="image-wrapper">
         <view class="img-upload-container">
-          <view class="img-preview-container" wx:for="{{imageList}}" wx:key="index">
-            <image class="img-preview" src="{{imageList[index]}}" data-src="{{imageList[index]}}" data-index="0" bindtap="previewImage"></image>
-            <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{imageList[index]}}" data-index="0" wx:if="{{id==0}}"></image>
+          <view class="img-preview-container" wx:for="{{item.imageList}}" wx:for-item="src">
+            <image class="img-preview" src="{{src}}" data-src="{{src}}" data-idx="{{idx}}" bindtap="previewImage"></image>
+            <image class="img-close" src="/imgs/close.png" data-idx="{{idx}}" data-src="{{src}}" bindtap="delImg"></image>
           </view>
-          <view class="img-preview-container" bindtap="chooseImage" data-index="0" wx:if="{{id==0}}">
+          <view class="img-preview-container"  data-idx="{{idx}}" bindtap="chooseImage">
             <image class="img-preview" src="/imgs/report/1.png" wx:if="{{imageList.length < 3}}"></image>
-          </view>
-        </view>
-      </view>
-    </view>
-    <view class="item-wrapper" wx:if="{{item.name == 'imgs1'}}">
-      <view class="label small-label">{{item.title}}</view>
-      <view class="image-wrapper">
-        <view class="img-upload-container" data-index="1">
-          <view class="img-preview-container" wx:for="{{image1List}}" wx:key="index">
-            <image class="img-preview" src="{{image1List[index]}}" data-src="{{image1List[index]}}" data-index="1" bindtap="previewImage"></image>
-            <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{image1List[index]}}" data-index="1" wx:if="{{id==0}}"></image>
-          </view>
-          <view class="img-preview-container" data-index="1" bindtap="chooseImage" wx:if="{{id==0}}">
-            <image class="img-preview" src="/imgs/report/1.png" wx:if="{{image1List.length < 3}}"></image>
           </view>
         </view>
       </view>
@@ -159,18 +165,22 @@
     </view>
   </view>
     
-  <view class="btn-wrapper" wx:if="{{id==0}}">
-    <view data-id="1" bindtap="bindSubmitForm">
+  <view class="btn-wrapper">
+    <view data-id="1" bindtap="bindSubmitForm"  wx:if="{{id == 0}}">
       <image src="/imgs/report/select.png"></image>
       <text>提交</text>
+    </view>
+    <view data-id="0" bindtap="bindSubmitForm"  wx:if="{{id != 0}}">
+      <image src="/imgs/report/select.png"></image>
+      <text>提交</text>
+    </view>
+    <view data-id="0" bindtap="bindSubmitForm" wx:if="{{id == 0}}">
+      <image src="/imgs/report/download.png"></image>
+      <text>保存草稿</text>
     </view>
     <view bindtap="bindBackToIndex">
       <image src="/imgs/report/select.png"></image>
       <text>取消</text>
-    </view>
-    <view data-id="0" bindtap="bindSubmitForm">
-      <image src="/imgs/report/download.png"></image>
-      <text>保存草稿</text>
     </view>
   </view>
 
@@ -202,15 +212,6 @@
       </checkbox-group>
     </scroll-view>
   </view>
-</view>
-
-
-<view>
-  <block wx:for="{{regionList}}" wx:for-item="{{itemList}}">
-    <view wx:for="itemList" wx:for-item="{{robj}}">
-      <text>{{robj.name}}</text>
-    </view>
-  </block>
 </view>
 
 <view class="picker-mask" catchtouchmove="move" wx:if="{{showPicker}}">

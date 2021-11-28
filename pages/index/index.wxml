@@ -18,15 +18,15 @@
       <view class="text"  wx:if="{{!showLogin}}">
         <view class="text-wrapper">
           <image src="/imgs/index/icon-task.png"></image>
-          <text bindtap="navigateToTaskList" data-menu="3">您有 <text class="co-red">{{mailInfo.number}}</text> 条任务待解决</text>
+          <text bindtap="navigateToTaskList" data-menu="3" data-tab="0">您有 <text class="co-red">{{mailInfo.number}}</text> 条问题待解决</text>
         </view>
         <view class="text-wrapper">
           <image src="/imgs/index/icon-msg.png"></image>
-          <text bindtap="navigateToTaskList" data-menu="3">您收到 <text class="co-red">{{mailInfo.number1}}</text> 条任务回复</text>
+          <text bindtap="navigateToTaskList" data-menu="4" data-tab="1">您收到 <text class="co-red">{{mailInfo.number1}}</text> 条问题回复</text>
         </view>
         <view class="text-wrapper">
           <image src="/imgs/index/icon-success.png"></image>
-          <text bindtap="navigateToTaskList" data-menu="3">您有 <text class="co-red">{{mailInfo.number2}}</text> 任务解决通过</text>
+          <text bindtap="navigateToTaskList" data-menu="3" data-tab="3">您有 <text class="co-red">{{mailInfo.number2}}</text> 条问题解决通过</text>
         </view>
       </view>
     </view>
@@ -40,7 +40,7 @@
           <text>发布问题</text>
         </view>
       </image>
-      <image mode="scaleToFill" class="menu-item" bindtap="navigateToTaskList" data-isfb="0" data-menu="2" src="/imgs/index/2.png">
+      <image mode="scaleToFill" class="menu-item" bindtap="navigateToTaskList" data-menu="2" src="/imgs/index/2.png">
         <view class="image-wrapper">
           <image src="/imgs/index/icon2.png"></image>
           <text>草稿箱</text>
@@ -48,13 +48,13 @@
       </image>
     </view>
     <view class="menu-line">
-      <image mode="scaleToFill" class="menu-item" bindtap="navigateToTaskList" data-isfb="1" data-menu="3" src="/imgs/index/3.png">
+      <image mode="scaleToFill" class="menu-item" bindtap="navigateToTaskList" data-menu="3" src="/imgs/index/3.png">
         <view class="image-wrapper">
           <image src="/imgs/index/icon3.png"></image>
           <text>我的处理</text>
         </view>
       </image>
-      <image mode="scaleToFill" class="menu-item" bindtap="navigateToTaskList" data-isfb="3" data-menu="4" src="/imgs/index/4.png">
+      <image mode="scaleToFill" class="menu-item" bindtap="navigateToTaskList" data-menu="4" src="/imgs/index/4.png">
         <view class="image-wrapper">
           <image src="/imgs/index/icon4.png"></image>
           <text>我的发布</text>
@@ -68,7 +68,7 @@
           <text>统计</text>
         </view>
       </image>
-      <image mode="scaleToFill" class="menu-item" bindtap="navigateToTaskList" data-isfb="0" data-menu="6" src="/imgs/index/6.png">
+      <image mode="scaleToFill" class="menu-item" bindtap="navigateToTaskList" data-menu="6" src="/imgs/index/6.png">
         <view class="image-wrapper">
           <image src="/imgs/index/icon6.png"></image>
           <text>问题查看</text>

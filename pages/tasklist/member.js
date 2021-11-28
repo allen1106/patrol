@@ -1,21 +1,24 @@
-// pages/group/add.js
+// pages/tasklist/member.js
 var util = require("../../utils/util.js")
-var api = require("../../utils/api.js")
+var api = require("../../utils/api.js");
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    title: '',
+    idstr: '',
+    showMember: 0,
     currentTab: 0,
-    rawRegionList: [],
+    // depart stack for choose member
     regionStack: null,
     stackPeek: null,
     stackLen: 0,
+    // ---
+    // member related
     departMemberMap: {},
-    info: null,
-    gid: null
+    memberDepartId: 0,
+    // ---
   },
 
   flatList: function (l, m) {
@@ -62,13 +65,6 @@ Page({
         flag: flag
       },
       success: function (res) {
-        if (that.data.gid) {
-          for (let i in res.data) {
-            if (that.data.info.filter((item) => item.id == res.data[i].id).length > 0) {
-              res.data[i].checked = true
-            }
-          }
-        }
         that.data.departMemberMap[departId] = res.data
         that.setData({
           departMemberMap: that.data.departMemberMap,
@@ -102,40 +98,17 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let title = options.title
-    let that = this
-    that.setData({
-      title: title
+    let idstr = options.idstr
+    this.setData({
+      idstr: idstr
     })
-    if (options.gid) {
-      api.phpRequest({
-        url: 'group_list.php',
-        data: {
-          userid: wx.getStorageSync('userId'),
-          group_id: options.gid
-        },
-        success: function (res) {
-          that.setData({
-            info: res.data,
-            gid: options.gid
-          })
-        }
-      })
-    }
-    that.initMemberList()
-    let reback = options.reback
-    if (reback) {
-      this.setData({
-        reback: reback
-      })
-    }
+    this.initMemberList()
   },
 
-  bindInputTitle: function (e) {
-    let title = e.detail.value
-    this.setData({
-      title: title
-    })
+  switchAssignTab: function (e) {
+    let that = this
+    let tabid = Number(e.currentTarget.dataset.tab)
+    that.setData({currentTab: tabid})
   },
 
   bindClickRegion: function (e) {
@@ -178,66 +151,6 @@ Page({
     })
   },
 
-  bindBackToIndex: function () {
-    wx.navigateBack({
-      delta: 1
-    })
-  },
-
-  bindBackToReport: function () {
-    var pages = getCurrentPages();
-    var reportPage = pages[pages.length - 2]
-    reportPage.setData({
-      needRefresh: 1
-    })
-    wx.navigateBack({
-      delta: 1,
-    })
-  },
-
-  bindBatchSubmit: function () {
-    let that = this
-    let checkedMem= that.getCheckedMember()
-    if (!checkedMem) return
-    let {pjr_id} = checkedMem
-    let data = {
-      userid: wx.getStorageSync('userId'),
-      title: that.data.title,
-      pjr_id: pjr_id
-    }
-    if (that.data.gid) {
-      data['group_id'] = that.data.gid
-    }
-
-    api.phpRequest({
-      url: 'group_submit.php',
-      data: data,
-      method: 'post',
-      header: {'content-type': 'application/x-www-form-urlencoded'},
-      success: function (res) {
-        if (res.data.status == 1) {
-          wx.showToast({
-            title: '提交成功',
-            icon: 'success',
-            success: function () {
-              if (that.data.reback) {
-                setTimeout(that.bindBackToReport, 1500)
-              } else {
-                setTimeout(that.bindBackToIndex, 1500)
-              }
-            }
-          })
-        } else {
-          wx.showToast({
-            title: '提交失败',
-            icon: 'none'
-          })
-        }
-      }
-    })
-  },
-
-  
   bindHideMask: function (e) {
     // this.setData({
     //   reg: '',
@@ -349,6 +262,13 @@ Page({
     }
     return ret
   },
+
+  bindNavToAddGroup: function () {
+    wx.navigateTo({
+      url: '/pages/group/add?reback=1',
+    })
+  },
+
   checkedSub: function (l, flag) {
     let that = this
     l.forEach((item) => {
@@ -442,5 +362,43 @@ Page({
       regionStack: that.data.regionStack,
       departMemberMap: that.data.departMemberMap
     })
-  }
+  },
+
+  bindSubmitForm: function () {
+    let that = this
+    let checkedMem = that.getCheckedMember()
+    if (!checkedMem) return
+    let {pjr_id, csr_id} = checkedMem
+    api.phpRequest({
+      url: 'report_submit_s.php',
+      method: 'post',
+      header: {'content-type': 'application/x-www-form-urlencoded'},
+      data: {
+        report_id_s: that.data.idstr,
+        pjr_id: pjr_id,
+        csr_id: csr_id
+      },
+      success: function (res) {
+        if (res.data.status == 1) {
+          wx.showToast({
+            title: '提交成功',
+            icon: 'success',
+            success: function () {
+              setTimeout(that.bindBackToIndex, 1500);
+            }
+          })
+        } else {
+          wx.showToast({
+            title: '提交失败',
+            icon: 'none'
+          })
+        }
+      }
+    })
+  },
+  bindBackToIndex: function () {
+    wx.navigateBack({
+      delta: 1
+    })
+  },
 })

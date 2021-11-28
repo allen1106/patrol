@@ -1,17 +1,30 @@
-<!--pages/group/add.wxml-->
-<view class="page-wrapper">
-  <view class="input-wrapper">
-    <text>分组名称：</text>
-    <input placeholder="请输入新分组名称" value="{{title}}" bindinput="bindInputTitle"></input>
-  </view>
+<view class="page-wrapper" bindtap="hidePicker">
+
   <view class="assign">
     <view class="title">
-      <text>本组人员</text>
+      <view class="{{currentTab==0 ? 'active' : ''}}" bindtap="switchAssignTab" data-tab="0">
+        <image src="/imgs/report/save_draft.png"></image>
+        <text>推送给Ta</text>
+      </view>
+      <view class="{{currentTab==1 ? 'active' : ''}}" bindtap="switchAssignTab" data-tab="1">
+        <image src="/imgs/report/save_draft.png"></image>
+        <text>抄送给Ta</text>
+      </view>
     </view>
-    <scroll-view class="scroll-view-common name-pannel" scroll-y>
+    <scroll-view wx:if="{{currentTab==0}}" class="scroll-view-common name-pannel" scroll-y>
       <block wx:for="{{departMemberMap}}" wx:for-item="memberList" wx:for-index="did">
         <block wx:for="{{memberList}}" wx:for-item="memberObj" wx:for-index="midx">
           <view class="member-item" wx:if="{{memberObj.checked}}">
+            <text>{{memberObj.realname}}</text>
+            <image src="/imgs/close.png" bindtap="delMember" data-did="{{did}}" data-midx="{{midx}}"></image>
+          </view>
+        </block>
+      </block>
+    </scroll-view>
+    <scroll-view wx:if="{{currentTab==1}}" class="scroll-view-common name-pannel" scroll-y>
+      <block wx:for="{{departMemberMap}}" wx:for-item="memberList" wx:for-index="did">
+        <block wx:for="{{memberList}}" wx:for-item="memberObj" wx:for-index="midx">
+          <view class="member-item" wx:if="{{memberObj.checked1}}">
             <text>{{memberObj.realname}}</text>
             <image src="/imgs/close.png" bindtap="delMember" data-did="{{did}}" data-midx="{{midx}}"></image>
           </view>
@@ -32,11 +45,16 @@
           <image src="/imgs/report/icon_return.png"></image>
           <text>上一级</text>
         </view>
+        <view bindtap="bindNavToAddGroup">
+          <image src="/imgs/report/icon_plus.png"></image>
+          <text>添加分组</text>
+        </view>
       </view>
       <scroll-view class="scroll-view-common depart-pannel" scroll-y>
         <checkbox-group bindchange="bindCheckRegion">
         <view class="region-item" wx:for="{{stackPeek}}" wx:for-item="regionObj">
-          <checkbox value="{{regionObj.value}}" checked="{{regionObj.checked}}"></checkbox>
+          <checkbox value="{{regionObj.value}}" checked="{{regionObj.checked}}" wx:if="{{currentTab==0}}"></checkbox>
+          <checkbox value="{{regionObj.value}}" checked="{{regionObj.checked1}}" wx:if="{{currentTab==1}}"></checkbox>
           <text bindtap="bindClickRegion" data-region="{{regionObj}}">{{regionObj.text}}</text>
           <image src="/imgs/register/left.png"></image>
         </view>
@@ -44,17 +62,18 @@
       </scroll-view>
     </view>
   </view>
-</view>
+    
+  <view class="btn-wrapper">
+    <view data-id="1" bindtap="bindSubmitForm">
+      <image src="/imgs/report/select.png"></image>
+      <text>提交</text>
+    </view>
+    <view bindtap="bindBackToIndex">
+      <image src="/imgs/report/select.png"></image>
+      <text>取消</text>
+    </view>
+  </view>
 
-<view class="btn-wrapper">
-  <view bindtap="bindBackToIndex">
-    <image src="/imgs/report/select.png"></image>
-    <text>取消</text>
-  </view>
-  <view data-id="0" bindtap="bindBatchSubmit">
-    <image src="/imgs/report/download.png"></image>
-    <text>保存</text>
-  </view>
 </view>
 
 <view class="mask" wx:if="{{showMember}}">
@@ -74,7 +93,8 @@
         <block wx:for="{{departMemberMap}}" wx:for-item="memberList">
           <block wx:for="{{memberList}}" wx:for-item="member">
             <view class="checkbox" wx:if="{{member.inbox && !member.hide}}">
-              <checkbox value="{{member.id}}" checked="{{member.checked}}">{{member.realname}}</checkbox>
+              <checkbox wx:if="{{currentTab==0}}" value="{{member.id}}" checked="{{member.checked}}">{{member.realname}}</checkbox>
+              <checkbox wx:if="{{currentTab==1}}" value="{{member.id}}" checked="{{member.checked1}}" data-sidx="{{midx}}">{{member.realname}}</checkbox>
             </view>
           </block>
         </block>

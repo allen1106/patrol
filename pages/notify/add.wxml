@@ -73,10 +73,13 @@
         </view>
       </view>
       <scroll-view class="scroll-view-common depart-pannel" scroll-y>
-        <view class="region-item" wx:for="{{stackPeek}}" wx:for-item="regionObj" bindtap="bindClickRegion" data-region="{{regionObj}}">
-          <text>{{regionObj.text}}</text>
+        <checkbox-group bindchange="bindCheckRegion">
+        <view class="region-item" wx:for="{{stackPeek}}" wx:for-item="regionObj">
+          <checkbox value="{{regionObj.value}}" checked="{{regionObj.checked}}"></checkbox>
+          <text bindtap="bindClickRegion" data-region="{{regionObj}}">{{regionObj.text}}</text>
           <image src="/imgs/register/left.png"></image>
         </view>
+        </checkbox-group>
       </scroll-view>
     </view>
     

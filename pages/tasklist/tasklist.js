@@ -174,11 +174,11 @@ Page({
     var that = this
     let title = options.title,
         menu = Number(options.menu),
-        isFb = Number(options.isfb)
+        tab = Number(options.tab)
     that.setData({
       title: title,
       menu: menu,
-      isFb: isFb,
+      tab: tab,
       userId: wx.getStorageSync('userId'),
     })
     wx.setNavigationBarTitle({
@@ -191,17 +191,6 @@ Page({
   onShow: function () {
     var that = this;
     that.fetchTaskList()
-    api.phpRequest({
-      url: 'report_data.php',
-      data: {
-        userid: wx.getStorageSync('userId')
-      },
-      success: function (res) {
-        that.setData({
-          reportInfo: res.data
-        })
-      }
-    })
   },
 
   fetchProjectList: function () {
@@ -327,6 +316,18 @@ Page({
           submitList: list
         })
       }
+    }),
+
+    api.phpRequest({
+      url: 'report_data.php',
+      data: {
+        userid: wx.getStorageSync('userId')
+      },
+      success: function (res) {
+        that.setData({
+          reportInfo: res.data
+        })
+      }
     })
   },
   
@@ -346,9 +347,15 @@ Page({
     console.log(e.currentTarget.dataset.rid)
     var rid = e.currentTarget.dataset.rid
 
-    wx.navigateTo({
-      url: '/pages/report/detail?menu=' + this.data.menu + '&id=' + rid,
-    })
+    if (this.data.menu == 2) {
+      wx.navigateTo({
+        url: '/pages/report/report?id=' + rid,
+      })
+    } else {
+      wx.navigateTo({
+        url: '/pages/report/detail?menu=' + this.data.menu + '&id=' + rid,
+      })
+    }
   },
 
   checkboxChange: function (e) {
@@ -441,6 +448,14 @@ Page({
             })
           }
         }
+      })
+    })
+  },
+  bindBatchSubmit: function () {
+    let that = this
+    that.batchAction((idstr) => {
+      wx.navigateTo({
+        url: './member?idstr=' + idstr,
       })
     })
   },

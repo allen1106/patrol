@@ -1,6 +1,4 @@
-/* pages/report/report.wxss */
-@import '../../components/cascaded-picker-view/cascaded-picker-view.wxss';
-
+/* pages/tasklist/member.wxss */
 page {
   background-color: #F2F2FC;
 }
@@ -10,216 +8,6 @@ page {
   margin: 20rpx auto;
   padding-bottom: 100rpx;
   font-size: 20rpx;
-}
-
-.header {
-  display: flex;
-  width: 100%;
-  /* height: 50rpx; */
-  margin: 20rpx 0;
-  font-size: 36rpx;
-  color: #9999A6;
-}
-
-.header .title {
-  flex: 8;
-  text-align: left;
-}
-
-.header .opt-wrapper {
-  flex: 2;
-  text-align: right;
-}
-
-.header .opt-wrapper image {
-  height: 30rpx;
-  width: 30rpx;
-}
-
-.nav-wrapper {
-  width: 100%;
-  margin: 20rpx auto;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.nav {
-  height: 80rpx;
-  margin-left: 20rpx;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #486AF0;
-  border-radius: 10rpx;
-  color: #fff;
-  font-size: 20rpx;
-}
-
-.cascaded-picker-view {
-  position: fixed;
-  bottom: 100rpx;
-  left: 0;
-  padding: 0;
-  width: 100%;
-  background-color: #EAE7E8;
-}
-
-.nav:nth-child(1) {
-  margin-left: 0;
-}
-
-.picker {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.picker text {
-  font-size: 28rpx;
-}
-
-.picker image {
-  width: 30rpx;
-  height: 30rpx;
-}
-
-.summary {
-  width: calc(100% - 60rpx);
-  height: 100rpx;
-  padding: 20rpx 30rpx;
-  color: #fff;
-  background-color: #486AF0;
-  border-radius: 10rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  font-size: 28rpx;
-}
-
-.summary view text:nth-child(2) {
-  margin-left: 50rpx;
-}
-
-.description {
-  margin-top: 20rpx;
-  width: 100%;
-  color: #9999A6;
-}
-.bg-blue {
-  background-color: #87CEFA;
-}
-.bg-gray {
-  background-color: #DCDCDC;
-}
-.co-black {
-  color: #000;
-}
-.co-orange {
-  color: #DAA520;
-}
-.co-pink {
-  color: #C71585;
-}
-.co-red {
-  color: #FF0000;
-}
-
-.item-wrapper {
-  margin-top: 20rpx;
-}
-.item-wrapper .label {
-  font-size: 32rpx;
-}
-.item-wrapper .small-label {
-  font-size: 28rpx;
-}
-.item-wrapper .input {
-  margin-top: 10rpx;
-  border: 2rpx solid #DCDCDC;
-  border-radius: 10rpx;
-  min-height: 80rpx;
-  width: calc(100% - 44rpx);
-  padding: 10rpx 20rpx;
-  background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 28rpx;
-}
-.item-wrapper .input textarea {
-  display: inline-block;
-  height: 80rpx;
-  width: calc(100% - 100rpx);
-}
-.item-wrapper .input input {
-  width: 100%;
-}
-.item-wrapper .input text {
-  display: inline-block;
-  word-wrap: break-word; 
-  word-break: normal;
-  width: 100%;
-}
-.item-wrapper .input .btn-speak {
-  display: inline-block;
-  width: 50rpx;
-  height: 50rpx;
-  border-radius: 37.5rpx;
-  border: 5rpx solid black;
-}
-
-.item-wrapper .input .btn-speak image {
-  width: 50rpx;
-  height: 50rpx;
-}
-
-.item-wrapper .image-wrapper {
-  background-color: #fff;
-  border: 2rpx solid #DCDCDC;
-  border-radius: 20rpx;
-}
-
-
-.img-upload-container {
-  width: 100%;
-  vertical-align: top;
-  overflow: hidden;
-}
-
-.img-upload-container view {
-  display: inline-block;
-  vertical-align: top;
-  width: 120rpx;
-  height: 120rpx;
-}
-
-.img-upload-container .img-preview {
-  width: 100%;
-  height: 100%;
-}
-
-.img-upload-container .img-preview-container {
-  position: relative;
-  padding: 20rpx;
-  float: left;
-}
-
-.img-upload-container .img-preview-container .img-close {
-  position: absolute;
-  width: 30rpx;
-  height: 30rpx;
-  right: 15rpx;
-  top: 15rpx;
-}
-
-.content-container .img-upload {
-  display: inline-block;
 }
 
 .assign {
@@ -407,11 +195,11 @@ checkbox .wx-checkbox-input {
   align-items: center;
   justify-content: center;
   font-size: 36rpx;
-  border-right: 2rpx solid #EAE7E8;
+  border-left: 2rpx solid #EAE7E8;
 }
 
-.btn-wrapper view:nth-child(3) {
-  border-right: none;
+.btn-wrapper view:nth-child(1) {
+  border-left: none;
 }
 
 .btn-wrapper view image {

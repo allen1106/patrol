@@ -14,6 +14,7 @@ Page({
     content: "",
     imageList: [],
     // depart stack for choose member
+    currentTab: 0,
     regionStack: null,
     stackPeek: null,
     stackLen: 0,
@@ -24,11 +25,84 @@ Page({
     showMember: false
   },
 
+  flatList: function (l, m) {
+    l.forEach((item) => {
+      if (item.subList) {
+        m[item.value] = {
+          text: item.text,
+          subList: item.subList
+        }
+        this.flatList(item.subList, m)
+      } else {
+        m[item.value] = {
+          text: item.text
+        }
+      }
+    })
+    this.setData({
+      nextListMap: m
+    })
+  },
+
+  convertList1: function (l) {
+    l.forEach((item) => {
+      item.text = item.name
+      item.value = item.id
+      item.subList = item.sub_depart_list
+      item.name = undefined
+      item.id = undefined
+      item.sub_depart_list = undefined
+      if (item.subList) {
+        this.convertList1(item.subList)
+      } else {
+        this.fetchMember(item.value, item.flag)
+      }
+    })
+  },
+
+  fetchMember: function (departId, flag) {
+    let that = this
+    api.phpRequest({
+      url: 'user.php',
+      data: {
+        departmentid_id: departId,
+        flag: flag
+      },
+      success: function (res) {
+        that.data.departMemberMap[departId] = res.data
+        that.setData({
+          departMemberMap: that.data.departMemberMap,
+        })
+      }
+    })
+  },
+
+  initMemberList: function () {
+    let that = this
+
+    // 获取部门信息
+    api.phpRequest({
+      url: 'department1.php',
+      data: {userid: wx.getStorageSync('userId')},
+      success: function (res) {
+        that.convertList1(res.data)
+        that.flatList(res.data, {})
+        const stack = new util.Stack()
+        stack.push(res.data)
+        that.setData({
+          regionStack: stack,
+          stackPeek: stack.peek(),
+          stackLen: stack.length()
+        })
+      }
+    })
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    this.fetchRegionList()
+    this.initMemberList()
   },
 
   /**
@@ -60,70 +134,6 @@ Page({
         icon: 'none'
       })
     }
-  },
-
-  convertList: function (l) {
-    l.forEach((item) => {
-      item.text = item.name
-      item.value = item.id
-      item.subList = item.sub_depart_list
-      item.name = undefined
-      item.id = undefined
-      item.sub_depart_list = undefined
-      if (item.subList) {
-        this.convertList(item.subList)
-      } else {
-        this.fetchMember(item.value, item.flag)
-      }
-    })
-  },
-
-  fetchRegionList: function () {
-    let that = this
-
-    // 获取部门信息
-    api.phpRequest({
-      url: 'department1.php',
-      data: {userid: wx.getStorageSync('userId')},
-      success: function (res) {
-        that.convertList(res.data)
-        const stack = new util.Stack()
-        stack.push(res.data)
-        that.setData({
-          regionStack: stack,
-          stackPeek: stack.peek(),
-          stackLen: stack.length()
-        })
-      }
-    })
-  },
-
-  fetchMember: function (departId, flag) {
-    let that = this
-    api.phpRequest({
-      url: 'user.php',
-      data: {
-        departmentid_id: departId,
-        flag: flag
-      },
-      success: function (res) {
-        if (that.data.id != 0) {
-          // let {pjr_id, csr_id} = that.data.reportInfo
-          // for (let i in res.data) {
-          //   if (pjr_id && pjr_id.indexOf(res.data[i].id) != -1) {
-          //     res.data[i].checked = true
-          //   }
-          //   if (csr_id && csr_id.indexOf(res.data[i].id) != -1) {
-          //     res.data[i].checked1 = true
-          //   }
-          // }
-        }
-        that.data.departMemberMap[departId] = res.data
-        that.setData({
-          departMemberMap: that.data.departMemberMap,
-        })
-      }
-    })
   },
 
   bindClickRegion: function (e) {
@@ -167,6 +177,10 @@ Page({
   },
 
   bindHideMask: function (e) {
+    // this.setData({
+    //   reg: '',
+    //   showMember: false
+    // }, this.bindSearchHandler)
     this.setData({
       showMember: false
     })
@@ -221,12 +235,19 @@ Page({
   bindPickMember: function (e) {
     var that = this
     var values = e.detail.value
+    var currentTab = that.data.currentTab
     
     for (let i in that.data.departMemberMap) {
       for (let j in that.data.departMemberMap[i]) {
         let memberObj = that.data.departMemberMap[i][j]
-        if (values.indexOf(memberObj.id) != -1) {
-          memberObj.checked = true
+        if (currentTab == 0) {
+          if (values.indexOf(memberObj.id) != -1) {
+            memberObj.checked = true
+          }
+        } else {
+          if (values.indexOf(memberObj.id) != -1) {
+            memberObj.checked1 = true
+          }
         }
       }
     }
@@ -234,19 +255,24 @@ Page({
       departMemberMap: that.data.departMemberMap,
     })
   },
+
   delMember: function (e) {
     let that = this
     let {did, midx} = e.currentTarget.dataset
-    let {departMemberMap} = that.data
+    let {departMemberMap, currentTab} = that.data
     let memberObj = departMemberMap[did][midx]
 
-    memberObj.checked = false
+    if (currentTab == 0) {
+      memberObj.checked = false
+    } else {
+      memberObj.checked1 = false
+    }
     that.setData({departMemberMap: departMemberMap})
   },
-  
+
   getCheckedMember: function () {
     let that = this
-    let ret = {'pjr_id': []}
+    let ret = {'pjr_id': [], 'csr_id': []}
     
     for (let i in that.data.departMemberMap) {
       for (let j in that.data.departMemberMap[i]) {
@@ -254,14 +280,111 @@ Page({
         if (memberObj.checked) {
           ret.pjr_id.push(memberObj.id)
         }
+        if (memberObj.checked1) {
+          ret.csr_id.push(memberObj.id)
+        }
       }
     }
     return ret
   },
+  checkedSub: function (l, flag) {
+    let that = this
+    l.forEach((item) => {
+      if (that.data.currentTab == 0) {
+        item.checked = flag
+      } else {
+        item.checked1 = flag
+      }
+      that.checkedSubMember(item.value, flag)
+      if (item.subList) checkedSub(item.subList, flag)
+    })
+  },
+
+  checkedSubMember: function (rid, flag) {
+    let memList = this.data.departMemberMap[rid]
+    for (let key in memList) {
+      if (this.data.currentTab == 0) {
+        memList[key].checked = flag
+      } else {
+        memList[key].checked1 = flag
+      }
+    }
+  },
+
+  checkedStackSubMember: function (l, flag) {
+    let that = this
+    if (l) {
+      l.forEach((item) => {
+        if (that.data.currentTab == 0) {
+          item.checked = flag
+        } else {
+          item.checked1 = flag
+        }
+        if (item.subList) that.checkedStackSubMember(item.subList, flag)
+      })
+    }
+  },
+
+  findReginInStack: function (l, rid, flag) {
+    let that = this
+    if (l) {
+      l.forEach(
+        (item) => {
+          if (item.value == rid) {
+            if (that.data.currentTab == 0) {
+              item.checked = flag
+            } else {
+              item.checked1 = flag
+            }
+            that.checkedStackSubMember(item.subList, flag)
+          } else {
+            that.findReginInStack(item.subList, rid, flag)
+          }
+        }
+      )
+    }
+  },
+
+  bindCheckRegion: function (e) {
+    let that = this
+    let {stackPeek} = that.data
+    var values = e.detail.value
+    for (let i in stackPeek) {
+      let regionObj = stackPeek[i]
+      if (values.indexOf(regionObj.value) != -1) {
+        if (that.data.currentTab == 0) {
+          regionObj.checked = true
+        } else {
+          regionObj.checked1 = true
+        }
+        that.checkedSubMember(regionObj.value, true)
+        that.findReginInStack(that.data.regionStack.data[0], regionObj.value, true)
+        if (regionObj.subList) {
+          that.checkedSub(regionObj.subList, true)
+        }
+      } else {
+        if (that.data.currentTab == 0) {
+          regionObj.checked = false
+        } else {
+          regionObj.checked1 = false
+        }
+        that.checkedSubMember(regionObj.value, false)
+        that.findReginInStack(that.data.regionStack.data[0], regionObj.value, false)
+        if (regionObj.subList) {
+          that.checkedSub(regionObj.subList, false)
+        }
+      }
+    }
+    that.setData({
+      stackPeek: stackPeek,
+      regionStack: that.data.regionStack,
+      departMemberMap: that.data.departMemberMap
+    })
+  },
 
   bindNavToAddGroup: function () {
     wx.navigateTo({
-      url: '/pages/group/add',
+      url: '/pages/group/add?reback=1',
     })
   },
 

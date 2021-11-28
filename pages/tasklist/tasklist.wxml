@@ -58,7 +58,7 @@
     <view class="nav">
       <view class="region" catchtap="showPicker" hover-stop-propagation="true">
         <view class="picker">
-          <text>{{nextListMap[departId].text || '请选择公司'}}</text>
+          <text>{{nextListMap[departId].text || '请选择部门'}}</text>
           <image src="/imgs/down.png"></image>
         </view>
       </view>

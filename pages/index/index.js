@@ -79,10 +79,11 @@ Page({
         icon: 'error',
       })
     } else {
-      let {isfb, menu} = e.currentTarget.dataset
+      let {menu, tab} = e.currentTarget.dataset
+      if (tab == undefined) tab = 0
       let title = titleMap[menu]
       wx.navigateTo({
-        url: '/pages/tasklist/tasklist?&isfb=' + isfb + '&menu=' + menu + '&title=' + title,
+        url: '/pages/tasklist/tasklist?menu=' + menu + '&tab=' + tab + '&title=' + title,
       })
     }
   },

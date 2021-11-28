@@ -11,10 +11,52 @@ Page({
    */
   data: {
     id: null,
-    info: null,
+    formData: null,
+    reportInfo: null,
     comments: null,
     comment: '',
-    imageList: []
+    imageList: [],
+    // form.php related
+    formData: null
+    // ---
+  },
+
+  fetchFromData: function () {
+    let that = this
+    api.phpRequest({
+      url: 'form.php',
+      success: function (res) {
+        that.setData({
+          formData: res.data,
+        }, () => {
+          for (let i in that.data.formData[3]) {
+            let item = that.data.formData[3][i]
+            item.imageList = []
+            let imgs = that.data.reportInfo[item.name]
+            if (imgs) {
+              item.imageList = imgs.split(",")
+            }
+            that.setData({
+              [`formData[3][` + i + `]`]: item
+            })
+          }
+          for (let i in that.data.formData[1]) {
+            let item = that.data.formData[1][i]
+            item.value = that.data.reportInfo[item.name]
+            that.setData({
+              [`formData[1][` + i + `]`]: item
+            })
+          }
+          for (let i in that.data.formData[2]) {
+            let item = that.data.formData[2][i]
+            item.value = that.data.reportInfo[item.name]
+            that.setData({
+              [`formData[2][` + i + `]`]: item
+            })
+          }
+        })
+      }
+    })
   },
 
   /**
@@ -31,14 +73,11 @@ Page({
         id: rid
       },
       success: function (res) {
-        console.log(res.data)
-        res.data.imageList = res.data.imgs ? res.data.imgs.split(',') : []
-        res.data.image1List = res.data.imgs1 ? res.data.imgs1.split(',') : []
         that.setData({
           id: rid,
-          info: res.data,
+          reportInfo: res.data,
           menu: menu
-        })
+        }, that.fetchFromData)
       }
     })
     api.phpRequest({
@@ -79,9 +118,19 @@ Page({
   },
 
   previewImage: function (e) {
-    var index = Number(e.currentTarget.dataset.idx)
+    let that = this
+    var idx = Number(e.currentTarget.dataset.idx)
     var current = e.target.dataset.src
-    var imgList = index == "0" ? this.data.info.imageList : this.data.info.image1List
+    var obj = that.data.formData[3][idx]
+    wx.previewImage({
+      current: current,
+      urls: obj.imageList
+    })
+  },
+
+  previewImage1: function (e) {
+    var current = e.target.dataset.src
+    var imgList = e.target.dataset.imgs
     wx.previewImage({
       current: current,
       urls: imgList
@@ -312,6 +361,11 @@ Page({
           })
         }
       }
+    })
+  },
+  navToEdit: function () {
+    wx.navigateTo({
+      url: '/pages/report/report?id=' + this.data.id + '&delta=' + 2,
     })
   }
 })

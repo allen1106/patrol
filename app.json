@@ -9,13 +9,13 @@
     "pages/logs/logs",
     "pages/report/report",
     "pages/group/group",
-    "pages/group/edit",
     "pages/group/add",
     "pages/register/register",
     "pages/report/detail",
     "pages/notify/list",
     "pages/notify/add",
-    "pages/notify/detail"
+    "pages/notify/detail",
+    "pages/tasklist/member"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -2,87 +2,69 @@
 <view class="page-wrapper">
   <view class="content-panel">
     <view class="header">
-      <text>{{info.title}}</text>
+      <text>{{reportInfo.title}}</text>
     </view>
     <view class="content-wrapper meta">
       <view class="text-wrapper">
         <text class="label">任务编号：</text>
-        <text class="value">{{info.bgbh}}</text>
+        <text class="value">{{reportInfo.bgbh}}</text>
       </view>
       <view class="text-wrapper">
         <text class="label">发起时间：</text>
-        <text class="value">{{info.task_time}}</text>
-      </view>
-      <view class="text-wrapper">
-        <text class="label">处理期限：</text>
-        <text class="value">{{info.endtime}}</text>
+        <text class="value">{{reportInfo.task_time}}</text>
       </view>
       <view class="text-wrapper">
         <text class="label">发布人：</text>
-        <text class="value">{{info.realname}}</text>
+        <text class="value">{{reportInfo.realname}}</text>
       </view>
       <view class="text-wrapper">
         <text class="label">部门：</text>
-        <text class="value">{{info.qymc}}</text>
+        <text class="value">{{reportInfo.qymc}}</text>
       </view>
       <view class="text-wrapper">
         <text class="label">项目名称：</text>
-        <text class="value">{{info.xmmc}}</text>
+        <text class="value">{{reportInfo.xmmc}}</text>
       </view>
       <view class="text-wrapper">
         <text class="label">专业名称：</text>
-        <text class="value">{{info.zymc}}</text>
+        <text class="value">{{reportInfo.zymc}}</text>
       </view>
       <view class="text-wrapper">
         <text class="label">推送给：</text>
-        <text class="value">{{info.pjrlb}}</text>
+        <text class="value">{{reportInfo.pjrlb}}</text>
       </view>
       <view class="text-wrapper">
         <text class="label">抄送给</text>
-        <text class="value">{{info.csrlb}}</text>
+        <text class="value">{{reportInfo.csrlb}}</text>
       </view>
     </view>
     <view class="content-wrapper data">
-      <view class="text-wrapper">
-        <text class="label">标题：</text>
-        <text class="value">{{info.title}}</text>
-      </view>
-      <view class="text-wrapper">
-        <text class="label">原因：</text>
-        <text class="value">{{info.reason}}</text>
-      </view>
-      <view class="text-wrapper">
-        <text class="label">解决办法：</text>
-        <text class="value">{{info.solve}}</text>
-      </view>
-      <view class="text-wrapper">
-        <text class="label">部位：</text>
-        <text class="value">{{info.position}}</text>
-      </view>
+      <block wx:for="{{formData[1]}}" wx:for-item="item">
+        <view class="text-wrapper">
+          <text class="label">{{item.title}}:</text>
+          <text class="value">{{item.value}}</text>
+        </view>
+      </block>
+
+      <block wx:for="{{formData[3]}}" wx:for-item="item" wx:for-index="idx">
       <view class="image-wrapper">
-        <view class="label">现场图片：</view>
+        <view class="label">{{item.title}}：</view>
         <view class="image-panel">
           <view class="img-upload-container">
-            <view class="img-preview-container" wx:for="{{info.imageList}}" wx:for-item="img">
-              <image class="img-preview" src="{{img}}" data-src="{{img}}" data-idx="0" bindtap="previewImage"></image>
+            <view class="img-preview-container" wx:for="{{item.imageList}}" wx:for-item="img">
+              <image class="img-preview" src="{{img}}" data-src="{{img}}" data-idx="{{idx}}" bindtap="previewImage"></image>
             </view>
           </view>
         </view>
       </view>
-      <view class="image-wrapper">
-        <view class="label">参照做法和要求：</view>
-        <view class="image-panel">
-          <view class="img-upload-container">
-            <view class="img-preview-container" wx:for="{{info.image1List}}" wx:for-item="img">
-              <image class="img-preview" src="{{img}}" data-src="{{img}}"  data-idx="1" bindtap="previewImage"></image>
-            </view>
-          </view>
+      </block>
+
+      <block wx:for="{{formData[2]}}" wx:for-item="item">
+        <view class="text-wrapper">
+          <text class="label">{{item.title}}:</text>
+          <text class="value">{{item.value}}</text>
         </view>
-      </view>
-      <view class="text-wrapper">
-        <text class="label">备注：</text>
-        <text class="value">{{info.content || ''}}</text>
-      </view>
+      </block>
     </view>
   </view>
 
@@ -99,7 +81,7 @@
         <view class="image-panel" wx:if="{{obj.evaluate_imgs}}">
           <view class="img-upload-container">
             <view class="img-preview-container" wx:for="{{obj.evaluate_imgs}}" wx:for-item="img">
-              <image class="img-preview" src="{{img}}" data-src="{{img}}"  data-idx="1" bindtap="previewImage"></image>
+              <image class="img-preview" src="{{img}}" data-src="{{img}}"  data-imgs="{{obj.evaluate_imgs}}" bindtap="previewImage1"></image>
             </view>
           </view>
         </view>
@@ -110,7 +92,7 @@
     </view>
   </view>
 
-  <view class="form-panel" wx:if="{{(menu == 3 || menu == 4) && info.display}}">
+  <view class="form-panel" wx:if="{{(menu == 3 || menu == 4) && reportInfo.display}}">
     <view class="item-wrapper">
       <view class="label">
         <text>回复/评价</text>
@@ -129,7 +111,7 @@
       <view class="image-wrapper">
         <view class="img-upload-container">
           <view class="img-preview-container" wx:for="{{imageList}}" wx:key="index">
-            <image class="img-preview" src="{{imageList[index]}}" data-src="{{imageList[index]}}" bindtap="previewImage"></image>
+            <image class="img-preview" src="{{imageList[index]}}" data-src="{{imageList[index]}}" data-imgs="{{imageList}}" bindtap="previewImage1"></image>
             <image class="img-close" src="/imgs/close.png" bindtap="delImg" data-src="{{imageList[index]}}"></image>
           </view>
           <view class="img-preview-container" bindtap="chooseImage">
@@ -140,14 +122,18 @@
     </view>
   </view>
 
-  <view class="btn-wrapper" wx:if="{{menu == 3 && info.display}}">
+  <view class="btn-wrapper" wx:if="{{menu == 3 && reportInfo.display}}">
     <view class="btn-download" bindtap="bindSubmitForm">
       <image src="/imgs/report/submit.png"></image>
       <text>提交</text>
     </view>
   </view>
 
-  <view class="btn-wrapper" wx:if="{{menu == 4 && info.display}}">
+  <view class="btn-wrapper" wx:if="{{menu == 4 && reportInfo.display}}">
+    <view class="btn-download" bindtap="navToEdit">
+      <image src="/imgs/report/submit.png"></image>
+      <text>编辑</text>
+    </view>
     <view class="btn-download" bindtap="handleSuccess">
       <image src="/imgs/report/submit.png"></image>
       <text>解决成功</text>

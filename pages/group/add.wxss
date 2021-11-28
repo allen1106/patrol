@@ -14,7 +14,7 @@ page {
   font-size: 24rpx;
 }
 
-.assign .header {
+.assign .title {
   width: 100%;
   height: 80rpx;
   font-size: 32rpx;
@@ -26,7 +26,6 @@ page {
   border-top-left-radius: 10rpx;
   border-top-right-radius: 10rpx;
 }
-
 .scroll-view-common {
   width: 100%;
 }
@@ -45,8 +44,9 @@ page {
 
 .input-wrapper input {
   height: 40rpx;
-  width: 100%;
+  width: 60%;
 }
+
 .input-wrapper .image {
   width: 80rpx;
   height: 80rpx;
@@ -81,6 +81,7 @@ page {
 }
 
 .name-pannel .member-item image {
+  margin-left: 20rpx;
   width: 30rpx;
   height: 30rpx;
 }
@@ -89,11 +90,12 @@ page {
   width: calc(100% - 44rpx);
   margin-top: 20rpx;
   padding: 20rpx;
+  padding-top: 0;
   border: 2rpx solid #DCDCDC;
   background-color: #fff;
 }
 
-.depart-wrapper .title {
+.depart-wrapper .header {
   width: 100%;
   height: 30rpx;
   display: flex;
@@ -101,11 +103,18 @@ page {
   justify-content: flex-end;
 }
 
-.depart-wrapper .title image {
+.depart-wrapper .header view {
+  margin-left: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.depart-wrapper .header image {
   width: 30rpx;
   height: 30rpx;
 }
-.depart-wrapper .title text {
+.depart-wrapper .header text {
   font-size: 24rpx;
   color: #A9A9A9;
 }
@@ -119,12 +128,13 @@ page {
   display: inline-flex;
   width: calc(48% - 40rpx);
   padding: 10rpx 20rpx;
-  height: 30rpx;
+  height: 50rpx;
   margin: 5rpx auto;
   background-color: #F2F2FC;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  font-size: 28rpx;
 }
 .region-item:nth-child(2n + 2) {
   margin-left: 4%;
@@ -135,6 +145,11 @@ page {
   height: 30rpx;
 }
 
+
+checkbox .wx-checkbox-input {
+  width: 40rpx;
+  height: 40rpx;
+}
 
 .btn-wrapper {
   color: #707070;
@@ -156,11 +171,11 @@ page {
   align-items: center;
   justify-content: center;
   font-size: 36rpx;
-  border-right: 2rpx solid #EAE7E8;
+  border-left: 2rpx solid #EAE7E8;
 }
 
-.btn-wrapper view:nth-child(3) {
-  border-right: none;
+.btn-wrapper view:nth-child(1) {
+  border-left: none;
 }
 
 .btn-wrapper view image {
@@ -168,6 +183,42 @@ page {
   height: 50rpx;
   margin-right: 10rpx;
 }
+
+.comment-list .comment-item {
+  margin-top: 5rpx;
+  padding: 10rpx 20rpx;
+  justify-content: center;
+  align-items: center;
+  border: 2rpx solid #87CEFA;
+  border-radius: 10rpx;
+}
+
+.comment-list .comment-item .content-item {
+  padding: 20rpx 0;
+  border-bottom: 2rpx solid #DCDCDC;
+}
+
+.comment-list .comment-item .title {
+  font-size: 32rpx;
+  color: red;
+}
+
+.comment-list .comment-item .raw-info {
+  width: 100%;
+  color: #9999A6;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comment-list .comment-item .content {
+  font-size: 28rpx;
+  width: 100%;
+  color: #000;
+  padding: 10rpx 0;
+}
+
 
 .mask{
   width:100%;

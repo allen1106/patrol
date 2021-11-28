@@ -2,7 +2,6 @@
 const { CascadedPickerView } = require('../../components/cascaded-picker-view/cascaded-picker-view.js');
 var util = require("../../utils/util.js")
 var api = require("../../utils/api.js");
-const { phpRequest } = require('../../utils/api.js');
 var plugin = requirePlugin("WechatSI")
 
 let manager = plugin.getRecordRecognitionManager()
@@ -118,9 +117,14 @@ Page({
         that.setData({
           rawRegionList: res.data
         }, () => {
-          if (app.globalData.departId) {
+          if (that.data.id == 0 && app.globalData.departId) {
             that.setData({
               departId: app.globalData.departId
+            }, that.fetchProjectList)
+          }
+          if (that.data.id != 0) {
+            that.setData({
+              departId: that.data.reportInfo.department_id
             }, that.fetchProjectList)
           }
           that.initAreaPicker()
@@ -223,19 +227,85 @@ Page({
       },
       success: function (res) {
         if (that.data.id != 0) {
-          // let {pjr_id, csr_id} = that.data.reportInfo
-          // for (let i in res.data) {
-          //   if (pjr_id && pjr_id.indexOf(res.data[i].id) != -1) {
-          //     res.data[i].checked = true
-          //   }
-          //   if (csr_id && csr_id.indexOf(res.data[i].id) != -1) {
-          //     res.data[i].checked1 = true
-          //   }
-          // }
+          let {pjr_id, csr_id} = that.data.reportInfo
+          for (let i in res.data) {
+            if (pjr_id && pjr_id.indexOf(res.data[i].id) != -1) {
+              res.data[i].checked = true
+            }
+            if (csr_id && csr_id.indexOf(res.data[i].id) != -1) {
+              res.data[i].checked1 = true
+            }
+          }
         }
         that.data.departMemberMap[departId] = res.data
         that.setData({
           departMemberMap: that.data.departMemberMap,
+        })
+      }
+    })
+  },
+
+  fetchFromData: function () {
+    let that = this
+    api.phpRequest({
+      url: 'form.php',
+      success: function (res) {
+        that.setData({
+          formData: res.data,
+        }, () => {
+          for (let i in that.data.formData[0]) {
+            let item = that.data.formData[0][i]
+            let dataList = [
+              {"name": item.title, "id": 0}
+            ]
+            api.phpRequest({
+              url: item.apifile,
+              success: function (res) {
+                var list = res.data
+                item.list = dataList.concat(list)
+                item.idx = 0
+                if (that.data.id != 0) {
+                  for (let i in item.list) {
+                    if (item.list[i].id == that.data.reportInfo[item.name + '_id']) {
+                      item.idx = i
+                    }
+                  }
+                }
+                that.setData({
+                  [`formData[0][` + i + `]`]: item
+                })
+              }
+            })
+          }
+          for (let i in that.data.formData[3]) {
+            let item = that.data.formData[3][i]
+            item.imageList = []
+            if (that.data.id != 0) {
+              let imgs = that.data.reportInfo[item.name]
+              if (imgs) {
+                item.imageList = imgs.split(",")
+              }
+            }
+            that.setData({
+              [`formData[3][` + i + `]`]: item
+            })
+          }
+          if (that.data.id != 0) {
+            for (let i in that.data.formData[1]) {
+              let item = that.data.formData[1][i]
+              item.value = that.data.reportInfo[item.name]
+              that.setData({
+                [`formData[1][` + i + `]`]: item
+              })
+            }
+            for (let i in that.data.formData[2]) {
+              let item = that.data.formData[2][i]
+              item.value = that.data.reportInfo[item.name]
+              that.setData({
+                [`formData[2][` + i + `]`]: item
+              })
+            }
+          }
         })
       }
     })
@@ -247,31 +317,50 @@ Page({
   onLoad: function (options) {
     var that = this
     var id = Number(options.id)
+    var delta = Number(options.delta)
     var info = app.globalData.userInfo
-    that.setData({
-      title: "发布巡检报告",
-      id: id,
-      reportInfo: {
-        username: info.realname,
-        time: util.formatTime(new Date())
-      },
-    }),
-    that.fetchRegionList()
-    that.initMemberList()
-    that.fetchSystemList()
-    that.setData({
-      title: app.globalData.title,
-      solve: app.globalData.solve,
-      term: app.globalData.term,
-    })
-    api.phpRequest({
-      url: 'form.php',
-      success: function (res) {
-        that.setData({
-          formData: res.data,
-        })
-      }
-    })
+    if (id == 0) {
+      that.setData({
+        title: "发布巡检报告",
+        id: id,
+        reportInfo: {
+          realname: info.realname,
+          task_time: util.formatTime(new Date())
+        },
+      }),
+      that.fetchRegionList()
+      that.initMemberList()
+      that.fetchSystemList()
+      that.setData({
+        title: app.globalData.title,
+        solve: app.globalData.solve,
+        term: app.globalData.term,
+      })
+      that.fetchFromData()
+    } else {
+      api.phpRequest({
+        url: 'report_list.php',
+        data: {
+          userid: wx.getStorageSync('userId'),
+          id: id,
+          delta: delta
+        },
+        success: function (res) {
+          console.log(res.data)
+          let reportInfo = res.data
+          that.setData({
+            title: "发布巡检报告",
+            id: id,
+            reportInfo: reportInfo,
+          }, () => {
+            that.fetchRegionList()
+            that.initMemberList()
+            that.fetchSystemList()
+            that.fetchFromData()
+          })
+        }
+      })
+    }
   },
 
   onShow: function () {
@@ -309,59 +398,59 @@ Page({
   },
 
   chooseImage: function (e) {
-    var index = Number(e.currentTarget.dataset.index)
     var that = this
-    let imgList = index == '0' ? that.data.imageList : that.data.image1List
+    var idx = Number(e.currentTarget.dataset.idx)
+    let obj = that.data.formData[3][idx]
     wx.chooseImage({
-      count: that.data.count - imgList.length,
+      count: that.data.count - obj.imageList.length,
       success: function (res) {
-        if (index == "0") {
-          that.setData({
-            imageList: that.data.imageList.concat(res.tempFilePaths)
-          })
-        } else {
-          that.setData({
-            image1List: that.data.image1List.concat(res.tempFilePaths)
-          })
-        }
+        obj.imageList = obj.imageList.concat(res.tempFilePaths)
+        that.setData({
+          [`formData[3][` + idx + `]`]: obj
+        })
       }
     })
   },
 
   previewImage: function (e) {
-    var index = Number(e.currentTarget.dataset.index)
+    var idx = Number(e.currentTarget.dataset.idx)
     var current = e.target.dataset.src
-    var imgList = index == "0" ? this.data.imageList : this.data.image1List
+    var obj = that.data.formData[3][idx]
     wx.previewImage({
       current: current,
-      urls: imgList
+      urls: obj.imgList
     })
   },
 
   delImg: function (e) {
+    let that = this
     var current = e.target.dataset.src
-    var index = Number(e.currentTarget.dataset.index)
-    var imgList = index == "0" ? this.data.imageList : this.data.image1List
-    var idx = imgList.indexOf(current)
-    imgList.splice(idx, 1)
-    if (index == "0") {
-      this.setData({
-        imageList: imgList
-      })
-    } else {
-      this.setData({
-        image1List: imgList
-      })
-    }
+    var idx = Number(e.currentTarget.dataset.idx)
+    var obj = that.data.formData[3][idx]
+    var idx = obj.imageList.indexOf(current)
+    obj.imageList.splice(idx, 1)
+    that.setData({
+      [`formData[3][` + idx + `]`]: obj
+    })
   },
 
   validateInfo: function (data, strict) {
-    if (data['report_id'] == 0 && data['project_id'] == 0) return '部门和项目'
-    if (data['report_id'] == 0 && data['industry_id'] == 0) return '专业'
+    if (data['project_id'] == 0) return '部门和项目'
+    if (data['industry_id'] == 0) return '专业'
+
+    for (let j in this.data.formData[0]) {
+      let item = this.data.formData[0][j]
+      if (strict && item.leixing && !item.idx) {
+        return item.title
+      }
+      if (item.idx) {
+        data[item.name] = item.list[item.idx].id
+      }
+    }
 
     for (let j in this.data.formData[1]) {
       let item = this.data.formData[1][j]
-      if (item.leixing && !item.value) {
+      if (strict && item.leixing && !item.value) {
         return item.title
       }
       if (item.value) {
@@ -370,7 +459,7 @@ Page({
     }
     for (let j in this.data.formData[2]) {
       let item = this.data.formData[2][j]
-      if (item.leixing && !item.value) {
+      if (strict && item.leixing && !item.value) {
         return item.title
       }
       if (item.value) {
@@ -412,8 +501,6 @@ Page({
       csr_id: csr_id
     }
     var valid = that.validateInfo(data, btnId == "1")
-    console.log("====>>>>")
-    console.log(data)
     if (valid != "success") {
       wx.showToast({
         title: valid + '不能为空',
@@ -459,38 +546,37 @@ Page({
 
   uploadImg: function (url, data) {
     var that = this
-    var uploadedImgs = [],
-        uploadedImgs1 = [],
-        imgs = this.data.imageList,
-        imgs1 = this.data.image1List
-    for (var i in imgs) {
-      if (imgs[i].startsWith(api.HTTP_HOST)) {
-        uploadedImgs.push(imgs.splice(i, 1))
+    let imageForm = that.data.formData[3]
+    let allRq = []
+    for (let i in imageForm) {
+      imageForm[i].uploadedImg = []
+      for (let j in imageForm[i].imageList) {
+        if (imageForm[i].imageList[j].startsWith(api.HTTP_HOST)) {
+          imageForm[i].uploadedImg.push(imageForm[i].imageList[j])
+        } else {
+          allRq.push({
+            "img": imageForm[i].imageList[j],
+            "list": imageForm[i].uploadedImg
+          })
+        }
       }
     }
-    for (var i in imgs1) {
-      if (imgs1[i].startsWith(api.HTTP_HOST)) {
-        uploadedImgs1.push(imgs1.splice(i, 1))
-      }
-    }
-    var allImgs = imgs.concat(imgs1)
-    if (allImgs.length == 0) {
-      data['imgs'] = uploadedImgs
-      data['imgs1'] = uploadedImgs1
-      that.submitForm(url, data)
+    if (allRq.length > 0) {
+      that.uploadSingleImg(allRq, 0, url, data)
     } else {
-      var i = 0
-      that.uploadSingleImg(i, uploadedImgs, uploadedImgs1, imgs, imgs1, allImgs, url, data)
+      that.submitForm(url, data)
     }
   },
 
-  uploadSingleImg: function (i, uploadedImgs, uploadedImgs1, imgs, imgs1, allImgs, url, data) {
-    var that = this
+  uploadSingleImg: function (allRq, i, url, data) {
+    let that = this
     wx.uploadFile({
       url: api.API_HOST + "fileup.php",
-      filePath: allImgs[i],
+      filePath: allRq[i].img,
       name: 'imgs',
       success: function (res) {
+        console.log("====>>>>1111")
+        console.log(res.data)
         if (typeof(res.data) != Object) {
           res.data = res.data.replace("\ufeff", "")
         }
@@ -505,18 +591,11 @@ Page({
         } else {
           switch (res.data.status) {
             case 1:
-              if (i < imgs.length) {
-                uploadedImgs.push(res.data.imgpath)
-              } else {
-                uploadedImgs1.push(res.data.imgpath)
-              }
-              if (i >= allImgs.length - 1) {
-                data['imgs'] = uploadedImgs
-                data['imgs1'] = uploadedImgs1
+              allRq[i].list.push(res.data.imgpath)
+              if (i == allRq.length - 1) {
                 that.submitForm(url, data)
               } else {
-                i++
-                that.uploadSingleImg(i, uploadedImgs, uploadedImgs1, imgs, imgs1, allImgs, url, data)
+                that.uploadSingleImg(allRq, i + 1, url, data)
               }
               break
             default:
@@ -537,6 +616,14 @@ Page({
 
   submitForm: function (url, data) {
     var that = this
+    for (let i in that.data.formData[3]) {
+      let obj = that.data.formData[3][i]
+      data[obj.name] = obj.uploadedImg
+    }
+    if (that.data.id != 0) {
+      data["report_id"] = that.data.id
+    }
+    console.log(data)
     // 获取到位置信息后，调用api提交表单
     api.phpRequest({
       url: url,
@@ -572,7 +659,7 @@ Page({
 
   bindBackToIndex: function () {
     wx.navigateBack({
-      delta: 1
+      delta: this.data.delta || 1
     })
   },
 
@@ -630,50 +717,27 @@ Page({
         that.setData({
           projectList: list
         }, () => {
-          if (app.globalData.proIdx) {
+          if (that.data.id == 0 && app.globalData.proIdx) {
             let proObj = list[app.globalData.proIdx]
             that.setData({
               proIdx: app.globalData.proIdx,
               projectId: proObj.project_id
             })
           }
+          if (that.data.id != 0) {
+            let pidx = 0
+            for (let i in list) {
+              if (list[i].project_id == that.data.reportInfo.project_id) {
+                pidx = i
+              }
+            }
+            that.setData({
+              proIdx: pidx,
+              projectId: that.data.reportInfo.project_id
+            })
+          }
         })
       }
-    })
-  },
-
-  fetchSystemList: function (fn) {
-    return new Promise(resolve => {
-      var that = this
-      var userInfo = app.globalData.userInfo
-      api.phpRequest({
-        url: 'industry.php',
-        success: function (res) {
-          var list = res.data
-          list = that.data.systemList.concat(list)
-          let sysIdx = 0
-          for (let i in list) {
-            if (list[i].industry_id == userInfo.industry_id) {
-              sysIdx = i
-            }
-          }
-          that.setData({
-            systemList: list,
-            sysIdx: sysIdx,
-            systemId: list[sysIdx].industry_id
-          }, () => {
-            if (app.globalData.sysIdx != 0) {
-              that.setData({
-                sysIdx: app.globalData.sysIdx,
-                systemId: list[app.globalData.sysIdx].industry_id
-              })
-            }
-          })
-          if (fn) {
-            fn()
-          }
-        }
-      })
     })
   },
 
@@ -685,6 +749,44 @@ Page({
       projectId: this.data.projectList[idx].project_id
     }, () => {
       app.globalData.proIdx = idx
+    })
+  },
+
+  fetchSystemList: function (fn) {
+    return new Promise(resolve => {
+      var that = this
+      api.phpRequest({
+        url: 'industry.php',
+        success: function (res) {
+          var list = res.data
+          list = that.data.systemList.concat(list)
+          that.setData({
+            systemList: list,
+          }, () => {
+            if (that.data.id == 0 && app.globalData.sysIdx != 0) {
+              that.setData({
+                sysIdx: app.globalData.sysIdx,
+                systemId: list[app.globalData.sysIdx].industry_id
+              })
+            }
+            if (that.data.id != 0) {
+              let sidx = 0
+              for (let i in list) {
+                if (list[i].industry_id == that.data.reportInfo.industry_id) {
+                  sidx = i
+                }
+              }
+              that.setData({
+                sysIdx: sidx,
+                systemId: that.data.reportInfo.industry_id
+              })
+            }
+          })
+          if (fn) {
+            fn()
+          }
+        }
+      })
     })
   },
 
@@ -707,6 +809,15 @@ Page({
       systemId: this.data.systemList[idx].industry_id
     }, () => {
       app.globalData.sysIdx = idx
+    })
+  },
+
+  bindPickerChange: function (e) {
+    var pidx = e.detail.value
+    let idx = e.currentTarget.dataset.idx
+    var that = this
+    that.setData({
+      [`formData[0][` + idx + `].idx`]: pidx,
     })
   },
 
@@ -908,7 +1019,7 @@ Page({
 
   bindNavToAddGroup: function () {
     wx.navigateTo({
-      url: '/pages/group/group?reback=1',
+      url: '/pages/group/add?reback=1',
     })
   },
 

@@ -129,9 +129,9 @@ checkbox .wx-checkbox-input.wx-checkbox-input-checked::before{
   align-items: center;
   justify-content: center;
   font-size: 36rpx;
-  border-right: 2rpx solid #EAE7E8;
+  border-left: 2rpx solid #EAE7E8;
 }
 
-.btn-wrapper view:nth-child(3) {
-  border-right: none;
+.btn-wrapper view:nth-child(1) {
+  border-left: none;
 }
