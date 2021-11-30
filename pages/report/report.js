@@ -342,8 +342,7 @@ Page({
         url: 'report_list.php',
         data: {
           userid: wx.getStorageSync('userId'),
-          id: id,
-          delta: delta
+          id: id
         },
         success: function (res) {
           console.log(res.data)
@@ -351,6 +350,7 @@ Page({
           that.setData({
             title: "发布巡检报告",
             id: id,
+            delta: delta,
             reportInfo: reportInfo,
           }, () => {
             that.fetchRegionList()
@@ -464,6 +464,12 @@ Page({
       }
       if (item.value) {
         data[item.name] = item.value
+      }
+    }
+    for (let j in this.data.formData[3]) {
+      let item = this.data.formData[3][j]
+      if (strict && item.leixing && !item.imageList) {
+        return item.title
       }
     }
     return 'success'

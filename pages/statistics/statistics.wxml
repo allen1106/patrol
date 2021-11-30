@@ -107,9 +107,10 @@
 
   <view class="report-summary">
     <view>报告总数：{{reportSummary.number}}</view>
-    <view>未解决：{{reportSummary.number2}}</view>
-    <view>已解决：{{reportSummary.number1}}</view>
-    <view>完成率：{{reportSummary.ratio}}%</view>
+    <view>已回复：{{reportSummary.number1}}</view>
+    <view>已解决：{{reportSummary.number2}}</view>
+    <view>回复率：{{reportSummary.ratio}}%</view>
+    <view>解决率：{{reportSummary.ratio1}}%</view>
   </view>
 </view>
 

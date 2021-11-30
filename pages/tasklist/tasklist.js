@@ -140,8 +140,8 @@ Page({
                 }, () => {
                   if (parentValue) {
                     this.initProjectList(this.fetchProjectList)
-                    this.fetchTaskList()
                   }
+                  this.fetchTaskList()
                 })
                 if (pickerIndex === 0) {    // 读取第一级选择器选项
                     callback(this.data.rawRegionList);

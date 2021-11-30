@@ -128,8 +128,8 @@ Page({
                 }, () => {
                   if (parentValue && pickerIndex != 0) {
                     this.initProjectList(this.fetchProjectList)
-                    this.fetchList()
                   }
+                  this.fetchList()
                 })
                 if (pickerIndex === 0) {    // 读取第一级选择器选项
                     callback(this.data.rawRegionList);
@@ -337,8 +337,8 @@ Page({
     if (that.data.departId) {data["department_id"] = that.data.departId}
     if (that.data.projectId != 0) {data["project_id"] = that.data.projectId}
     if (that.data.systemId != 0) {data["industry_id"] = that.data.systemId}
-    if (that.data.startDate != "请选择开始时间") {data["startDate"] = that.data.startDate}
-    if (that.data.endDate != "请选择结束时间") {data["endDate"] = that.data.endDate}
+    if (that.data.startDate != "开始时间") {data["startDate"] = that.data.startDate}
+    if (that.data.endDate != "结束时间") {data["endDate"] = that.data.endDate}
     api.phpRequest({
       url: 'statistics_excel.php',
       data: data,
