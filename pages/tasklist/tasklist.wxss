@@ -56,6 +56,7 @@
   width: 95%;
   margin: 20rpx auto;
   font-size: 20rpx;
+  padding-bottom: 100rpx;
 }
 
 .nav-wrapper {
@@ -180,6 +181,16 @@ checkbox .wx-checkbox-input.wx-checkbox-input-checked::before{
 .picker image {
   width: 30rpx;
   height: 30rpx;
+}
+
+.tip-msg {
+  width: 100%;
+  height: 60rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 32rpx;
 }
 
 .co1 {

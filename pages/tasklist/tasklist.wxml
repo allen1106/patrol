@@ -126,6 +126,10 @@
     </checkbox-group>
   </view>
 
+  <view class="tip-msg" wx:if="{{submitList.length <= 0 && menu == 6}}">
+    <text>请前往我的发布和我的处理查看</text>
+  </view>
+
   <view class="btn-wrapper" wx:if="{{menu == 2}}">
     <view class="btn-download" bindtap="bindSelectAll">
       <image src="/imgs/report/select.png"></image>
