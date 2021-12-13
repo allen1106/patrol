@@ -40,9 +40,6 @@ App({
     subProIdx: 0,
     sysIdx: 0,
     quesIdx: 0,
-    title: "",
-    solve: "",
-    term: "",
-    content: "",
+    formData: null,
   }
 })

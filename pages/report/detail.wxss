@@ -6,7 +6,7 @@ page {
 .page-wrapper {
   width: 90%;
   margin: 0 auto;
-  font-size: 24rpx;
+  font-size: 28rpx;
   padding-bottom: 130rpx;
 }
 
@@ -24,7 +24,7 @@ page {
 .content-panel .header {
   height: 80rpx;
   line-height: 80rpx;
-  font-size: 36rpx;
+  font-size: 40rpx;
   color: #fff;
   background-color: #4769F1;
   text-align: center;
@@ -115,7 +115,7 @@ page {
 
 .comment-item .meta .time {
   margin-left: 20rpx;
-  font-size: 20rpx;
+  font-size: 24rpx;
   color: #999997;
 }
 
@@ -137,7 +137,7 @@ page {
   margin-top: 20rpx;
 }
 .item-wrapper .label {
-  font-size: 32rpx;
+  font-size: 36rpx;
 }
 .item-wrapper .input {
   margin-top: 10rpx;
@@ -150,7 +150,7 @@ page {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 28rpx;
+  font-size: 32rpx;
 }
 .item-wrapper .input textarea {
   display: inline-block;
@@ -204,7 +204,7 @@ page {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  font-size: 36rpx;
+  font-size: 32rpx;
   border-left: 2rpx solid #EAE7E8;
 }
 

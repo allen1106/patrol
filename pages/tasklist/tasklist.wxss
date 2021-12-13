@@ -130,6 +130,7 @@
 }
 
 .task-item .content-wrapper {
+  width: 100%;
 }
 
 checkbox .wx-checkbox-input{

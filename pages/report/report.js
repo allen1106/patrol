@@ -290,17 +290,33 @@ Page({
               [`formData[3][` + i + `]`]: item
             })
           }
-          if (that.data.id != 0) {
-            for (let i in that.data.formData[1]) {
-              let item = that.data.formData[1][i]
+          for (let i in that.data.formData[1]) {
+            let item = that.data.formData[1][i]
+            if (that.data.id != 0) {
               item.value = that.data.reportInfo[item.name]
               that.setData({
                 [`formData[1][` + i + `]`]: item
               })
             }
-            for (let i in that.data.formData[2]) {
-              let item = that.data.formData[2][i]
+            if (app.globalData.formData) {
+              let d = app.globalData.formData[1].filter((x) => x.name == item.name)[0]
+              item.value = d.value
+              that.setData({
+                [`formData[1][` + i + `]`]: item
+              })
+            }
+          }
+          for (let i in that.data.formData[2]) {
+            let item = that.data.formData[2][i]
+            if (that.data.id != 0) {
               item.value = that.data.reportInfo[item.name]
+              that.setData({
+                [`formData[2][` + i + `]`]: item
+              })
+            }
+            if (app.globalData.formData) {
+              let d = app.globalData.formData[2].filter((x) => x.name == item.name)[0]
+              item.value = d.value
               that.setData({
                 [`formData[2][` + i + `]`]: item
               })
@@ -331,11 +347,6 @@ Page({
       that.fetchRegionList()
       that.initMemberList()
       that.fetchSystemList()
-      that.setData({
-        title: app.globalData.title,
-        solve: app.globalData.solve,
-        term: app.globalData.term,
-      })
       that.fetchFromData()
     } else {
       api.phpRequest({
@@ -391,9 +402,10 @@ Page({
     if (that.data.id == 0) {
       app.globalData.departId = Number(that.data.departId)
       app.globalData.proIdx = that.data.proIdx
-      app.globalData.title = that.data.title
-      app.globalData.solve = that.data.solve
-      app.globalData.term = that.data.term
+      app.globalData.formData = that.data.formData
+      console.log("=====>>>>>")
+      console.log(that.data.formData)
+      console.log(app.globalData.formData)
     }
   },
 
@@ -638,14 +650,7 @@ Page({
       header: {'content-type': 'application/x-www-form-urlencoded'},
       success: function (res) {
         if (res.data.status == 1) {
-          app.globalData.title = ''
-          app.globalData.solve = ''
-          app.globalData.term = ''
-          that.setData({
-            title: '',
-            solve: '',
-            term: '',
-          })
+          app.globalData.formData = null
           wx.showToast({
             title: '提交成功',
             icon: 'success',

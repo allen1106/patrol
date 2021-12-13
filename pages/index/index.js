@@ -95,6 +95,15 @@ Page({
         icon: 'error',
       })
     } else {
+      var userInfo = app.globalData.userInfo
+      console.log(userInfo)
+      if (userInfo.display != 1) {
+        wx.showToast({
+          title: '暂无权限',
+          icon: 'none'
+        })
+        return
+      }
       wx.navigateTo({
         url: '/pages/statistics/statistics?tab=' + e.currentTarget.dataset.tab,
       })
