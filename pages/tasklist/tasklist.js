@@ -433,7 +433,9 @@ Page({
     that.batchAction((idstr) => {
       api.phpRequest({
         url: 'report_delete.php',
-        data: {'report_id_s': idstr},
+        data: {
+          'report_id_s': idstr,
+        },
         success: function (res) {
           if (res.data.status == 1) {
             wx.showToast({

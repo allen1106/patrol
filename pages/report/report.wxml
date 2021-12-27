@@ -114,23 +114,35 @@
       </view>
     </view>
     <scroll-view wx:if="{{currentTab==0}}" class="scroll-view-common name-pannel" scroll-y>
-      <block wx:for="{{departMemberMap}}" wx:for-item="memberList" wx:for-index="did">
+      <!-- <block wx:for="{{departMemberMap}}" wx:for-item="memberList" wx:for-index="did">
         <block wx:for="{{memberList}}" wx:for-item="memberObj" wx:for-index="midx">
           <view class="member-item" wx:if="{{memberObj.checked}}">
             <text>{{memberObj.realname}}</text>
             <image src="/imgs/close.png" bindtap="delMember" data-did="{{did}}" data-midx="{{midx}}"></image>
           </view>
         </block>
+      </block> -->
+      <block wx:for="{{memberBox1}}" wx:for-item="memberObj">
+        <view class="member-item" wx:if="{{memberObj.checked}}">
+          <text>{{memberObj.realname}}</text>
+          <image src="/imgs/close.png" bindtap="delMember" data-midx="{{memberObj.id}}"></image>
+        </view>
       </block>
     </scroll-view>
     <scroll-view wx:if="{{currentTab==1}}" class="scroll-view-common name-pannel" scroll-y>
-      <block wx:for="{{departMemberMap}}" wx:for-item="memberList" wx:for-index="did">
+      <!-- <block wx:for="{{departMemberMap}}" wx:for-item="memberList" wx:for-index="did">
         <block wx:for="{{memberList}}" wx:for-item="memberObj" wx:for-index="midx">
           <view class="member-item" wx:if="{{memberObj.checked1}}">
             <text>{{memberObj.realname}}</text>
             <image src="/imgs/close.png" bindtap="delMember" data-did="{{did}}" data-midx="{{midx}}"></image>
           </view>
         </block>
+      </block> -->
+      <block wx:for="{{memberBox2}}" wx:for-item="memberObj" wx:for-index="midx">
+        <view class="member-item" wx:if="{{memberObj.checked}}">
+          <text>{{memberObj.realname}}</text>
+          <image src="/imgs/close.png" bindtap="delMember" data-midx="{{memberObj.id}}"></image>
+        </view>
       </block>
     </scroll-view>
 

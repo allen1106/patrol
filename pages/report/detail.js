@@ -342,8 +342,9 @@ Page({
     var that = this
     api.phpRequest({
       url: "report_delete.php",
-      data: {'report_id_s': that.data.id},
-      method: 'post',
+      data: {
+        'report_id_s': that.data.id,
+      },
       header: {'content-type': 'application/x-www-form-urlencoded'},
       success: function (res) {
         if (res.data.status == 1) {
