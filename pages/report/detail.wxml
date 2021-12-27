@@ -37,6 +37,10 @@
         <text class="label">抄送给</text>
         <text class="value">{{reportInfo.csrlb}}</text>
       </view>
+      <view class="text-wrapper">
+        <text class="label">已查</text>
+        <text class="value">{{reportInfo.cha_id}}</text>
+      </view>
     </view>
     <view class="content-wrapper data">
       <block wx:for="{{formData[1]}}" wx:for-item="item">
