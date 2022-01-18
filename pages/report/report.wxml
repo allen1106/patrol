@@ -139,7 +139,7 @@
         </block>
       </block> -->
       <block wx:for="{{memberBox2}}" wx:for-item="memberObj" wx:for-index="midx">
-        <view class="member-item" wx:if="{{memberObj.checked}}">
+        <view class="member-item" wx:if="{{memberObj.checked1}}">
           <text>{{memberObj.realname}}</text>
           <image src="/imgs/close.png" bindtap="delMember" data-midx="{{memberObj.id}}"></image>
         </view>
@@ -178,15 +178,11 @@
   </view>
     
   <view class="btn-wrapper">
-    <view data-id="1" bindtap="bindSubmitForm"  wx:if="{{id == 0}}">
+    <view data-id="1" bindtap="bindSubmitForm">
       <image src="/imgs/report/select.png"></image>
       <text>提交</text>
     </view>
-    <view data-id="0" bindtap="bindSubmitForm"  wx:if="{{id != 0}}">
-      <image src="/imgs/report/select.png"></image>
-      <text>提交</text>
-    </view>
-    <view data-id="0" bindtap="bindSubmitForm" wx:if="{{id == 0}}">
+    <view data-id="0" bindtap="bindSubmitForm">
       <image src="/imgs/report/download.png"></image>
       <text>保存草稿</text>
     </view>

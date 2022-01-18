@@ -38,7 +38,7 @@
         <text class="value">{{reportInfo.csrlb}}</text>
       </view>
       <view class="text-wrapper">
-        <text class="label">已查</text>
+        <text class="label">已读</text>
         <text class="value">{{reportInfo.cha_id}}</text>
       </view>
     </view>

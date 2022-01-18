@@ -1,4 +1,5 @@
 // pages/index/nav.js
+const app = getApp()
 Page({
 
   /**
@@ -16,6 +17,14 @@ Page({
   },
 
   navToNotification: function () {
+    var userInfo = app.globalData.userInfo
+    if (userInfo && userInfo.audit != 1) {
+      wx.showToast({
+        title: '审核中，请等待管理员审核',
+        icon: 'none'
+      })
+      return
+    }
     wx.navigateTo({
       url: '/pages/notify/list',
     })

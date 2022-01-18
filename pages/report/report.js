@@ -112,9 +112,10 @@ Page({
 
     // 获取部门信息
     api.phpRequest({
-      url: 'department.php',
+      url: 'department_1.php',
       success: function (res) {
         that.convertList(res.data)
+        that.flatList(res.data, {})
         that.setData({
           rawRegionList: res.data
         }, () => {
@@ -143,7 +144,7 @@ Page({
       data: {userid: wx.getStorageSync('userId')},
       success: function (res) {
         that.convertList1(res.data)
-        that.flatList(res.data, {})
+        // that.flatList(res.data, {})
         const stack = new util.Stack()
         stack.push(res.data)
         that.setData({
@@ -261,7 +262,7 @@ Page({
         }
         if (memberObj.checked1) {
           if (!memberBoxIds2.has(memberObj.id)) memberBox2.push(memberObj)
-          memberBoxIds1.add(memberObj.id)
+          memberBoxIds2.add(memberObj.id)
         }
       }
     }
@@ -546,6 +547,14 @@ Page({
     if (valid != "success") {
       wx.showToast({
         title: valid + '不能为空',
+        icon: 'none',
+      })
+      return
+    }
+    let userinfo = app.globalData.userInfo
+    if (data['pjr_id'].length > userinfo.number || data['csr_id'].length > userinfo.number) {
+      wx.showToast({
+        title: '推送给人数不能超过' + userinfo.number + '人',
         icon: 'none',
       })
       return

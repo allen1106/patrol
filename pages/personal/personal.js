@@ -73,6 +73,14 @@ Page({
     })
   },
   navigateToGroup: function () {
+    var userInfo = app.globalData.userInfo
+    if (userInfo.audit != 1) {
+      wx.showToast({
+        title: '审核中，请等待管理员审核',
+        icon: 'none'
+      })
+      return
+    }
     wx.navigateTo({
       url: '/pages/group/group'
     })

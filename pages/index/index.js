@@ -79,6 +79,14 @@ Page({
         icon: 'error',
       })
     } else {
+      var userInfo = app.globalData.userInfo
+      if (userInfo.audit != 1) {
+        wx.showToast({
+          title: '审核中，请等待管理员审核',
+          icon: 'none'
+        })
+        return
+      }
       let {menu, tab} = e.currentTarget.dataset
       if (tab == undefined) tab = 0
       let title = titleMap[menu]
@@ -96,7 +104,13 @@ Page({
       })
     } else {
       var userInfo = app.globalData.userInfo
-      console.log(userInfo)
+      if (userInfo.audit != 1) {
+        wx.showToast({
+          title: '审核中，请等待管理员审核',
+          icon: 'none'
+        })
+        return
+      }
       if (userInfo.display != 1) {
         wx.showToast({
           title: '暂无权限',
@@ -117,6 +131,14 @@ Page({
         icon: 'error',
       })
     } else {
+      var userInfo = app.globalData.userInfo
+      if (userInfo.audit != 1) {
+        wx.showToast({
+          title: '审核中，请等待管理员审核',
+          icon: 'none'
+        })
+        return
+      }
       let rid = Number(e.currentTarget.dataset.id)
       wx.navigateTo({
         url: '/pages/report/report?id=' + rid,

@@ -84,7 +84,7 @@ Page({
 
     // 获取部门信息
     api.phpRequest({
-      url: 'department.php',
+      url: 'department_1.php',
       success: function (res) {
         that.convertList(res.data)
         that.setData({
