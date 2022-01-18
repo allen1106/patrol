@@ -552,6 +552,7 @@ Page({
       return
     }
     let userinfo = app.globalData.userInfo
+    console.log(data)
     if (data['pjr_id'].length > userinfo.number || data['csr_id'].length > userinfo.number) {
       wx.showToast({
         title: '推送给人数不能超过' + userinfo.number + '人',
@@ -1053,20 +1054,21 @@ Page({
 
   getCheckedMember: function () {
     let that = this
-    let ret = {'pjr_id': [], 'csr_id': []}
+    let pjr_ids = new Set()
+    let csr_ids = new Set()
     
     for (let i in that.data.departMemberMap) {
       for (let j in that.data.departMemberMap[i]) {
         let memberObj = that.data.departMemberMap[i][j]
         if (memberObj.checked) {
-          ret.pjr_id.push(memberObj.id)
+          pjr_id.add(memberObj.id)
         }
         if (memberObj.checked1) {
-          ret.csr_id.push(memberObj.id)
+          csr_id.add(memberObj.id)
         }
       }
     }
-    return ret
+    return {'pjr_id': Array.from(pjr_ids), 'csr_id': Array.from(csr_ids)}
   },
 
   bindNavToAddGroup: function () {
