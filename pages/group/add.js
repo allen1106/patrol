@@ -55,30 +55,6 @@ Page({
     })
   },
 
-  fetchMember: function (departId, flag) {
-    let that = this
-    api.phpRequest({
-      url: 'user.php',
-      data: {
-        departmentid_id: departId,
-        flag: flag
-      },
-      success: function (res) {
-        if (that.data.gid) {
-          for (let i in res.data) {
-            if (that.data.info.filter((item) => item.id == res.data[i].id).length > 0) {
-              res.data[i].checked = true
-            }
-          }
-        }
-        that.data.departMemberMap[departId] = res.data
-        that.setData({
-          departMemberMap: that.data.departMemberMap,
-        }, that.setMemberBox)
-      }
-    })
-  },
-
   setMemberBox: function () {
     let {departMemberMap} = this.data
     let memberBoxIds1 = new Set([])
@@ -101,6 +77,30 @@ Page({
     this.setData({
       memberBox1: memberBox1,
       memberBox2: memberBox2
+    })
+  },
+
+  fetchMember: function (departId, flag) {
+    let that = this
+    api.phpRequest({
+      url: 'user.php',
+      data: {
+        departmentid_id: departId,
+        flag: flag
+      },
+      success: function (res) {
+        if (that.data.gid) {
+          for (let i in res.data) {
+            if (that.data.info.filter((item) => item.id == res.data[i].id).length > 0) {
+              res.data[i].checked = true
+            }
+          }
+        }
+        that.data.departMemberMap[departId] = res.data
+        that.setData({
+          departMemberMap: that.data.departMemberMap,
+        }, that.setMemberBox)
+      }
     })
   },
 

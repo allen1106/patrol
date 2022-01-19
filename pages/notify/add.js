@@ -22,7 +22,9 @@ Page({
     // member related
     departMemberMap: {},
     memberDepartId: 0,
-    showMember: false
+    showMember: false,
+    memberBox1: null,
+    memberBox2: null,
   },
 
   flatList: function (l, m) {
@@ -60,6 +62,31 @@ Page({
     })
   },
 
+  setMemberBox: function () {
+    let {departMemberMap} = this.data
+    let memberBoxIds1 = new Set([])
+    let memberBox1 = []
+    let memberBoxIds2 = new Set([])
+    let memberBox2 = []
+    for (let i in departMemberMap) {
+      for (let j in departMemberMap[i]) {
+        let memberObj = departMemberMap[i][j]
+        if (memberObj.checked) {
+          if (!memberBoxIds1.has(memberObj.id)) memberBox1.push(memberObj)
+          memberBoxIds1.add(memberObj.id)
+        }
+        if (memberObj.checked1) {
+          if (!memberBoxIds2.has(memberObj.id)) memberBox2.push(memberObj)
+          memberBoxIds2.add(memberObj.id)
+        }
+      }
+    }
+    this.setData({
+      memberBox1: memberBox1,
+      memberBox2: memberBox2
+    })
+  },
+
   fetchMember: function (departId, flag) {
     let that = this
     api.phpRequest({
@@ -72,7 +99,7 @@ Page({
         that.data.departMemberMap[departId] = res.data
         that.setData({
           departMemberMap: that.data.departMemberMap,
-        })
+        }, that.setMemberBox)
       }
     })
   },
@@ -162,7 +189,7 @@ Page({
         showMember: true,
         memberDepartId: region.value,
         departMemberMap: departMemberMap
-      })
+      }, that.setMemberBox)
     }
   },
 
@@ -214,7 +241,10 @@ Page({
     that.setData({
       showMember: true,
       departMemberMap: departMemberMap
-    }, that.bindSearchHandler)
+    }, () => {
+      that.setMemberBox()
+      that.bindSearchHandler()
+    })
   },
 
   bindSearchHandler: function () {
@@ -229,7 +259,7 @@ Page({
         }
       }
     }
-    that.setData({departMemberMap: that.data.departMemberMap})
+    that.setData({departMemberMap: that.data.departMemberMap}, that.setMemberBox)
   },
 
   bindPickMember: function (e) {
@@ -253,21 +283,26 @@ Page({
     }
     that.setData({
       departMemberMap: that.data.departMemberMap,
-    })
+    }, that.setMemberBox)
   },
 
   delMember: function (e) {
     let that = this
-    let {did, midx} = e.currentTarget.dataset
+    let {midx} = e.currentTarget.dataset
     let {departMemberMap, currentTab} = that.data
-    let memberObj = departMemberMap[did][midx]
 
-    if (currentTab == 0) {
-      memberObj.checked = false
-    } else {
-      memberObj.checked1 = false
+    for (let i in departMemberMap) {
+      for (let j in departMemberMap[i]) {
+        if (departMemberMap[i][j].id == midx) {
+          if (currentTab == 0) {
+            departMemberMap[i][j].checked = false
+          } else {
+            departMemberMap[i][j].checked1 = false
+          }
+        }
+      }
     }
-    that.setData({departMemberMap: departMemberMap})
+    that.setData({departMemberMap: departMemberMap}, that.setMemberBox)
   },
 
   getCheckedMember: function () {
@@ -379,7 +414,7 @@ Page({
       stackPeek: stackPeek,
       regionStack: that.data.regionStack,
       departMemberMap: that.data.departMemberMap
-    })
+    }, that.setMemberBox)
   },
 
   bindNavToAddGroup: function () {
