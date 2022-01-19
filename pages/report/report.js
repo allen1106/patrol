@@ -866,6 +866,12 @@ Page({
     })
   },
 
+  bindNavToAddGroup: function () {
+    wx.navigateTo({
+      url: '/pages/group/add?reback=1',
+    })
+  },
+
   setFormValue: function (name, value) {
     for(let i in this.data.formData) {
       for (let j in this.data.formData[i]) {
@@ -1061,20 +1067,14 @@ Page({
       for (let j in that.data.departMemberMap[i]) {
         let memberObj = that.data.departMemberMap[i][j]
         if (memberObj.checked) {
-          pjr_id.add(memberObj.id)
+          pjr_ids.add(memberObj.id)
         }
         if (memberObj.checked1) {
-          csr_id.add(memberObj.id)
+          csr_ids.add(memberObj.id)
         }
       }
     }
     return {'pjr_id': Array.from(pjr_ids), 'csr_id': Array.from(csr_ids)}
-  },
-
-  bindNavToAddGroup: function () {
-    wx.navigateTo({
-      url: '/pages/group/add?reback=1',
-    })
   },
 
   checkedSub: function (l, flag) {
