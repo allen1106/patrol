@@ -1,7 +1,7 @@
 <!--pages/index/nav.wxml-->
 <view class="page-wrapper">
   <view class="menu" bindtap="navToIndex">
-    <text>质量品控管理系统</text>
+    <text>品控管理</text>
   </view>
   <view class="menu" bindtap="navToNotification">
     <text>通知公告</text>

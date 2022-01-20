@@ -1,6 +1,6 @@
 <!--index.wxml-->
 <image src="/imgs/index/bg-top.png" class="page-top">
-  <view class="header">金达质量品控管理系统</view>
+  <view class="header">金茂郑州品控管理系统</view>
 </image>
 
 <view class="container">
