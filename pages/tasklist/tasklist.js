@@ -457,7 +457,7 @@ Page({
     let that = this
     that.batchAction((idstr) => {
       wx.navigateTo({
-        url: './member?idstr=' + idstr,
+        url: './member?stype=0&idstr=' + idstr,
       })
     })
   },

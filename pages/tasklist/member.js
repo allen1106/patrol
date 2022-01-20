@@ -126,8 +126,10 @@ Page({
    */
   onLoad: function (options) {
     let idstr = options.idstr
+    let stype = Number(options.stype)
     this.setData({
-      idstr: idstr
+      idstr: idstr,
+      stype: stype
     })
     this.initMemberList()
   },
@@ -400,6 +402,14 @@ Page({
   },
 
   bindSubmitForm: function () {
+    if (this.data.stype == 1) {
+      this.bindSubmitTransfer()
+    } else {
+      this.bindSubmitReport()
+    }
+  },
+
+  bindSubmitReport: function () {
     let that = this
     let checkedMem = that.getCheckedMember()
     if (!checkedMem) return
@@ -431,6 +441,44 @@ Page({
       }
     })
   },
+
+  bindSubmitTransfer: function () {
+    let that = this
+    let checkedMem = that.getCheckedMember()
+    if (!checkedMem) return
+    let {pjr_id, csr_id} = checkedMem
+    api.phpRequest({
+      url: 'report_transfer.php',
+      method: 'post',
+      header: {'content-type': 'application/x-www-form-urlencoded'},
+      data: {
+        report_id: that.data.idstr,
+        tjr_id: pjr_id,
+        user_id: wx.getStorageSync('userId')
+      },
+      success: function (res) {
+        if (res.data.status == 1) {
+          wx.showToast({
+            title: '提交成功',
+            icon: 'success',
+            success: function () {
+              setTimeout(() => {
+                wx.navigateBack({
+                  delta: 2
+                })
+              }, 1500);
+            }
+          })
+        } else {
+          wx.showToast({
+            title: '提交失败',
+            icon: 'none'
+          })
+        }
+      }
+    })
+  },
+
   bindBackToIndex: function () {
     wx.navigateBack({
       delta: 1

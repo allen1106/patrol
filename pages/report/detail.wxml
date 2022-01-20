@@ -34,12 +34,16 @@
         <text class="value">{{reportInfo.pjrlb}}</text>
       </view>
       <view class="text-wrapper">
-        <text class="label">抄送给</text>
+        <text class="label">抄送给：</text>
         <text class="value">{{reportInfo.csrlb}}</text>
       </view>
       <view class="text-wrapper">
-        <text class="label">已读</text>
+        <text class="label">已读：</text>
         <text class="value">{{reportInfo.cha_id}}</text>
+      </view>
+      <view class="text-wrapper">
+        <text class="label">问题转办：</text>
+        <text class="value">{{reportInfo.transfer}}</text>
       </view>
     </view>
     <view class="content-wrapper data">
@@ -126,10 +130,14 @@
     </view>
   </view>
 
-  <view class="btn-wrapper" wx:if="{{menu == 3 && reportInfo.display}}">
-    <view class="btn-download" bindtap="bindSubmitForm">
+  <view class="btn-wrapper" wx:if="{{menu == 3}}">
+    <view class="btn-download" bindtap="bindSubmitForm" wx:if="{{reportInfo.display}}">
       <image src="/imgs/report/submit.png"></image>
       <text>提交</text>
+    </view>
+    <view class="btn-download" bindtap="navToMember" wx:if="{{reportInfo.jurisdiction}}">
+      <image src="/imgs/report/submit.png"></image>
+      <text>转发</text>
     </view>
   </view>
 

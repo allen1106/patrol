@@ -368,5 +368,10 @@ Page({
     wx.navigateTo({
       url: '/pages/report/report?id=' + this.data.id + '&delta=' + 2,
     })
+  },
+  navToMember: function () {
+    wx.navigateTo({
+      url: '/pages/tasklist/member?stype=1&idstr=' + this.data.id,
+    })
   }
 })

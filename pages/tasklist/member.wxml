@@ -1,7 +1,7 @@
 <view class="page-wrapper" bindtap="hidePicker">
 
   <view class="assign">
-    <view class="title">
+    <view class="title" wx:if="{{stype == 0}}">
       <view class="{{currentTab==0 ? 'active' : ''}}" bindtap="switchAssignTab" data-tab="0">
         <image src="/imgs/report/save_draft.png"></image>
         <text>推送给Ta</text>
