@@ -1,6 +1,6 @@
 <!--pages/login/login.wxml-->
 <view class="page-wrapper bind" wx:if="{{bindInfo}}">
-  <view class="header">金达质量品控管理系统</view>
+  <view class="header">绿地京津冀品控巡检系统</view>
   <form bindsubmit="loginBind">
   <view class="bind-container">
     <view class="title">绑定账号</view>
