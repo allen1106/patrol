@@ -311,3 +311,58 @@ checkbox .wx-checkbox-input {
   height: 50rpx;
   margin-top: 30rpx;
 }
+
+.item-wrapper {
+  margin-top: 20rpx;
+}
+.item-wrapper .label {
+  font-size: 32rpx;
+}
+.item-wrapper .small-label {
+  font-size: 28rpx;
+}
+.item-wrapper .input {
+  margin-top: 10rpx;
+  border: 2rpx solid #DCDCDC;
+  border-radius: 10rpx;
+  min-height: 120rpx;
+  width: calc(100% - 44rpx);
+  padding: 10rpx 20rpx;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 28rpx;
+}
+.item-wrapper .input textarea {
+  display: inline-block;
+  height: 80rpx;
+  width: calc(100% - 100rpx);
+}
+.item-wrapper .input input {
+  width: 100%;
+}
+.item-wrapper .input text {
+  display: inline-block;
+  word-wrap: break-word; 
+  word-break: normal;
+  width: 100%;
+}
+.item-wrapper .input .btn-speak {
+  display: inline-block;
+  width: 50rpx;
+  height: 50rpx;
+  border-radius: 37.5rpx;
+  border: 5rpx solid black;
+}
+
+.item-wrapper .input .btn-speak image {
+  width: 50rpx;
+  height: 50rpx;
+}
+
+.item-wrapper .image-wrapper {
+  background-color: #fff;
+  border: 2rpx solid #DCDCDC;
+  border-radius: 20rpx;
+}

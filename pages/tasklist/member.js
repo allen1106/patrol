@@ -1,6 +1,9 @@
 // pages/tasklist/member.js
 var util = require("../../utils/util.js")
-var api = require("../../utils/api.js");
+var api = require("../../utils/api.js")
+var plugin = requirePlugin("WechatSI")
+
+let manager = plugin.getRecordRecognitionManager()
 Page({
 
   /**
@@ -21,6 +24,7 @@ Page({
     memberBox1: null,
     memberBox2: null,
     // ---
+    remark: ''
   },
 
   flatList: function (l, m) {
@@ -134,6 +138,26 @@ Page({
     this.initMemberList()
   },
 
+  onShow: function () {
+    var that = this
+    manager.onStop = (res) => {
+      that.bindInput(res.result)
+    }
+
+    manager.onStart = (res) => {
+      wx.showToast({
+        title: "正在聆听，松开结束语音",
+        icon: 'none'
+      })
+    }
+    manager.onError = (res) => {
+      wx.showToast({
+        title: '说话时间太短，请重试',
+        icon: 'none'
+      })
+    }
+  },
+
   switchAssignTab: function (e) {
     let that = this
     let tabid = Number(e.currentTarget.dataset.tab)
@@ -181,10 +205,6 @@ Page({
   },
 
   bindHideMask: function (e) {
-    // this.setData({
-    //   reg: '',
-    //   showMember: false
-    // }, this.bindSearchHandler)
     this.setData({
       showMember: false
     })
@@ -454,6 +474,7 @@ Page({
       data: {
         report_id: that.data.idstr,
         tjr_id: pjr_id,
+        content: that.data.remark,
         user_id: wx.getStorageSync('userId')
       },
       success: function (res) {
@@ -484,4 +505,33 @@ Page({
       delta: 1
     })
   },
+
+  bindInputText: function (e) {
+    let remark = e.detail.value
+    this.setData({
+      remark: remark
+    })
+  },
+
+  bindSpeakText: function (e) {
+    var that = this
+    that.bindInput = (res) => {
+      that.setData({
+        remark: res
+      })
+    }
+    manager.start({
+      lang: "zh_CN"
+    })
+  },
+
+  bindTouchUp: function () {
+    manager.stop()
+    wx.showToast({
+      title: '正在解析……',
+      icon: 'loading',
+      duration: 2000
+    })
+  },
+
 })

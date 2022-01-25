@@ -17,7 +17,9 @@ Page({
     comment: '',
     imageList: [],
     // form.php related
-    formData: null
+    formData: null,
+    statusList: [{name: "不逾期", status: 0},{name: "逾期", status: 1},{name: "合理逾期", status: 2}],
+    sid: 0
     // ---
   },
 
@@ -373,5 +375,40 @@ Page({
     wx.navigateTo({
       url: '/pages/tasklist/member?stype=1&idstr=' + this.data.id,
     })
-  }
+  },
+  bindStatusChange: function (e) {
+    var idx = e.detail.value
+    var that = this
+    that.setData({
+      sid: that.data.statusList[idx].status
+    }, that.handleOverdue)
+  },
+  handleOverdue: function () {
+    var that = this
+    api.phpRequest({
+      url: "report_overdue.php",
+      data: {
+        userid: wx.getStorageSync('userId'),
+        report_id: that.data.id,
+        overdue: that.data.sid
+      },
+      header: {'content-type': 'application/x-www-form-urlencoded'},
+      success: function (res) {
+        if (res.data.status == 1) {
+          wx.showToast({
+            title: '处理成功',
+            icon: 'success',
+            success: function () {
+              setTimeout(that.bindBackToIndex, 1500);
+            }
+          })
+        } else {
+          wx.showToast({
+            title: '处理失败',
+            icon: 'none'
+          })
+        }
+      }
+    })
+  },
 })
