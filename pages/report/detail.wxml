@@ -41,12 +41,19 @@
         <text class="label">已读：</text>
         <text class="value">{{reportInfo.cha_id}}</text>
       </view>
-      <view class="text-wrapper">
+      <!-- <view class="text-wrapper">
         <text class="label">问题转办：</text>
         <text class="value">{{reportInfo.transfer}}</text>
-      </view>
+      </view> -->
     </view>
     <view class="content-wrapper data">
+      <block wx:for="{{formData[0]}}" wx:for-item="item">
+        <view class="text-wrapper">
+          <text class="label">{{item.title}}:</text>
+          <text class="value">{{item.value}}</text>
+        </view>
+      </block>
+
       <block wx:for="{{formData[1]}}" wx:for-item="item">
         <view class="text-wrapper">
           <text class="label">{{item.title}}:</text>
@@ -94,7 +101,8 @@
           </view>
         </view>
         <view class="text">
-          <text>{{obj.evaluate_content}}</text>
+          <view>{{obj.evaluate_content}}</view>
+          <view class="co-red">{{obj.transfer_content}}</view>
         </view>
       </view>
     </view>
@@ -137,26 +145,34 @@
     </view>
     <view class="btn-download" bindtap="navToMember" wx:if="{{reportInfo.jurisdiction}}">
       <image src="/imgs/report/submit.png"></image>
-      <text>转发</text>
+      <text>转办</text>
     </view>
   </view>
 
   <view class="btn-wrapper" wx:if="{{menu == 4 && reportInfo.display}}">
     <view class="btn-download" bindtap="navToEdit">
-      <image src="/imgs/report/submit.png"></image>
+      <!-- <image src="/imgs/report/submit.png"></image> -->
       <text>编辑</text>
     </view>
     <view class="btn-download" bindtap="handleSuccess">
-      <image src="/imgs/report/submit.png"></image>
+      <!-- <image src="/imgs/report/submit.png"></image> -->
       <text>解决成功</text>
     </view>
     <view class="btn-cancel" bindtap="bindSubmitForm">
-      <image src="/imgs/close.png"></image>
+      <!-- <image src="/imgs/close.png"></image> -->
       <text>提交</text>
     </view>
     <view class="btn-cancel" bindtap="handleDelete">
-      <image src="/imgs/report/delete.png"></image>
+      <!-- <image src="/imgs/report/delete.png"></image> -->
       <text>删除</text>
+    </view>
+    <view class="btn-cancel" wx:if="{{reportInfo.overdue == 1}}">
+      <!-- <image src="/imgs/report/delete.png"></image> -->
+      <picker bindchange="bindStatusChange" value="{{sid}}" range="{{statusList}}" range-key="name">
+        <view class="picker">
+          <text>逾期</text>
+        </view>
+      </picker>
     </view>
   </view>
 </view>
