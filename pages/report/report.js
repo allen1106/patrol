@@ -293,10 +293,14 @@ Page({
                 item.idx = 0
                 if (that.data.id != 0) {
                   for (let i in item.list) {
-                    if (item.list[i].id == that.data.reportInfo[item.name + '_id']) {
+                    if (item.list[i].id == that.data.reportInfo[item.name]) {
                       item.idx = i
                     }
                   }
+                }
+                if (app.globalData.formData) {
+                  let d = app.globalData.formData[0].filter((x) => x.name == item.name)[0]
+                  item.idx = d.idx
                 }
                 that.setData({
                   [`formData[0][` + i + `]`]: item
@@ -957,10 +961,6 @@ Page({
   },
 
   bindHideMask: function (e) {
-    // this.setData({
-    //   reg: '',
-    //   showMember: false
-    // }, this.bindSearchHandler)
     this.setData({
       showMember: false
     })
@@ -996,7 +996,7 @@ Page({
       departMemberMap: departMemberMap
     }, () => {
       that.setMemberBox()
-      that.bindSearchHandler()
+      // that.bindSearchHandler()
     })
   },
 
@@ -1030,6 +1030,28 @@ Page({
         } else {
           if (values.indexOf(memberObj.id) != -1) {
             memberObj.checked1 = true
+          }
+        }
+      }
+    }
+    that.setData({
+      departMemberMap: that.data.departMemberMap,
+    }, that.setMemberBox)
+  },
+
+  bindPickMember1: function (e) {
+    var that = this
+    var mid = Number(e.currentTarget.dataset.mid)
+    var currentTab = that.data.currentTab
+    
+    for (let i in that.data.departMemberMap) {
+      for (let j in that.data.departMemberMap[i]) {
+        let memberObj = that.data.departMemberMap[i][j]
+        if (memberObj.id == mid) {
+          if (currentTab == 0) {
+              memberObj.checked = !memberObj.checked
+          } else {
+            memberObj.checked1 = !memberObj.checked1
           }
         }
       }
@@ -1091,12 +1113,23 @@ Page({
   },
 
   checkedSubMember: function (rid, flag) {
+    let that = this
     let memList = this.data.departMemberMap[rid]
+    let mids = []
     for (let key in memList) {
-      if (this.data.currentTab == 0) {
-        memList[key].checked = flag
-      } else {
-        memList[key].checked1 = flag
+      mids.push(memList[key].id)
+    }
+    for (let i in that.data.departMemberMap) {
+      for (let j in that.data.departMemberMap[i]) {
+        let memberObj = that.data.departMemberMap[i][j]
+        if (mids.indexOf(memberObj.id) != -1) {
+          if (that.data.currentTab == 0) {
+            memberObj.checked = flag
+            console.log(memberObj.id, flag)
+          } else {
+            memberObj.checked1 = flag
+          }
+        }
       }
     }
   },
@@ -1138,30 +1171,22 @@ Page({
   bindCheckRegion: function (e) {
     let that = this
     let {stackPeek} = that.data
-    var values = e.detail.value
+    var rid = Number(e.currentTarget.dataset.rid)
     for (let i in stackPeek) {
       let regionObj = stackPeek[i]
-      if (values.indexOf(regionObj.value) != -1) {
+      if (regionObj.value == rid) {
+        let flag = true
         if (that.data.currentTab == 0) {
-          regionObj.checked = true
+          flag = !regionObj.checked
+          regionObj.checked = !regionObj.checked
         } else {
-          regionObj.checked1 = true
+          flag = !regionObj.checked1
+          regionObj.checked1 = !regionObj.checked1
         }
-        that.checkedSubMember(regionObj.value, true)
-        that.findReginInStack(that.data.regionStack.data[0], regionObj.value, true)
+        that.checkedSubMember(regionObj.value, flag)
+        that.findReginInStack(that.data.regionStack.data[0], regionObj.value, flag)
         if (regionObj.subList) {
-          that.checkedSub(regionObj.subList, true)
-        }
-      } else {
-        if (that.data.currentTab == 0) {
-          regionObj.checked = false
-        } else {
-          regionObj.checked1 = false
-        }
-        that.checkedSubMember(regionObj.value, false)
-        that.findReginInStack(that.data.regionStack.data[0], regionObj.value, false)
-        if (regionObj.subList) {
-          that.checkedSub(regionObj.subList, false)
+          that.checkedSub(regionObj.subList, flag)
         }
       }
     }

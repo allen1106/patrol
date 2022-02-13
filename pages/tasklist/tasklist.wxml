@@ -73,7 +73,7 @@
         </picker>
       </view>
     </view>
-    <view class="nav">
+    <view class="nav" wx:if="{{formData[0].length == 0}}">
       <view class="system">
         <picker bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
           <view class="picker">
@@ -84,6 +84,30 @@
       </view>
     </view>
   </view>
+
+  <view class="nav-wrapper" wx:if="{{formData[0].length > 0}}">
+    <view class="nav">
+      <view class="system">
+        <picker bindchange="bindSystemChange" value="{{sysIdx}}" range="{{systemList}}" range-key="name">
+          <view class="picker">
+            <text>{{systemList[sysIdx].name}}</text>
+            <image src="/imgs/down.png"></image>
+          </view>
+        </picker>
+      </view>
+    </view>
+    <block wx:for="{{formData[0]}}" wx:for-item="item" wx:for-index="idx">
+    <view class="nav">
+      <view class="system">
+        <picker class="picker" data-idx="{{idx}}" bindchange="bindPickerChange" value="{{item.idx}}" range="{{item.list}}" range-key="name">
+          <text>{{item.list[item.idx].name}}</text>
+          <image src="/imgs/down.png"></image>
+        </picker>
+      </view>
+    </view>
+    </block>
+  </view>
+
   <view class="nav-wrapper">
     <view class="nav">
       <picker mode="date" bindchange="bindStartChange" value="{{startDate}}" start="1990-01-01" end="{{currentDate}}">

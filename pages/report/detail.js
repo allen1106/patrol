@@ -42,6 +42,24 @@ Page({
               [`formData[3][` + i + `]`]: item
             })
           }
+          for (let i in that.data.formData[0]) {
+            let item = that.data.formData[0][i]
+            api.phpRequest({
+              url: item.apifile,
+              success: function (res) {
+                var list = res.data
+                item.idx = 0
+                for (let i in list) {
+                  if (list[i].id == that.data.reportInfo[item.name]) {
+                    item.value = list[i].name
+                  }
+                }
+                that.setData({
+                  [`formData[0][` + i + `]`]: item
+                })
+              }
+            })
+          }
           for (let i in that.data.formData[1]) {
             let item = that.data.formData[1][i]
             item.value = that.data.reportInfo[item.name]
