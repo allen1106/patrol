@@ -167,6 +167,43 @@ Page({
     );
   },
 
+  fetchFromData: function () {
+    let that = this
+    api.phpRequest({
+      url: 'form.php',
+      success: function (res) {
+        that.setData({
+          formData: res.data,
+        }, () => {
+          for (let i in that.data.formData[0]) {
+            let item = that.data.formData[0][i]
+            let dataList = [
+              {"name": item.title, "id": 0}
+            ]
+            api.phpRequest({
+              url: item.apifile,
+              success: function (res) {
+                var list = res.data
+                item.list = dataList.concat(list)
+                item.idx = 0
+                if (that.data.id != 0) {
+                  for (let i in item.list) {
+                    if (item.list[i].id == that.data.reportInfo[item.name + '_id']) {
+                      item.idx = i
+                    }
+                  }
+                }
+                that.setData({
+                  [`formData[0][` + i + `]`]: item
+                })
+              }
+            })
+          }
+        })
+      }
+    })
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
@@ -186,6 +223,7 @@ Page({
     })
     that.fetchRegionList()
     that.fetchSystemList()
+    that.fetchFromData()
   },
 
   onShow: function () {
@@ -282,6 +320,15 @@ Page({
     }, this.fetchTaskList)
   },
 
+  bindPickerChange: function (e) {
+    var pidx = e.detail.value
+    let idx = e.currentTarget.dataset.idx
+    var that = this
+    that.setData({
+      [`formData[0][` + idx + `].idx`]: pidx,
+    }, this.fetchTaskList)
+  },
+
   switchTab: function (e) {
     let that = this
     let tabid = Number(e.currentTarget.dataset.tab)
@@ -301,6 +348,16 @@ Page({
     if (that.data.systemId != 0) {data["industry_id"] = that.data.systemId}
     if (that.data.startDate != "请选择开始时间") {data["startDate"] = that.data.startDate}
     if (that.data.endDate != "请选择结束时间") {data["endDate"] = that.data.endDate}
+
+    if (this.data.formData) {
+      for (let j in this.data.formData[0]) {
+        let item = this.data.formData[0][j]
+        if (item.idx) {
+          data[item.name] = item.list[item.idx].id
+        }
+      }
+    }
+
     if (!concatFlag) {
       data["page"] = 1
     }

@@ -72,7 +72,7 @@ Page({
 
     // 获取部门信息
     api.phpRequest({
-      url: 'department.php',
+      url: 'department_1.php',
       success: function (res) {
         that.convertList(res.data)
         that.setData({
@@ -262,8 +262,8 @@ Page({
       success: function (res) {
         var list = res.data
         for (var i in list) {
-          list[i].ratio = parseInt(list[i].ratio * 100)
-          list[i].ratio1 = parseInt(list[i].ratio1 * 100)
+          list[i].ratio = list[i].ratio
+          list[i].ratio1 = list[i].ratio1
         }
         that.setData({
           itemList: that.sortList(list)
@@ -280,8 +280,8 @@ Page({
       data: data,
       success: function (res) {
         var summary = res.data
-        summary.ratio = parseInt(summary.ratio * 100)
-        summary.ratio1 = parseInt(summary.ratio1 * 100)
+        summary.ratio = summary.ratio
+        summary.ratio1 = summary.ratio1
         that.setData({
           reportSummary: summary
         })

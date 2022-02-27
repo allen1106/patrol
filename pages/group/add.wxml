@@ -41,9 +41,9 @@
         </view>
       </view>
       <scroll-view class="scroll-view-common depart-pannel" scroll-y>
-        <checkbox-group bindchange="bindCheckRegion">
+        <checkbox-group>
         <view class="region-item" wx:for="{{stackPeek}}" wx:for-item="regionObj">
-          <checkbox value="{{regionObj.value}}" checked="{{regionObj.checked}}"></checkbox>
+          <checkbox value="{{regionObj.value}}" checked="{{regionObj.checked}}" data-rid="{{regionObj.value}}" bindtap="bindCheckRegion"></checkbox>
           <text bindtap="bindClickRegion" data-region="{{regionObj}}">{{regionObj.text}}</text>
           <image src="/imgs/register/left.png"></image>
         </view>
@@ -73,15 +73,16 @@
     <view class="search-pannel">
       <view class="input-pannel">
         <input placeholder="搜索" value="{{reg}}" bindinput="bindInputReg"></input>
-        <image src="/imgs/report/icon_search.png" bindtap="bindSearchHandler"></image>
+        <image src="/imgs/report/icon_search.png" bindtap="searchName1"></image>
       </view>
     </view>
     <scroll-view class="choose-pannel" scroll-y>
-      <checkbox-group bindchange="bindPickMember">
+      <!-- <checkbox-group bindchange="bindPickMember"> -->
+      <checkbox-group>
         <block wx:for="{{departMemberMap}}" wx:for-item="memberList">
           <block wx:for="{{memberList}}" wx:for-item="member">
             <view class="checkbox" wx:if="{{member.inbox && !member.hide}}">
-              <checkbox value="{{member.id}}" checked="{{member.checked}}">{{member.realname}}</checkbox>
+              <checkbox value="{{member.id}}" checked="{{member.checked}}" data-mid="{{member.id}}" bindtap="bindPickMember1">{{member.realname}}</checkbox>
             </view>
           </block>
         </block>
