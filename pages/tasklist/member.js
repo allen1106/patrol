@@ -4,6 +4,9 @@ var api = require("../../utils/api.js")
 var plugin = requirePlugin("WechatSI")
 
 let manager = plugin.getRecordRecognitionManager()
+
+const app = getApp()
+
 Page({
 
   /**
@@ -326,20 +329,21 @@ Page({
 
   getCheckedMember: function () {
     let that = this
-    let ret = {'pjr_id': [], 'csr_id': []}
+    let pjr_ids = new Set()
+    let csr_ids = new Set()
     
     for (let i in that.data.departMemberMap) {
       for (let j in that.data.departMemberMap[i]) {
         let memberObj = that.data.departMemberMap[i][j]
         if (memberObj.checked) {
-          ret.pjr_id.push(memberObj.id)
+          pjr_ids.add(memberObj.id)
         }
         if (memberObj.checked1) {
-          ret.csr_id.push(memberObj.id)
+          csr_ids.add(memberObj.id)
         }
       }
     }
-    return ret
+    return {'pjr_id': Array.from(pjr_ids), 'csr_id': Array.from(csr_ids)}
   },
 
   bindNavToAddGroup: function () {
@@ -459,6 +463,16 @@ Page({
     let checkedMem = that.getCheckedMember()
     if (!checkedMem) return
     let {pjr_id, csr_id} = checkedMem
+    let userinfo = app.globalData.userInfo
+    console.log(pjr_id)
+    console.log(csr_id)
+    if (pjr_id.length > userinfo.number || csr_id.length > userinfo.number) {
+      wx.showToast({
+        title: '推送给人数不能超过' + userinfo.number + '人',
+        icon: 'none',
+      })
+      return
+    }
     api.phpRequest({
       url: 'report_submit_s.php',
       method: 'post',
@@ -492,6 +506,16 @@ Page({
     let checkedMem = that.getCheckedMember()
     if (!checkedMem) return
     let {pjr_id, csr_id} = checkedMem
+
+    let userinfo = app.globalData.userInfo
+    if (pjr_id.length > userinfo.number || csr_id.length > userinfo.number) {
+      wx.showToast({
+        title: '推送给人数不能超过' + userinfo.number + '人',
+        icon: 'none',
+      })
+      return
+    }
+
     api.phpRequest({
       url: 'report_transfer.php',
       method: 'post',
