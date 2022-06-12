@@ -1,4 +1,4 @@
-const HTTP_HOST = 'https://jinmao.0371-net.com'
+const HTTP_HOST = 'https://xfxunjian.17letao.cn'
 const API_HOST = HTTP_HOST + '/api/'
 const DEBUG = false
 const IMG_HOST = DEBUG ? '' : HTTP_HOST
